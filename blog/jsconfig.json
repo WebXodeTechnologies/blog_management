@@ -1,8 +1,35 @@
 {
+  "$schema": "https://json.schemastore.org/jsconfig",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
-    }
-  }
+    },
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "preserve",
+    "checkJs": false,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "types": []
+  },
+  "include": [
+    "app/**/*",
+    "components/**/*",
+    "modules/**/*",
+    "lib/**/*",
+    "server/**/*",
+    "hooks/**/*",
+    "store/**/*",
+    "utils/**/*",
+    "tests/**/*",
+    "middleware.js"
+  ],
+  "exclude": [
+    "node_modules",
+    ".next",
+    "dist",
+    "coverage"
+  ]
 }

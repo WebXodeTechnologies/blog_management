@@ -1,12 +1,22 @@
 {
-  "name": "blog",
+  "name": "texora",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
+    "dev:socket": "node server/socket.js",
+    "dev:worker": "node server/worker.js",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "start:socket": "node server/socket.js",
+    "start:worker": "node server/worker.js",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "format": "prettier --write .",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "prepare": "husky"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.2.6",
@@ -40,6 +50,8 @@
     "razorpay": "^2.9.8",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "sanitize-html": "^2.14.0",
+    "slugify": "^1.6.6",
     "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3",
     "sonner": "^2.0.8",
@@ -48,12 +60,16 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
     "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.3.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4"

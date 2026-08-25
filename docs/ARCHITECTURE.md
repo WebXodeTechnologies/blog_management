@@ -61,6 +61,7 @@ Each module owns its:
                                 │
                               Worker
 ```
+
 ````
 
 ---
@@ -512,3 +513,4 @@ Scaling requirements
 Failure isolation
 
 ---
+````

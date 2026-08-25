@@ -98,7 +98,7 @@ export default function proxy(req) {
         new URL(`/dashboard/${tenantSlug}${dashboardPath}`, req.url),
         {
           request: { headers: requestHeaders },
-        },
+        }
       );
     }
 

@@ -81,7 +81,7 @@ Database
 
 Use:
 
-```text
+````text
 modules/
 ``
 
@@ -102,8 +102,9 @@ modules/
 ├── payments/
 └── notifications/
 
-```
---- 
+````
+
+---
 
 ## 4. MULTI-TENANCY
 
@@ -128,7 +129,6 @@ Membership
 Tenant
 ```
 
-
 Every tenant-owned database query must enforce tenant isolation.
 
 Example:
@@ -149,10 +149,8 @@ Never allow Tenant A to access Tenant B data.
 
 Supported authentication:
 
-
 - Google OAuth
 - Email/password
-
 
 Future:
 
@@ -208,7 +206,6 @@ Approved
 Published
 ```
 
-
 Users can create and edit their allowed blogs.
 
 Admin/moderator approval must happen server-side.
@@ -226,6 +223,7 @@ Database access should be handled through repositories where practical.
 Use indexes for important query patterns.
 
 Tenant-owned collections should normally consider:
+
 ```text
 tenantId
 ```
@@ -275,7 +273,6 @@ Fallback if Redis is unavailable?
 
 ```
 
-
 Do not cache everything unnecessarily.
 
 ---
@@ -298,7 +295,6 @@ Socket events must respect:
 Never broadcast private tenant data to unauthorized users.
 
 ---
-
 
 ## 12. BACKGROUND JOBS
 
@@ -358,17 +354,17 @@ Create reusable components instead of duplicating UI.
 
 ---
 
-
 ## 15. UI
 
 Use:
+
 ```text
 Next.js
 Tailwind CSS
 ```
 
-
 All user-facing pages should support:
+
 ```text
 - Mobile
 - Tablet
@@ -376,6 +372,7 @@ All user-facing pages should support:
 ```
 
 Provide appropriate:
+
 ```text
 - Loading states
 - Error states
@@ -389,6 +386,7 @@ Provide appropriate:
 ## 16. SECURITY
 
 Never:
+
 ```text
 - Hardcode secrets
 - Expose API keys
@@ -409,6 +407,7 @@ Use environment variables.
 Use Playwright for important end-to-end flows.
 
 Prioritize:
+
 ```text
 
 Authentication
@@ -425,6 +424,7 @@ Payment flow
 ```
 
 Critical security flows must include tenant-isolation testing.
+
 ```text
 
 Test:
@@ -436,7 +436,6 @@ Tenant isolation
 Error handling
 ```
 
-
 ---
 
 ## 18. ERROR HANDLING
@@ -444,6 +443,7 @@ Error handling
 Handle errors properly.
 
 Do not expose:
+
 ```text
 
 - Stack traces
@@ -452,6 +452,7 @@ Do not expose:
 - Internal infrastructure details
 
 ```
+
 to users.
 
 Return clear user-facing errors and log useful technical information.
@@ -473,6 +474,7 @@ Consider:
 - Pagination
 - Next.js rendering strategy
 ```
+
 Measure before introducing complicated optimizations.
 
 ---
@@ -521,7 +523,7 @@ A feature is complete only when:
 - A focused Git commit is created
 ```
 
---- 
+---
 
 ## FINAL RULE
 
@@ -539,5 +541,3 @@ Do not add complexity just because a technology exists in the project.
 Follow the existing architecture unless there is a clear reason to change it.
 
 ---
-
-

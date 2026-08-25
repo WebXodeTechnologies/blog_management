@@ -1,11 +1,10 @@
-
 ---
 
 # 4. `final.md`
 
 I would make this your **master specification**, not just another architecture document.
 
-```md
+````md
 # Blog Management SaaS — Master Project Specification
 
 ## Project Status
@@ -111,11 +110,10 @@ Future:
                               └───────────┼───────────┘
                                           │
                                      SUBSCRIPTION
-
 ```
+````
 
 ---
-
 
 ## Application Layers
 
@@ -145,6 +143,7 @@ MongoDB
 ---
 
 ## Core Modules
+
 ```text
 auth
 users
@@ -166,6 +165,7 @@ analytics
 moderation
 audit-logs
 ```
+
 ---
 
 ## Frontend Areas
@@ -189,7 +189,7 @@ EDITOR
 AUTHOR
 MODERATOR
 MEMBER
-``` 
+```
 
 ---
 
@@ -210,9 +210,11 @@ PENDING_REVIEW
  ↓
 REJECTED
 ```
+
 ---
 
 ## Development Roadmap
+
 Phase 1 — Foundation
 
 - Initialize Next.js
@@ -287,7 +289,7 @@ Implement:
 - Publishing
 - Blog analytics
 
---- 
+---
 
 ## Phase 7 — Public Platform
 
@@ -374,6 +376,7 @@ Implement:
 ## Phase 14 — Docker
 
 - Create:
+
 ```text
 - docker-compose.yml
 - docker-compose.dev.yml
@@ -381,6 +384,7 @@ Implement:
 ```
 
 Containers:
+
 ```text
 - nginx
 - nextjs
@@ -399,7 +403,7 @@ Implement:
 - Security headers
 - Rate limiting where appropriate
 
---- 
+---
 
 ## Phase 16 — Monitoring
 
@@ -414,6 +418,7 @@ Track:
 - Background job failures
 
 ## Phase 17 — CI/CD
+
 GitHub Actions pipeline:
 
 ```text
@@ -447,6 +452,7 @@ Worker
 ```
 
 External:
+
 ```text
 MongoDB Atlas
 Cloudinary
@@ -460,7 +466,7 @@ Measure before optimizing.
 
 Investigate:
 
-```text
+````text
 - Database queries
 - MongoDB indexes
 - Redis caching
@@ -491,7 +497,8 @@ CDN
  ↓
 Service Extraction if Required
 
-```
+````
+
 ---
 
 ## Non-Negotiable Architecture Rules
@@ -517,12 +524,12 @@ Service Extraction if Required
 - Existing architecture must not be changed without documenting the reason.
 - Performance optimization must be based on measurements.
 
-
 ---
 
 ## AI Development Rule
 
 AI coding assistants must read:
+
 ```text
 
 docs/01-PROJECT-OVERVIEW.md
@@ -530,7 +537,6 @@ docs/02-ARCHITECTURE.md
 docs/03-SUBSCRIPTIONS.md
 docs/final.md
 ```
-
 
 before implementing major features.
 
@@ -549,5 +555,5 @@ Never expose secrets.
 Never bypass authorization.
 Never bypass tenant isolation.
 ```
----
 
+---

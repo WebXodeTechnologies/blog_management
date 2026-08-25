@@ -24,12 +24,7 @@
     "store/**/*",
     "utils/**/*",
     "tests/**/*",
-    "middleware.js"
+    "proxy.js"
   ],
-  "exclude": [
-    "node_modules",
-    ".next",
-    "dist",
-    "coverage"
-  ]
+  "exclude": ["node_modules", ".next", "dist", "coverage"]
 }

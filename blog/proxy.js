@@ -24,7 +24,7 @@ const RESERVED_SUBDOMAINS = new Set([
   "staging",
 ]);
 
-export default function middleware(req) {
+export default function proxy(req) {
   const url = req.nextUrl;
   const { pathname } = url;
 

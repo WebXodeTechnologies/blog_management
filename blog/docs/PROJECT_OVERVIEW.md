@@ -196,7 +196,7 @@ A user may belong to multiple tenants.
 
 Example:
 
-```text
+````text
 User
 │
 ├── Webxode
@@ -235,26 +235,32 @@ Tenant isolation is mandatory.
 Blog lifecycle:
 ```text
 Draft → Pending → Approved → Published
-```
+````
+
 ---
 
 Rejected content:
+
 ```text
 PENDING_REVIEW
    ↓
 REJECTED
 ```
+
 ---
 
 ## 9. Blog Editor
 
 The blog editor will use:
+
 ```text
 Tiptap
 ```
+
 ---
 
 Required capabilities:
+
 - Rich text
 - Headings
 - Paragraphs
@@ -273,14 +279,14 @@ Required capabilities:
 
 ## 10. Media Storage
 
-
 Initial storage:
 
 ```text
 
 Initial storage:
 
-``` 
+```
+
 ---
 
 Future production architecture:
@@ -290,7 +296,9 @@ AWS S3
 +
 CloudFront
 ```
+
 ---
+
 The application must isolate storage logic behind a service layer so that Cloudinary can later be replaced without rewriting the blog module.
 
 ## 11. Community
@@ -318,6 +326,7 @@ The application will use:
 ```text
 Razorpay
 ```
+
 ---
 
 Subscription state must be controlled by the backend.
@@ -373,6 +382,7 @@ Socket.io
 +
 Redis Adapter
 ```
+
 ---
 
 Initial use cases:
@@ -384,7 +394,7 @@ Initial use cases:
 - Real-time collaboration
 - Live updates
 
---- 
+---
 
 ## 15. Background Jobs
 
@@ -395,6 +405,7 @@ BullMQ
 +
 Redis
 ```
+
 ---
 
 Potential jobs:
@@ -415,6 +426,7 @@ Monitoring will use:
 ```text
 Sentry
 ```
+
 ---
 
 Sentry should be configured for:
@@ -436,6 +448,7 @@ Primary E2E testing framework:
 Playwright
 
 ```
+
 Critical tests:
 
 - Registration
@@ -460,7 +473,7 @@ Tenant isolation testing is especially important.
 
 Initial deployment:
 
-``` text 
+```text
 vercel
 ```
 
@@ -470,7 +483,9 @@ Containerization:
 Docker
 Docker Compose
 ```
+
 Reverse proxy:
+
 ```
 Nginx
 ```
@@ -480,6 +495,7 @@ CI/CD:
 ```
 GitHub Actions
 ```
+
 ---
 
 ## 19. Initial Architecture
@@ -515,8 +531,9 @@ Next.js Modular Monolith
   ├── Razorpay
   └── Sentry
 
-  ```
-  ---
+```
+
+---
 
 ## 20. Development Philosophy
 
@@ -543,11 +560,12 @@ Then optimize based on real bottlenecks.
 
 Initial:
 
-``` text
+```text
 Modular Monolith
 ```
 
 Possible future:
+
 ```text
 Modular Monolith
         ↓
@@ -561,7 +579,9 @@ Dedicated Workers
         ↓
 Service Extraction if required
 ```
+
 ---
+
 Potential future services:
 
 - Notification service
@@ -573,22 +593,23 @@ Potential future services:
 These should only be extracted when there is a real requirement.
 ---
 
-
 ## 22. Current Development Stage
 
 Current stage:
+
 ```text
 
 Architecture Planning
 ```
 
 Next milestone:
+
 ```text
 Project Foundation
 ```
 
-
 Then:
+
 ```text
 
 

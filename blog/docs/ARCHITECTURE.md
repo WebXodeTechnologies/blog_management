@@ -1,11 +1,10 @@
-
 ---
 
 # 2. `02-ARCHITECTURE.md`
 
 This should be more technical.
 
-```md
+````md
 # Blog Management SaaS — Architecture
 
 ## 1. Architecture Style
@@ -61,8 +60,8 @@ Each module owns its:
                   Cache       BullMQ
                                 │
                               Worker
-
 ```
+````
 
 ---
 
@@ -113,7 +112,6 @@ Business logic must not be implemented directly inside route handlers.
 
 ---
 
-
 ## 4. Business Module Architecture
 
 ```text
@@ -141,7 +139,8 @@ modules/
 └── audit-logs/
 
 ```
-Example 
+
+Example
 
 ```text
 modules/blogs/
@@ -162,7 +161,7 @@ modules/blogs/
 
 Every protected request should follow
 
-```text 
+```text
 
 Request
   ↓
@@ -185,19 +184,21 @@ Repository
 Database
 
 ```
+
 ---
 
 6. Tenant Isolation
 
 Every tenant-owned database resource must contain:
 
-```text 
+```text
 
 {
   tenantId: ObjectId
 }
 
 ```
+
 Tenant ID must be derived from trusted server-side context.
 
 Do not trust:
@@ -205,16 +206,17 @@ Do not trust:
 ```text
 tenantId
 ```
+
 provided directly by the browser for authorization.
 
 The backend must resolve the active tenant from the authenticated user's membership and validated tenant context.
 
 ---
 
-
 ## 7. RBAC
 
 Initial roles:
+
 ```text
 OWNER
 ADMIN
@@ -224,10 +226,9 @@ MODERATOR
 MEMBER
 ```
 
-
 Permissions should be explicit.
 
-```text 
+```text
 Example:
 
 BLOG_CREATE
@@ -246,15 +247,14 @@ BILLING_VIEW
 BILLING_MANAGE
 ```
 
-
 Authorization should be performed server-side.
 
 Frontend role checks are only for UI visibility.
 
 ---
 
-
 ## 8. Data Access Architecture
+
 ```text
 Route
  ↓
@@ -274,6 +274,7 @@ Routes are responsible for HTTP concerns.
 ---
 
 ## 9. Redis Architecture
+
 ```text
 Redis will initially support:
 
@@ -297,6 +298,7 @@ Cache invalidation must be explicitly implemented.
 ---
 
 ## 10. Real-Time Architecture
+
 ```text
 
 Client
@@ -310,12 +312,12 @@ Redis Adapter
 Multiple Application Instances
 ```
 
-
 Redis Adapter allows Socket.io events to work correctly when multiple application instances exist.
 
 ---
 
 ## 11. Background Processing
+
 ```text
 Application
     ↓
@@ -336,7 +338,6 @@ Jobs include:
 - Scheduled publishing
 - Webhooks
 - Cleanup
-
 
 ---
 
@@ -368,7 +369,6 @@ Never activate a subscription solely because the frontend reports a successful p
 
 ---
 
-
 ## 13. Storage Architecture
 
 ```text
@@ -380,8 +380,8 @@ Application
 Cloudinary
 ```
 
-
 Future:
+
 ```text
 
 Application
@@ -391,8 +391,8 @@ S3
 CloudFront
 ```
 
-
 Storage provider access must be isolated inside:
+
 ```text
 
 lib/cloudinary/
@@ -403,6 +403,7 @@ or an abstraction layer so migration to S3 does not affect business modules.
 ## 14. Deployment Architecture
 
 Initial:
+
 ```text
 Internet
    ↓
@@ -418,6 +419,7 @@ Next.js
 ```
 
 External infrastructure:
+
 ```text
 MongoDB Atlas
 Cloudinary
@@ -432,6 +434,7 @@ For future production scaling, Redis should be moved to a managed service such a
 ---
 
 ## 15. CI/CD
+
 ```text
 Developer
    ↓
@@ -452,8 +455,8 @@ Docker Image
 Deployment
 ```
 
-
 Pull requests should run:
+
 ```text
 
 Lint
@@ -467,6 +470,7 @@ Playwright tests where appropriate
 ## 16. Scaling Strategy
 
 Stage 1:
+
 ```text
 Single EC2
 +
@@ -474,6 +478,7 @@ Docker Compose
 ```
 
 Stage 2:
+
 ```text
 Multiple Next.js containers
 +
@@ -482,8 +487,8 @@ Load Balancer
 Managed Redis
 ```
 
-
 Stage 3:
+
 ```text
 Application
 +
@@ -497,7 +502,6 @@ CDN
 ```
 
 Stage 4:
-
 
 Extract services only when justified by:
 

@@ -1,11 +1,10 @@
-
 ---
 
 # 3. `03-SUBSCRIPTIONS.md`
 
 This one is important because your SaaS model depends on it.
 
-```md
+````md
 # Subscription Architecture
 
 ## 1. Payment Provider
@@ -33,6 +32,8 @@ FREE
 PRO
 BUSINESS
 ```
+````
+
 These values are configurable and must not be hardcoded throughout the application.
 
 ## 3. Subscription Hierarchy
@@ -52,11 +53,13 @@ Platform
                  ├── Start Date
                  └── Renewal Date
 ```
+
 ---
 
 ## 4. Subscription Status
 
 Supported states:
+
 ```text
 
 TRIALING
@@ -74,6 +77,7 @@ PAUSED
 Subscription plans should define capabilities.
 
 Example:
+
 ```text
 FREE
 
@@ -92,6 +96,7 @@ PRO
 - Premium community features
 - Increased limits
 ```
+
 ```text
 BUSINESS
 
@@ -108,16 +113,16 @@ BUSINESS
 
 The application should not check plan names everywhere.
 
-
 Avoid:
+
 ```text
 if (subscription.plan === "PRO") {
    ...
 }
 ```
 
-
 Prefer:
+
 ```text
 
 if (canUseFeature("ADVANCED_ANALYTICS")) {
@@ -130,6 +135,7 @@ This allows plans to change without rewriting application logic.
 ---
 
 ## 7. Payment Flow
+
 ```text
 User selects plan
         ↓
@@ -149,6 +155,7 @@ Backend updates subscription
         ↓
 Entitlements become active
 ```
+
 ---
 
 ## 8. Webhook Security
@@ -163,15 +170,14 @@ Every Razorpay webhook must:
 - Record payment event
 - Return successful response
 
-Webhook processing must be idempotent. 
-
+Webhook processing must be idempotent.
 
 ---
-
 
 ## 9. Subscription Database
 
 Potential collections:
+
 ```text
 
 subscriptions
@@ -199,7 +205,7 @@ Example:
   createdAt,
   updatedAt
 }
-``` 
+```
 
 ---
 
@@ -208,6 +214,7 @@ Example:
 Every webhook event should have a unique external event ID.
 
 Example:
+
 ```text
 
 razorpayEventId
@@ -236,6 +243,7 @@ This prevents duplicate webhook processing.
 Subscription checks must happen server-side.
 
 Example:
+
 ```text
 
 Request
@@ -255,12 +263,12 @@ Permission
 Allow / Deny
 ```
 
---- 
-
+---
 
 ## 13. Important Rule
 
 The frontend is never trusted for:
+
 ```text
 Payment status
 Subscription status
@@ -270,8 +278,6 @@ Permissions
 Usage limits
 ```
 
-
 These must be verified by the backend.
 
 ---
-

@@ -1,34 +1,9 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+import nextPlugin from "@next/eslint-plugin-next";
+import reactPlugin from "eslint-plugin-react";
+import hooksPlugin from "eslint-plugin-react-hooks";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
-const eslintConfig = [
-  // Next.js Core Web Vitals rules
-  ...compat.extends("next/core-web-vitals"),
-
-  // Custom project rules and environment overrides
-  {
-    rules: {
-      // Allow unused variables if prefixed with an underscore (e.g., _req, _next)
-      "no-unused-vars": [
-        "warn",
-        {
-          argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
-        },
-      ],
-      "no-console": ["warn", { allow: ["warn", "error", "info"] }],
-    },
-  },
-
-  // Ignore build artifacts, caches, and test coverage
+export default [
+  // 1. Ignore build artifacts and generated files
   {
     ignores: [
       ".next/**",
@@ -42,6 +17,48 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
-];
 
-export default eslintConfig;
+  // 2. React & Next.js Core Rules with JSX Parsing Enabled
+  {
+    files: ["**/*.{js,jsx,mjs}"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
+    plugins: {
+      "@next/next": nextPlugin,
+      react: reactPlugin,
+      "react-hooks": hooksPlugin,
+    },
+    rules: {
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs["core-web-vitals"].rules,
+      ...reactPlugin.configs.recommended.rules,
+      ...hooksPlugin.configs.recommended.rules,
+
+      // Next.js automatically provides JSX runtime
+      "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off",
+
+      // Allow _prefixed unused variables
+      "no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+      "no-console": ["warn", { allow: ["warn", "error", "info"] }],
+    },
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+  },
+];

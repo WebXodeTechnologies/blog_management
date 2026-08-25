@@ -111,7 +111,8 @@ Future:
                                           │
                                      SUBSCRIPTION
 ```
-````
+
+`````
 
 ---
 
@@ -497,7 +498,7 @@ CDN
  ↓
 Service Extraction if Required
 
-````
+`````
 
 ---
 

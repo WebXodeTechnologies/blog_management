@@ -9,10 +9,6 @@ on:
     branches:
       - main
 
-defaults:
-  run:
-    working-directory: ./blog
-
 jobs:
   lint-and-build:
     name: Lint, Format & Next.js Build
@@ -21,7 +17,10 @@ jobs:
     env:
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       NEXT_PUBLIC_SOCKET_URL: http://localhost:4000
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      MONGODB_URI: mongodb://localhost:27017/texora_test
+      REDIS_URL: redis://localhost:6379
+      JWT_SECRET: test_jwt_secret_key_minimum_32_characters_long
+      NEXTAUTH_SECRET: test_nextauth_secret_placeholder_key
 
     steps:
       - name: Checkout repository
@@ -33,14 +32,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          cache-dependency-path: './blog/package-lock.json'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
 
       - name: Check code formatting (Prettier)
-        run: npx prettier --check .
+        run: npx prettier --check --ignore-unknown .
 
       - name: Run ESLint
         run: npm run lint

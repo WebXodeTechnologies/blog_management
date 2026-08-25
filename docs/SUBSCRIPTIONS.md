@@ -32,6 +32,7 @@ FREE
 PRO
 BUSINESS
 ```
+
 ````
 
 These values are configurable and must not be hardcoded throughout the application.
@@ -281,3 +282,4 @@ Usage limits
 These must be verified by the backend.
 
 ---
+````

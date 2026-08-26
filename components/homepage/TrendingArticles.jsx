@@ -13,165 +13,66 @@ import {
   Flame,
   TrendingUp,
 } from "lucide-react";
-
-const CATEGORIES = [
-  { name: "All", count: 4 },
-  { name: "System Design", count: 1 },
-  { name: "AI", count: 1 },
-  { name: "Web Development", count: 1 },
-  { name: "Founder's Note", count: 1 },
-];
-
-const ARTICLES = [
-  {
-    id: 1,
-    slug: "mastering-nextjs-app-router",
-    category: "System Design",
-    title: "Mastering Next.js 16 App Router & Server Actions at Scale",
-    excerpt:
-      "A deep architectural dive into building resilient micro-frontends, ISR invalidation, and Redis caching strategies with React 19 Server Components.",
-    readTime: "5 min read",
-    views: "3.8k",
-    likes: 420,
-    karma: "+1.2k Karma",
-    featured: true,
-    author: {
-      name: "Alex Rivera",
-      avatar: "/avatars/user1.png",
-      role: "Sr. System Architect",
-    },
-    image: "/articles/arch.png",
-  },
-  {
-    id: 2,
-    slug: "scaling-llm-infrastructure",
-    category: "AI",
-    title: "Architecting Low-Latency AI Pipelines with Distributed Workers",
-    excerpt:
-      "How we reduced LLM inference latency by 65% using BullMQ worker queues, Redis stream processing, and custom token streaming.",
-    readTime: "8 min read",
-    views: "3.4k",
-    likes: 680,
-    karma: "+890 Karma",
-    featured: false,
-    author: {
-      name: "Tania Kapoor",
-      avatar: "/avatars/user2.png",
-      role: "AI Systems Lead",
-    },
-    image: "/articles/ai.png",
-  },
-  {
-    id: 3,
-    slug: "tailwind-glassmorphism-design-system",
-    category: "Web Development",
-    title: "Crafting High-Craft Glassmorphic UI Design Systems in 2026",
-    excerpt:
-      "Advanced CSS techniques for frosted glass depth, dynamic aura lighting, fluid animations, and flawless accessibility.",
-    readTime: "4 min read",
-    views: "4.1k",
-    likes: 512,
-    karma: "+650 Karma",
-    featured: false,
-    author: {
-      name: "David Chen",
-      avatar: "/avatars/user3.png",
-      role: "UI Engineer",
-    },
-    image: "/articles/webdev.png",
-  },
-  {
-    id: 4,
-    slug: "bootstrap-to-series-a-tech-saas",
-    category: "Founder's Note",
-    title: "From 0 to 50k Active Creators: Lessons in SaaS Scale",
-    excerpt:
-      "The engineering trade-offs, developer community flywheel, and database partitioning decisions that fueled our scale.",
-    readTime: "6 min read",
-    views: "5.2k",
-    likes: 930,
-    karma: "+1.5k Karma",
-    featured: false,
-    author: {
-      name: "Elena Rostova",
-      avatar: "/avatars/user4.png",
-      role: "Co-Founder",
-    },
-    image: "/articles/business.png",
-  },
-];
+import { CATEGORY_NAMES, STANDARDIZED_ARTICLES } from "@/constants/categories";
 
 export default function TrendingArticles() {
   const [activeCategory, setActiveCategory] = useState("All");
 
   const filteredArticles =
     activeCategory === "All"
-      ? ARTICLES
-      : ARTICLES.filter(
+      ? STANDARDIZED_ARTICLES.slice(0, 4)
+      : STANDARDIZED_ARTICLES.filter(
           (article) =>
             article.category.toLowerCase() === activeCategory.toLowerCase()
         );
 
-  const featuredArticle =
-    filteredArticles.find((a) => a.featured) || filteredArticles[0];
-
-  const sideArticles = filteredArticles.filter(
-    (a) => a.id !== featuredArticle?.id
-  );
+  const featuredArticle = filteredArticles[0] || STANDARDIZED_ARTICLES[0];
+  const sideArticles = filteredArticles.slice(1, 4);
 
   return (
     <section className="relative py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto z-10 font-sans">
-      {/* Header Strip with Glowing Badge */}
+      {/* Header Strip */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
         <div>
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-blue-300/60 bg-blue-50/80 backdrop-blur-md text-blue-700 text-xs font-sans font-semibold mb-4 shadow-2xs">
             <Flame className="h-3.5 w-3.5 text-rose-500 fill-rose-500 animate-bounce" />
-            <span>Curated Developer Stories</span>
+            <span>Curated Stories for Students, Engineers &amp; Founders</span>
           </div>
           <h2 className="font-heading font-extrabold text-3xl sm:text-5xl text-slate-950 tracking-tight leading-tight">
-            Trending Engineering Insights
+            Trending Publications
           </h2>
         </div>
 
         <Link
-          href="/articles"
+          href="/explore"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white/80 backdrop-blur-md border border-slate-200/80 text-slate-900 text-xs font-sans font-semibold hover:bg-slate-950 hover:text-white shadow-xs hover:shadow-md transition-all group shrink-0"
         >
-          <span>Explore All Publications</span>
+          <span>Explore All Stories</span>
           <ArrowUpRight className="h-4 w-4 text-blue-600 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
         </Link>
       </div>
 
-      {/* Cyberpunk Category Capsule Selector */}
+      {/* Standardized Category Filter Pills */}
       <div className="flex flex-wrap items-center gap-2 mb-12 overflow-x-auto pb-2 scrollbar-none">
-        {CATEGORIES.map((cat) => {
-          const isActive = activeCategory === cat.name;
+        {CATEGORY_NAMES.map((catName) => {
+          const isActive = activeCategory === catName;
           return (
             <button
-              key={cat.name}
-              onClick={() => setActiveCategory(cat.name)}
-              className={`relative text-xs px-4 py-2 rounded-full font-sans font-medium transition-all cursor-pointer shrink-0 flex items-center gap-2 ${
+              key={catName}
+              onClick={() => setActiveCategory(catName)}
+              className={`relative text-xs px-4 py-2 rounded-full font-sans transition-all cursor-pointer shrink-0 flex items-center gap-2 ${
                 isActive
                   ? "bg-slate-950 text-white shadow-lg shadow-slate-950/20 font-semibold"
                   : "bg-white/75 text-slate-600 border border-slate-200/70 hover:bg-white hover:text-slate-950 hover:border-slate-300"
               }`}
             >
-              <span>{cat.name}</span>
-              <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "bg-slate-100 text-slate-500"
-                }`}
-              >
-                {cat.count}
-              </span>
+              <span>{catName}</span>
             </button>
           );
         })}
       </div>
 
-      {/* Unique Asymmetric Layout: Left Featured Showcase + Right Vertical Stream */}
+      {/* Asymmetric Layout: Left Featured Spotlight + Right Vertical Stream */}
       <AnimatePresence mode="wait">
         {featuredArticle && (
           <motion.div
@@ -192,7 +93,7 @@ export default function TrendingArticles() {
                 <div className="absolute inset-0 bg-linear-to-br from-blue-500/10 via-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
                 <div>
-                  {/* Spotlight Image Container */}
+                  {/* Spotlight Unsplash Image Container */}
                   <div className="relative aspect-video w-full rounded-2xl overflow-hidden mb-6 bg-slate-900 border border-slate-200/80 shadow-inner">
                     <Image
                       src={featuredArticle.image}
@@ -278,7 +179,7 @@ export default function TrendingArticles() {
               </Link>
             </div>
 
-            {/* Right Column (5 cols): Stacked Vertical Magazine Feed */}
+            {/* Right Column (5 cols): Stacked Vertical Stream */}
             <div className="lg:col-span-5 flex flex-col gap-4">
               {sideArticles.map((article, idx) => (
                 <Link
@@ -312,7 +213,7 @@ export default function TrendingArticles() {
                       </p>
                     </div>
 
-                    {/* Thumbnail Image */}
+                    {/* Unsplash Thumbnail Image */}
                     <div className="relative h-16 w-16 rounded-xl overflow-hidden shrink-0 border border-slate-200 hidden sm:block">
                       <Image
                         src={article.image}
@@ -341,7 +242,7 @@ export default function TrendingArticles() {
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <span className="flex items-center gap-1 text-rose-600 font-medium">
                         <Heart className="h-3 w-3 fill-rose-500 text-rose-500" />{" "}
                         {article.likes}

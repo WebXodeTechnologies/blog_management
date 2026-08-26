@@ -1,4 +1,9 @@
-import { Orbitron, Bricolage_Grotesque, Inter, JetBrains_Mono } from "next/font/google";
+import {
+  Orbitron,
+  Bricolage_Grotesque,
+  Inter,
+  JetBrains_Mono,
+} from "next/font/google";
 import "./globals.css";
 import ToastProvider from "@/providers/toast-provider";
 import QueryProvider from "@/providers/query-provider";

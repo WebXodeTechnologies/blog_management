@@ -57,7 +57,8 @@ export default function FeaturesGrid() {
         </h2>
 
         <p className="text-slate-600 text-base sm:text-lg font-sans font-normal leading-relaxed">
-          Everything technical creators need to turn deep engineering knowledge into impactful, high-traffic publications.
+          Everything technical creators need to turn deep engineering knowledge
+          into impactful, high-traffic publications.
         </p>
       </div>
 

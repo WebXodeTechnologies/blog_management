@@ -1,73 +1,209 @@
 import Link from "next/link";
-import { Zap, Heart } from "lucide-react";
+import Image from "next/image";
+import { Heart, Send, CheckCircle2 } from "lucide-react";
+import logo from "@/public/logos/logo2.png";
 
 export default function MarketingFooter() {
   return (
-    <footer className="w-full py-12 px-4 sm:px-6 lg:px-8 mt-20">
+    <footer className="w-full py-12 px-4 sm:px-6 lg:px-8 mt-16 font-sans">
       <div className="max-w-7xl mx-auto">
         {/* Glassmorphic Shell Card */}
-        <div className="rounded-3xl border border-white/60 bg-white/75 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04),0_1px_3px_rgb(0,0,0,0.02)] p-8 sm:p-12 space-y-10">
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
-            {/* Col 1: Brand & Bio */}
-            <div className="space-y-3 md:col-span-1">
-              <Link href="/" className="flex items-center gap-2.5 group">
-                <div className="h-7 w-7 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform duration-200">
-                  <Zap className="h-3.5 w-3.5 fill-current" />
-                </div>
-                <span className="font-heading font-extrabold text-lg tracking-wider text-slate-950">
-                  TEXORA
-                </span>
+        <div className="rounded-3xl border border-slate-200/70 bg-white/80 backdrop-blur-xl shadow-[0_10px_35px_rgba(0,0,0,0.03)] p-8 sm:p-12 space-y-12">
+          {/* Top Hero Strip: Brand Info & Newsletter */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-10 border-b border-slate-100/90">
+            {/* Brand & Bio */}
+            <div className="space-y-3 max-w-md">
+              <Link href="/" className="flex items-center gap-3 group">
+                <Image
+                  src={logo}
+                  alt="Texora Logo"
+                  width={42}
+                  height={42}
+                  className="rounded-lg shadow-xs group-hover:scale-105 transition-transform duration-200"
+                />
+                <h1 className="font-brand font-black text-2xl sm:text-3xl tracking-tight text-slate-950">
+                  Texora
+                </h1>
               </Link>
-              <p className="text-xs text-slate-500 leading-relaxed max-w-xs">
-                Next-gen developer publishing, karma discussions, and real-time
-                community rooms.
+              <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed">
+                The premier developer publishing platform for deep technical
+                stories, system design insights, and real-time community aura.
               </p>
+              {/* Live Status Indicator Pill */}
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-xs font-sans font-medium">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>All Systems Operational • 99.99% Uptime</span>
+              </div>
             </div>
 
-            {/* Col 2: Navigation */}
-            <div className="space-y-2.5">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-900 font-mono">
-                Platform
+            {/* Newsletter Subscription Box */}
+            <div className="w-full lg:w-auto max-w-md bg-slate-50/80 rounded-2xl p-5 border border-slate-100">
+              <h4 className="font-heading font-bold text-sm text-slate-950 mb-1">
+                Subscribe to Tech Pulse Weekly
+              </h4>
+              <p className="text-xs text-slate-500 font-sans mb-3">
+                Curated system design guides & engineering stories delivered to
+                your inbox.
               </p>
-              <ul className="space-y-2 text-xs text-slate-600 font-medium">
-                <li>
-                  <Link
-                    href="#our-story"
-                    className="hover:text-slate-950 transition-colors"
-                  >
-                    Our story
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#membership"
-                    className="hover:text-slate-950 transition-colors"
-                  >
-                    Membership
-                  </Link>
-                </li>
+              <form
+                onSubmit={(e) => e.preventDefault()}
+                className="flex items-center gap-2"
+              >
+                <input
+                  type="email"
+                  placeholder="enter your email..."
+                  className="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs font-sans text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-all"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-950 text-white text-xs font-sans font-semibold hover:bg-blue-600 shadow-xs transition-colors shrink-0 cursor-pointer"
+                >
+                  <span>Join</span>
+                  <Send className="w-3 h-3" />
+                </button>
+              </form>
+            </div>
+          </div>
+
+          {/* Navigation Links Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {/* Col 1: Product */}
+            <div className="space-y-3">
+              <h5 className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-950">
+                Product
+              </h5>
+              <ul className="space-y-2 text-xs font-sans font-medium text-slate-600">
                 <li>
                   <Link
                     href="/dashboard/tech-pulse/blog/create"
-                    className="hover:text-slate-950 transition-colors"
+                    className="hover:text-blue-600 transition-colors"
                   >
-                    Write a story
+                    MDX Technical Editor
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#custom-domains"
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    Custom Domains & SSL
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#karma"
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    Karma & Upvotes
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#discussions"
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    Community Aura Rooms
                   </Link>
                 </li>
               </ul>
             </div>
 
-            {/* Col 3: Legal */}
-            <div className="space-y-2.5">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-900 font-mono">
-                Legal
-              </p>
-              <ul className="space-y-2 text-xs text-slate-600 font-medium">
+            {/* Col 2: Topics */}
+            <div className="space-y-3">
+              <h5 className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-950">
+                Explore Topics
+              </h5>
+              <ul className="space-y-2 text-xs font-sans font-medium text-slate-600">
+                <li>
+                  <Link
+                    href="/topics"
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    System Design
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/topics"
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    AI Pipelines & ML
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/topics"
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    Web Development
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/topics"
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    Founder Notes
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Col 3: Resources */}
+            <div className="space-y-3">
+              <h5 className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-950">
+                Resources
+              </h5>
+              <ul className="space-y-2 text-xs font-sans font-medium text-slate-600">
+                <li>
+                  <Link
+                    href="/articles"
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    Featured Articles
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#docs"
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    API Documentation
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    GitHub Open Source
+                  </a>
+                </li>
+                <li>
+                  <Link
+                    href="#status"
+                    className="hover:text-blue-600 transition-colors flex items-center gap-1"
+                  >
+                    <span>System Status</span>
+                    <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Col 4: Legal & Social */}
+            <div className="space-y-3">
+              <h5 className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-950">
+                Legal & Security
+              </h5>
+              <ul className="space-y-2 text-xs font-sans font-medium text-slate-600 mb-4">
                 <li>
                   <Link
                     href="/privacy"
-                    className="hover:text-slate-950 transition-colors"
+                    className="hover:text-blue-600 transition-colors"
                   >
                     Privacy Policy
                   </Link>
@@ -75,7 +211,7 @@ export default function MarketingFooter() {
                 <li>
                   <Link
                     href="/terms"
-                    className="hover:text-slate-950 transition-colors"
+                    className="hover:text-blue-600 transition-colors"
                   >
                     Terms of Service
                   </Link>
@@ -83,25 +219,20 @@ export default function MarketingFooter() {
                 <li>
                   <Link
                     href="/security"
-                    className="hover:text-slate-950 transition-colors"
+                    className="hover:text-blue-600 transition-colors"
                   >
                     Security & Trust
                   </Link>
                 </li>
               </ul>
-            </div>
 
-            {/* Col 4: Social SVGs */}
-            <div className="space-y-2.5">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-900 font-mono">
-                Connect
-              </p>
-              <div className="flex items-center gap-3 text-slate-500">
+              {/* Social SVG Links */}
+              <div className="flex items-center gap-2.5 text-slate-500">
                 <a
                   href="https://github.com"
                   target="_blank"
                   rel="noreferrer"
-                  className="p-2 rounded-xl bg-slate-100/80 hover:bg-slate-200 hover:text-slate-950 transition-colors shadow-2xs"
+                  className="p-2 rounded-xl bg-slate-100/90 hover:bg-slate-950 hover:text-white transition-colors shadow-2xs"
                   aria-label="GitHub"
                 >
                   <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
@@ -112,7 +243,7 @@ export default function MarketingFooter() {
                   href="https://twitter.com"
                   target="_blank"
                   rel="noreferrer"
-                  className="p-2 rounded-xl bg-slate-100/80 hover:bg-slate-200 hover:text-slate-950 transition-colors shadow-2xs"
+                  className="p-2 rounded-xl bg-slate-100/90 hover:bg-slate-950 hover:text-white transition-colors shadow-2xs"
                   aria-label="X"
                 >
                   <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
@@ -123,7 +254,7 @@ export default function MarketingFooter() {
                   href="https://linkedin.com"
                   target="_blank"
                   rel="noreferrer"
-                  className="p-2 rounded-xl bg-slate-100/80 hover:bg-slate-200 hover:text-slate-950 transition-colors shadow-2xs"
+                  className="p-2 rounded-xl bg-slate-100/90 hover:bg-slate-950 hover:text-white transition-colors shadow-2xs"
                   aria-label="LinkedIn"
                 >
                   <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
@@ -134,8 +265,8 @@ export default function MarketingFooter() {
             </div>
           </div>
 
-          {/* Bottom Divider & Credit Row */}
-          <div className="pt-6 border-t border-slate-200/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          {/* Bottom Copyright & Credit Row */}
+          <div className="pt-6 border-t border-slate-200/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-sans text-slate-500">
             <p>© {new Date().getFullYear()} TEXORA. All rights reserved.</p>
 
             {/* Centered Developer Credit */}

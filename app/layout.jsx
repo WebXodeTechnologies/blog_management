@@ -1,9 +1,14 @@
-import { Orbitron, Outfit, Inter, JetBrains_Mono } from "next/font/google";
+import {
+  Orbitron,
+  Bricolage_Grotesque,
+  Inter,
+  JetBrains_Mono,
+} from "next/font/google";
 import "./globals.css";
 import ToastProvider from "@/providers/toast-provider";
 import QueryProvider from "@/providers/query-provider";
 
-// Digital & Cyber Tech Headings
+// Digital & Cyber Tech Headings (Only for H1, Branding & CTAs)
 const orbitron = Orbitron({
   variable: "--font-orbitron",
   subsets: ["latin"],
@@ -11,15 +16,14 @@ const orbitron = Orbitron({
   display: "swap",
 });
 
-// Modern Geometric Body Text
-const outfit = Outfit({
-  variable: "--font-outfit",
+// Section Headings (H2, H3, H4, H5, H6)
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
-// Fallback Clean UI Sans
+// Clean UI Body Sans (P, Body, Inputs, Buttons)
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -52,7 +56,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${orbitron.variable} ${outfit.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${orbitron.variable} ${bricolage.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans selection:bg-blue-600 selection:text-white">
         <QueryProvider>

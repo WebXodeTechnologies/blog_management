@@ -33,8 +33,10 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
 
-  --font-sans: var(--font-outfit), var(--font-inter), sans-serif;
-  --font-heading: var(--font-orbitron), sans-serif;
+  --font-sans: var(--font-inter), sans-serif;
+  --font-orbitron: var(--font-orbitron), sans-serif;
+  --font-bricolage: var(--font-bricolage), sans-serif;
+  --font-heading: var(--font-bricolage), sans-serif;
   --font-mono: var(--font-mono), monospace;
 }
 
@@ -52,22 +54,31 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Automatic Heading Application */
+/* H1 Main Titles, Brand Logos, and High-Impact CTA Highlights -> Orbitron */
 h1,
+.font-orbitron,
+.font-brand {
+  font-family: var(--font-orbitron), sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Section Headings H2-H6 -> Bricolage Grotesque */
 h2,
 h3,
 h4,
 h5,
 h6,
 .font-heading {
-  font-family: var(--font-heading);
+  font-family: var(--font-bricolage), sans-serif;
   letter-spacing: -0.02em;
 }
 
+/* Body & UI Text -> Inter (Neat & Clean Sans-Serif) */
 p,
 span,
 a,
 input,
-button {
+button,
+label {
   font-family: var(--font-sans);
 }

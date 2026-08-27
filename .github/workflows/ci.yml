@@ -16,11 +16,13 @@ jobs:
 
     env:
       NEXT_PUBLIC_APP_URL: http://localhost:3000
-      NEXT_PUBLIC_SOCKET_URL: http://localhost:4000
-      MONGODB_URI: mongodb://localhost:27017/texora_test
-      REDIS_URL: redis://localhost:6379
-      JWT_SECRET: test_jwt_secret_key_minimum_32_characters_long
-      NEXTAUTH_SECRET: test_nextauth_secret_placeholder_key
+      MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      SMTP_HOST: ${{ secrets.SMTP_HOST }}
+      SMTP_PORT: ${{ secrets.SMTP_PORT }}
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+      SMTP_PASS: ${{ secrets.SMTP_PASS }}
+      EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
 
     steps:
       - name: Checkout repository

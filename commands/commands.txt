@@ -1,0 +1,12 @@
+eslinting 
+
+
+npx prettier --write .
+
+npm run format
+
+npm run lint
+
+npx prettier --check .
+
+npm run build

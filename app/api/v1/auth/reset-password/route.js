@@ -45,6 +45,7 @@ export async function POST(req) {
       { message: "Password updated successfully" },
       { status: 200 }
     );
+    // eslint-disable-next-line no-unused-vars
   } catch (error) {
     return NextResponse.json(
       { message: "Internal server error" },

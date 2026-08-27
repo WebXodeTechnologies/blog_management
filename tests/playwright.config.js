@@ -11,12 +11,13 @@ export default defineConfig({
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
   },
-  // CRITICAL: This tells Playwright to start the server automatically in CI & locally
   webServer: {
-    command: "npm run build && npm run start",
+    command: "npm run start",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    stdout: "pipe",
+    stderr: "pipe",
   },
   projects: [
     {

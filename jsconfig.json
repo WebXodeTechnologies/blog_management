@@ -25,6 +25,6 @@
     "utils/**/*",
     "tests/**/*",
     "proxy.js"
-  ],
+, "playwright.config.js"  ],
   "exclude": ["node_modules", ".next", "dist", "coverage"]
 }

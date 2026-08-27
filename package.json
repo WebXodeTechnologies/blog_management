@@ -11,11 +11,7 @@
     "start": "next start",
     "start:socket": "node server/socket.js",
     "start:worker": "node server/worker.js",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix",
     "format": "prettier --write .",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
     "prepare": "husky"
   },
   "dependencies": {
@@ -65,12 +61,9 @@
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
-    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4",
     "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",
-    "eslint": "^9.39.5",
-    "eslint-config-next": "16.3.2",
     "husky": "^9.1.7",
     "lint-staged": "^15.4.3",
     "prettier": "^3.9.6",

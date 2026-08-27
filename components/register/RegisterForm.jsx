@@ -5,7 +5,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, User, ArrowRight, Loader2, Sparkles } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  User,
+  ArrowRight,
+  Loader2,
+  Sparkles,
+  ShieldCheck,
+} from "lucide-react";
 import logo from "@/public/logos/logo2.png";
 
 export default function RegisterForm() {
@@ -14,6 +22,7 @@ export default function RegisterForm() {
     name: "",
     email: "",
     password: "",
+    role: "user", // Default role selection
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -24,7 +33,7 @@ export default function RegisterForm() {
     setError("");
 
     try {
-      const res = await fetch("/api/auth/register", {
+      const res = await fetch("/api/v1/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -46,12 +55,12 @@ export default function RegisterForm() {
       initial={{ opacity: 0, y: 20, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
-      className="w-full max-w-md mx-auto bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-3xl p-6 sm:p-8 md:p-10 shadow-[0_10px_35px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_60px_rgba(59,130,246,0.1)] transition-all relative overflow-hidden font-sans"
+      className="w-full max-w-md mx-auto bg-white/85 backdrop-blur-xl border border-slate-200/80 rounded-3xl p-6 sm:p-8 md:p-10 shadow-[0_10px_35px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_60px_rgba(59,130,246,0.1)] transition-all relative overflow-hidden font-sans"
     >
       {/* Top Accent Gradient Line */}
       <div className="absolute top-0 left-0 right-0 h-1.5 bg-linear-to-r from-blue-500 via-indigo-500 to-purple-500" />
 
-      {/* Mobile Brand Logo Header (Visible on Mobile & Tablet < lg) */}
+      {/* Mobile Brand Logo Header */}
       <div className="lg:hidden flex items-center justify-center mb-6 pt-2">
         <Link href="/" className="inline-flex items-center gap-2.5 group">
           <Image
@@ -103,8 +112,42 @@ export default function RegisterForm() {
       {/* Register Form */}
       <form
         onSubmit={handleSubmit}
-        className="space-y-4 sm:space-y-5 font-sans"
+        className="space-y-4 sm:space-y-4 font-sans"
       >
+        {/* Role Selector Tabs */}
+        <div>
+          <label className="block text-xs font-sans font-semibold text-slate-700 mb-1.5">
+            Select Account Role
+          </label>
+          <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100/80 rounded-2xl border border-slate-200/60">
+            <button
+              type="button"
+              onClick={() => setFormData({ ...formData, role: "user" })}
+              className={`py-2.5 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                formData.role === "user"
+                  ? "bg-white text-blue-600 shadow-sm border border-slate-200/50"
+                  : "text-slate-600 hover:text-slate-950"
+              }`}
+            >
+              <User className="h-3.5 w-3.5" />
+              <span>Standard User</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setFormData({ ...formData, role: "moderator" })}
+              className={`py-2.5 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                formData.role === "moderator"
+                  ? "bg-white text-blue-600 shadow-sm border border-slate-200/50"
+                  : "text-slate-600 hover:text-slate-950"
+              }`}
+            >
+              <ShieldCheck className="h-3.5 w-3.5" />
+              <span>Moderator</span>
+            </button>
+          </div>
+        </div>
+
         {/* Full Name Input */}
         <div>
           <label className="block text-xs font-sans font-semibold text-slate-700 mb-1.5">

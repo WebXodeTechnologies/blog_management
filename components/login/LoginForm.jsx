@@ -15,6 +15,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import logo from "@/public/logos/logo2.png";
+import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 
 export default function LoginForm({ selectedRole, onRoleChange }) {
   const router = useRouter();
@@ -66,12 +67,12 @@ export default function LoginForm({ selectedRole, onRoleChange }) {
       initial={{ opacity: 0, y: 20, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
-      className="w-full max-w-md mx-auto bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-3xl p-6 sm:p-8 md:p-10 shadow-[0_10px_35px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_60px_rgba(59,130,246,0.1)] transition-all relative overflow-hidden font-sans"
+      className="w-full max-w-md mx-auto bg-white/80 backdrop-blur-xl border border-slate-200/85 rounded-3xl p-6 sm:p-8 md:p-10 shadow-[0_10px_35px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_60px_rgba(59,130,246,0.1)] transition-all relative overflow-hidden font-sans"
     >
       {/* Top Accent Gradient Line */}
       <div className="absolute top-0 left-0 right-0 h-1.5 bg-linear-to-r from-blue-500 via-indigo-500 to-purple-500" />
 
-      {/* Mobile Brand Logo Header (Visible on Mobile & Tablet < lg) */}
+      {/* Mobile Brand Logo Header */}
       <div className="lg:hidden flex items-center justify-center mb-6 pt-2">
         <Link href="/" className="inline-flex items-center gap-2.5 group">
           <Image
@@ -122,7 +123,7 @@ export default function LoginForm({ selectedRole, onRoleChange }) {
         onSubmit={handleSubmit}
         className="space-y-4 sm:space-y-5 font-sans"
       >
-        {/* Bouncing Spring Role Selector Tabs */}
+        {/* Role Selector Tabs */}
         <div>
           <label className="block text-xs font-sans font-semibold text-slate-700 mb-2">
             Select Portal Access
@@ -212,7 +213,7 @@ export default function LoginForm({ selectedRole, onRoleChange }) {
           </div>
         </div>
 
-        {/* Bouncing Submit Button */}
+        {/* Submit Button */}
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -240,6 +241,18 @@ export default function LoginForm({ selectedRole, onRoleChange }) {
           )}
         </motion.button>
       </form>
+
+      {/* Divider */}
+      <div className="relative flex py-5 items-center">
+        <div className="grow border-t border-slate-200"></div>
+        <span className="shrink mx-4 text-xs font-medium text-slate-400">
+          Or continue with
+        </span>
+        <div className="grow border-t border-slate-200"></div>
+      </div>
+
+      {/* Google OAuth Button */}
+      <GoogleAuthButton />
 
       {/* Footer Link */}
       <p className="text-center text-xs font-sans text-slate-500 mt-6">

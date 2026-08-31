@@ -7,6 +7,7 @@ import {
 import "./globals.css";
 import ToastProvider from "@/providers/toast-provider";
 import QueryProvider from "@/providers/query-provider";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 // Digital & Cyber Tech Headings (Only for H1, Branding & CTAs)
 const orbitron = Orbitron({
@@ -59,10 +60,14 @@ export default function RootLayout({ children }) {
       className={`${orbitron.variable} ${bricolage.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans selection:bg-blue-600 selection:text-white">
-        <QueryProvider>
-          {children}
-          <ToastProvider />
-        </QueryProvider>
+        <GoogleOAuthProvider
+          clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
+        >
+          <QueryProvider>
+            {children}
+            <ToastProvider />
+          </QueryProvider>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

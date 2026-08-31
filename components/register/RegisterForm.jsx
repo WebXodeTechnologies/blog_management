@@ -15,6 +15,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import logo from "@/public/logos/logo2.png";
+import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function RegisterForm() {
     name: "",
     email: "",
     password: "",
-    role: "user", // Default role selection
+    role: "user",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -55,7 +56,7 @@ export default function RegisterForm() {
       initial={{ opacity: 0, y: 20, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
-      className="w-full max-w-md mx-auto bg-white/85 backdrop-blur-xl border border-slate-200/80 rounded-3xl p-6 sm:p-8 md:p-10 shadow-[0_10px_35px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_60px_rgba(59,130,246,0.1)] transition-all relative overflow-hidden font-sans"
+      className="w-full max-w-md mx-auto bg-white/85 backdrop-blur-xl border border-slate-200/85 rounded-3xl p-6 sm:p-8 md:p-10 shadow-[0_10px_35px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_60px_rgba(59,130,246,0.1)] transition-all relative overflow-hidden font-sans"
     >
       {/* Top Accent Gradient Line */}
       <div className="absolute top-0 left-0 right-0 h-1.5 bg-linear-to-r from-blue-500 via-indigo-500 to-purple-500" />
@@ -110,10 +111,7 @@ export default function RegisterForm() {
       </AnimatePresence>
 
       {/* Register Form */}
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-4 sm:space-y-4 font-sans"
-      >
+      <form onSubmit={handleSubmit} className="space-y-4 font-sans">
         {/* Role Selector Tabs */}
         <div>
           <label className="block text-xs font-sans font-semibold text-slate-700 mb-1.5">
@@ -236,6 +234,18 @@ export default function RegisterForm() {
           )}
         </motion.button>
       </form>
+
+      {/* Divider */}
+      <div className="relative flex py-5 items-center">
+        <div className="grow border-t border-slate-200"></div>
+        <span className="shrink mx-4 text-xs font-medium text-slate-400">
+          Or continue with
+        </span>
+        <div className="grow border-t border-slate-200"></div>
+      </div>
+
+      {/* Google OAuth Button */}
+      <GoogleAuthButton />
 
       {/* Footer Link */}
       <p className="text-center text-xs font-sans text-slate-500 mt-6">

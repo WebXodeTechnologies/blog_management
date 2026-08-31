@@ -1,8 +1,8 @@
-"use type";
+"use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useGoogleLogin } from "@react-oauth/google";
-import { FcGoogle } from "react-icons/fc"; // Optional or use Lucide/SVG
 import { Loader2 } from "lucide-react";
 
 export default function GoogleAuthButton() {
@@ -15,7 +15,6 @@ export default function GoogleAuthButton() {
       setLoading(true);
       setError("");
       try {
-        // Fetch user info from Google using the access token
         const userInfoRes = await fetch(
           "https://www.googleapis.com/oauth2/v3/userinfo",
           {
@@ -24,7 +23,6 @@ export default function GoogleAuthButton() {
         );
         const googleUser = await userInfoRes.json();
 
-        // Send user details to your custom backend auth route
         const res = await fetch("/api/v1/auth/google", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -39,7 +37,12 @@ export default function GoogleAuthButton() {
         if (!res.ok)
           throw new Error(data.message || "Google authentication failed");
 
-        router.push("/dashboard");
+        // Role-based routing after Google Auth
+        if (data.user?.role === "moderator") {
+          router.push("/moderator");
+        } else {
+          router.push("/explore");
+        }
       } catch (err) {
         setError(err.message);
       } finally {

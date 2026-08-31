@@ -28,7 +28,12 @@ export async function POST(req) {
         password: randomPassword,
         role: "user",
         avatar: avatar || "",
+        googleAvatar: avatar || "",
       });
+    } else if (avatar && !user.googleAvatar) {
+      user.googleAvatar = avatar;
+      if (!user.avatar) user.avatar = avatar;
+      await user.save();
     }
 
     // Generate JWT token (matches your app's auth standard)

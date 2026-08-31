@@ -24,6 +24,41 @@ const UserSchema = new mongoose.Schema(
       enum: ["user", "moderator", "admin"],
       default: "user",
     },
+    avatar: {
+      type: String,
+      default: "",
+    },
+    googleAvatar: {
+      type: String,
+      default: "",
+    },
+    phone: {
+      type: String,
+      default: "",
+    },
+    headline: {
+      type: String,
+      default: "",
+    },
+    pronouns: {
+      type: String,
+      default: "he/him/his",
+    },
+    bio: {
+      type: String,
+      default: "",
+    },
+    location: {
+      type: String,
+      default: "",
+    },
+    socialLinks: {
+      twitter: { type: String, default: "" },
+      github: { type: String, default: "" },
+      linkedin: { type: String, default: "" },
+      website: { type: String, default: "" },
+      instagram: { type: String, default: "" },
+    },
     tenantId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Tenant",

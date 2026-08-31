@@ -37,14 +37,14 @@ export default function LoginForm({ selectedRole, onRoleChange }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...formData, role: selectedRole }),
       });
-
+      // Inside handleSubmit in LoginForm.jsx:
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Invalid credentials");
 
-      if (selectedRole === "moderator") {
+      if (data.user?.role === "moderator") {
         router.push("/moderator");
       } else {
-        router.push("/dashboard");
+        router.push("/explore");
       }
     } catch (err) {
       setError(err.message);

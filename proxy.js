@@ -65,10 +65,17 @@ export default function proxy(req) {
     return NextResponse.redirect(new URL("/explore", req.url));
   }
 
-  // 2. Protected Routes Check (/dashboard, /bookmarks, /moderator)
+  // 2. Protected Routes Check (/dashboard, /bookmarks, /moderator, /admin)
   const isDashboardRoute = pathname.startsWith("/dashboard");
   const isBookmarksRoute = pathname.startsWith("/bookmarks");
   const isModeratorRoute = pathname.startsWith("/moderator");
+  const isAdminRoute = pathname.startsWith("/admin") && pathname !== "/admin/login";
+
+  if (isAdminRoute && !user) {
+    const adminLoginUrl = new URL("/admin/login", req.url);
+    adminLoginUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(adminLoginUrl);
+  }
 
   if (isDashboardRoute || isBookmarksRoute || isModeratorRoute) {
     if (!user) {
@@ -116,7 +123,7 @@ export default function proxy(req) {
 
   // --- Subdomain Routing Rules ---
   if (isSubdomain && tenantSlug) {
-    if (pathname.startsWith("/platform-admin")) {
+    if (pathname.startsWith("/admin")) {
       return NextResponse.redirect(new URL("/", req.url));
     }
 

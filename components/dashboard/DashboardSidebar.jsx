@@ -26,9 +26,7 @@ import {
   LogOut,
   X,
   Plus,
-  ShieldAlert,
   ShieldCheck,
-  Flag,
   CheckSquare,
 } from "lucide-react";
 import logo from "@/public/logos/logo2.png";
@@ -59,7 +57,7 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
     <div className="h-full flex flex-col justify-between bg-white border-r border-slate-200/80 p-4 font-sans select-none">
       {/* Top Header & Brand */}
       <div className="space-y-4">
-        {/* Brand Bar with Indigo SaaS Accent */}
+        {/* Brand Bar with Standard Indigo SaaS Accent */}
         <div className="flex items-center justify-between px-2 pt-1 pb-3.5 border-b border-slate-100">
           <Link href="/dashboard" className="flex items-center gap-3 group">
             <div className="p-0.5 rounded-2xl bg-indigo-600 shadow-md shadow-indigo-600/20 group-hover:scale-105 transition-transform overflow-hidden">
@@ -73,21 +71,15 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-brand font-black text-xl tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">
+                <span className="font-sans font-black text-xl tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">
                   Texora
                 </span>
-                <span
-                  className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md shadow-2xs ${
-                    isModerator
-                      ? "bg-rose-600 text-white"
-                      : "bg-indigo-600 text-white"
-                  }`}
-                >
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md shadow-2xs bg-indigo-600 text-white">
                   {isModerator ? "MOD" : "PRO"}
                 </span>
               </div>
               <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mt-0.5">
-                {isModerator ? "Moderator Panel" : "Admin Workspace"}
+                {isModerator ? "Moderator Workspace" : "Author Workspace"}
               </span>
             </div>
           </Link>
@@ -104,7 +96,7 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
 
         {/* Action Button: Write New Story */}
         <Link
-          href="/dashboard/tech-pulse/blog/create"
+          href="/dashboard/write"
           onClick={() => setMobileOpen && setMobileOpen(false)}
           className="w-full flex items-center justify-center gap-2 p-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all hover:scale-[1.01] active:scale-[0.99] border border-indigo-500 group cursor-pointer"
         >
@@ -114,11 +106,11 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
 
         {/* Navigation Items */}
         <nav className="space-y-1.5 pt-2 overflow-y-auto max-h-[calc(100vh-300px)] scrollbar-none">
-          {/* MODERATOR DYNAMIC SECTION (Appended for Moderators) */}
+          {/* MODERATOR DYNAMIC SECTION (Standard SaaS Palette) */}
           {isModerator && (
-            <div className="mb-4 pb-3 border-b border-rose-100 space-y-1">
-              <p className="px-3 text-[10px] font-mono font-bold uppercase tracking-wider text-rose-500 mb-2 flex items-center gap-1">
-                <ShieldAlert className="h-3 w-3" />
+            <div className="mb-4 pb-3 border-b border-slate-100 space-y-1">
+              <p className="px-3 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1">
+                <ShieldCheck className="h-3 w-3 text-indigo-600" />
                 <span>Moderator Controls</span>
               </p>
 
@@ -127,13 +119,13 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
                 onClick={() => setMobileOpen && setMobileOpen(false)}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition cursor-pointer ${
                   checkActive("/moderator", true)
-                    ? "bg-rose-600 text-white font-bold shadow-md shadow-rose-600/20 border border-rose-500"
-                    : "text-rose-700 hover:bg-rose-50/80"
+                    ? "bg-indigo-600 text-white font-bold shadow-md shadow-indigo-600/20 border border-indigo-500"
+                    : "text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/60"
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <ShieldCheck
-                    className={`h-4 w-4 ${checkActive("/moderator", true) ? "text-white" : "text-rose-600"}`}
+                    className={`h-4 w-4 ${checkActive("/moderator", true) ? "text-white" : "text-slate-500"}`}
                   />
                   <span>Control Center</span>
                 </div>
@@ -141,7 +133,7 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
                   className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
                     checkActive("/moderator", true)
                       ? "bg-white/20 text-white border-white/30"
-                      : "bg-rose-100 text-rose-700 border-rose-200"
+                      : "bg-indigo-50 text-indigo-700 border-indigo-200"
                   }`}
                 >
                   14 Queue
@@ -153,13 +145,13 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
                 onClick={() => setMobileOpen && setMobileOpen(false)}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition cursor-pointer ${
                   checkActive("/moderator/queue")
-                    ? "bg-rose-600 text-white font-bold shadow-md shadow-rose-600/20 border border-rose-500"
-                    : "text-rose-700 hover:bg-rose-50/80"
+                    ? "bg-indigo-600 text-white font-bold shadow-md shadow-indigo-600/20 border border-indigo-500"
+                    : "text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/60"
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <CheckSquare
-                    className={`h-4 w-4 ${checkActive("/moderator/queue") ? "text-white" : "text-rose-600"}`}
+                    className={`h-4 w-4 ${checkActive("/moderator/queue") ? "text-white" : "text-slate-500"}`}
                   />
                   <span>Review &amp; Approve</span>
                 </div>
@@ -451,9 +443,9 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
 
         <button
           onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold text-xs border border-rose-200 transition cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs border border-slate-200 transition cursor-pointer"
         >
-          <LogOut className="h-3.5 w-3.5" />
+          <LogOut className="h-3.5 w-3.5 text-slate-500" />
           <span>Sign Out</span>
         </button>
       </div>

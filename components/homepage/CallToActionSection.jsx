@@ -43,7 +43,7 @@ export default function CallToActionSection() {
             </Link>
 
             <Link
-              href="/dashboard/tech-pulse/blog/create"
+              href="/dashboard/write"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl border border-white/15 bg-white/5 backdrop-blur-md text-white text-sm font-semibold hover:bg-white/10 transition-all"
             >
               <Terminal className="h-4 w-4 text-blue-400" />

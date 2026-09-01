@@ -168,7 +168,7 @@ export default function UserActivityStream() {
                       </Link>
 
                       <Link
-                        href="/dashboard/tech-pulse/blog/create"
+                        href="/dashboard/write"
                         className="p-2 rounded-xl bg-primary text-primary-foreground hover:bg-primary-hover transition shadow-2xs"
                         title="Edit Draft"
                       >

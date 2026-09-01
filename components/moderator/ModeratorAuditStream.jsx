@@ -1,15 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import {
-  ShieldAlert,
-  CheckCircle2,
-  XCircle,
-  AlertTriangle,
-  Clock,
-  Sparkles,
-  RefreshCw,
-} from "lucide-react";
+import { ShieldAlert, Sparkles } from "lucide-react";
 
 export default function ModeratorAuditStream({ logs }) {
   const defaultLogs = [
@@ -38,7 +29,7 @@ export default function ModeratorAuditStream({ logs }) {
       target: "Automated Crypto Bot Script",
       reason: "Unsolicited Commercial Promotion",
       timestamp: "42 mins ago",
-      type: "danger",
+      type: "neutral",
     },
     {
       id: "LOG-8809",
@@ -57,8 +48,8 @@ export default function ModeratorAuditStream({ logs }) {
     <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4 font-sans text-slate-100">
       <div className="flex items-center justify-between pb-3 border-b border-slate-800">
         <div className="flex items-center gap-2">
-          <ShieldAlert className="h-4 w-4 text-purple-400" />
-          <h3 className="font-heading font-bold text-base text-white">
+          <ShieldAlert className="h-4 w-4 text-indigo-400" />
+          <h3 className="font-sans font-bold text-base text-white">
             Real-Time Audit Stream &amp; Safety Logs
           </h3>
         </div>
@@ -100,8 +91,8 @@ export default function ModeratorAuditStream({ logs }) {
                   {log.action}
                 </span>
               )}
-              {log.type === "danger" && (
-                <span className="px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-400 font-bold text-[10px] border border-rose-500/20">
+              {(log.type === "neutral" || log.type === "danger") && (
+                <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 font-bold text-[10px] border border-indigo-500/20">
                   {log.action}
                 </span>
               )}

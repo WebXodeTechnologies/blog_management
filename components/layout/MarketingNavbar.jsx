@@ -86,7 +86,7 @@ export default function MarketingNavbar() {
                 <span>Topics</span>
               </Link>
               <Link
-                href="/dashboard/tech-pulse/blog/create"
+                href="/dashboard/write"
                 className="flex items-center gap-1.5 hover:text-slate-950 transition-colors"
               >
                 <PenTool className="h-3.5 w-3.5 text-blue-600" />

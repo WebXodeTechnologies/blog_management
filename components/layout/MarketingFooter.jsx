@@ -76,7 +76,7 @@ export default function MarketingFooter() {
               <ul className="space-y-2 text-xs font-sans font-medium text-slate-600">
                 <li>
                   <Link
-                    href="/dashboard/tech-pulse/blog/create"
+                    href="/dashboard/write"
                     className="hover:text-blue-600 transition-colors"
                   >
                     MDX Technical Editor

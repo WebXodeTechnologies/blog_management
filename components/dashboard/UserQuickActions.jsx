@@ -17,7 +17,7 @@ export default function UserQuickActions() {
       title: "Write New Story",
       description: "Create and publish deep technical guides with TipTap editor.",
       icon: <PenTool className="h-5 w-5 text-white" />,
-      href: "/dashboard/tech-pulse/blog/create",
+      href: "/dashboard/write",
       cta: "Open Editor",
       highlight: true,
     },

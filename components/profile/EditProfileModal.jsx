@@ -23,7 +23,6 @@ import {
   Share2,
   ShieldCheck,
   ChevronRight,
-  Sparkle,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -229,7 +228,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 12 }}
           transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full max-w-4xl bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.3)] border border-slate-200/80 overflow-hidden flex flex-col md:flex-row max-h-[92vh] md:max-h-[85vh]"
+          className="relative w-full max-w-4xl h-[90vh] md:h-155 bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.3)] border border-slate-200/80 overflow-hidden flex flex-col md:flex-row"
         >
           {/* Desktop Left Sidebar / Mobile Top Header */}
           <div className="w-full md:w-72 bg-linear-to-b from-slate-50 via-slate-50/90 to-slate-100/50 border-b md:border-b-0 md:border-r border-slate-200/80 p-4 sm:p-6 flex flex-col justify-between shrink-0">
@@ -238,7 +237,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
               <div className="flex items-center justify-between md:block mb-4 md:mb-6">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <div className="p-1.5 rounded-xl bg-blue-600 text-white shadow-xs">
+                    <div className="p-1.5 rounded-xl bg-indigo-600 text-white shadow-xs">
                       <ShieldCheck className="h-4 w-4" />
                     </div>
                     <h3 className="font-sans font-bold text-base sm:text-lg text-slate-950">
@@ -246,7 +245,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                     </h3>
                   </div>
                   <p className="text-[11px] text-black font-medium hidden md:block">
-                    Author & Workspace Identity
+                    Author &amp; Workspace Identity
                   </p>
                 </div>
 
@@ -260,7 +259,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                 </button>
               </div>
 
-              {/* Sidebar Navigation: Horizontal Scroll on Mobile / Vertical on Desktop */}
+              {/* Sidebar Navigation */}
               <nav className="flex md:flex-col gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
                 {navItems.map((item) => {
                   const Icon = item.icon;
@@ -272,30 +271,38 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                       onClick={() => setActiveTab(item.id)}
                       className={`relative flex items-center gap-3 p-2.5 sm:p-3 rounded-2xl text-left transition-all cursor-pointer whitespace-nowrap shrink-0 md:w-full ${
                         isActive
-                          ? "bg-white text-blue-600 shadow-sm border border-slate-200/80 font-semibold"
-                          : "text-slate-950 hover:bg-white/60 font-semibold"
+                          ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20 font-bold border border-indigo-500"
+                          : "text-slate-700 hover:bg-indigo-50/60 font-semibold"
                       }`}
                     >
                       <div
                         className={`p-2 rounded-xl transition ${
                           isActive
-                            ? "bg-blue-600 text-white shadow-xs"
-                            : "bg-slate-200/70 text-slate-900"
+                            ? "bg-white/20 text-white"
+                            : "bg-indigo-50 text-indigo-600 border border-indigo-100"
                         }`}
                       >
                         <Icon className="h-4 w-4" />
                       </div>
                       <div className="hidden sm:block">
-                        <p className="text-xs font-bold">{item.label}</p>
-                        <p className="text-[10px] text-slate-900 font-medium hidden md:block">
+                        <p
+                          className={`text-xs font-bold ${isActive ? "text-white" : "text-slate-900"}`}
+                        >
+                          {item.label}
+                        </p>
+                        <p
+                          className={`text-[10px] font-medium hidden md:block ${isActive ? "text-indigo-100" : "text-slate-500"}`}
+                        >
                           {item.desc}
                         </p>
                       </div>
-                      <span className="sm:hidden text-xs font-bold">
+                      <span
+                        className={`sm:hidden text-xs font-bold ${isActive ? "text-white" : "text-slate-900"}`}
+                      >
                         {item.label}
                       </span>
                       {isActive && (
-                        <ChevronRight className="h-3.5 w-3.5 text-blue-600 ml-auto hidden md:block" />
+                        <ChevronRight className="h-3.5 w-3.5 text-white ml-auto hidden md:block" />
                       )}
                     </button>
                   );
@@ -309,10 +316,10 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                 <img
                   src={formData.avatar}
                   alt="Avatar"
-                  className="w-10 h-10 rounded-xl object-cover border border-slate-200 ring-2 ring-blue-500/10"
+                  className="w-10 h-10 rounded-xl object-cover border border-slate-200 ring-2 ring-indigo-500/10"
                 />
               ) : (
-                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white font-bold flex items-center justify-center text-xs shadow-xs">
+                <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-xs">
                   {formData.name?.[0]?.toUpperCase() || "U"}
                 </div>
               )}
@@ -320,7 +327,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                 <p className="text-xs font-bold text-slate-950 truncate">
                   {formData.name || "Author"}
                 </p>
-                <p className="text-[10px] text-black font-semibold capitalize">
+                <p className="text-[10px] text-indigo-600 font-semibold capitalize">
                   {user?.role || "Member"} Workspace
                 </p>
               </div>
@@ -337,7 +344,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                 </h4>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-[10px] font-semibold text-black bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/60">
+                <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/60">
                   Press ESC to close
                 </span>
                 <button
@@ -379,7 +386,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                           onChange={(e) =>
                             setFormData({ ...formData, name: e.target.value })
                           }
-                          className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-2xl bg-slate-50/80 border border-slate-200 text-xs text-slate-950 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 font-semibold shadow-2xs transition"
+                          className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-2xl bg-slate-50/80 border border-slate-200 text-xs text-slate-950 focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 font-semibold shadow-2xs transition"
                           required
                           placeholder="e.g. Alex Rivera"
                         />
@@ -400,7 +407,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                           onChange={(e) =>
                             setFormData({ ...formData, phone: e.target.value })
                           }
-                          className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-2xl bg-slate-50/80 border border-slate-200 text-xs text-slate-950 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 font-medium shadow-2xs transition"
+                          className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-2xl bg-slate-50/80 border border-slate-200 text-xs text-slate-950 focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 font-medium shadow-2xs transition"
                           placeholder="+91-9884489084"
                         />
                       </div>
@@ -428,7 +435,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                         className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-2xl bg-slate-100/80 border border-slate-200/80 text-xs text-slate-500 font-mono cursor-not-allowed"
                       />
                     </div>
-                    <p className="text-[11px] text-black mt-1.5 font-semibold">
+                    <p className="text-[11px] text-slate-500 mt-1.5 font-semibold">
                       Email address is tied to your account login and cannot be
                       altered here.
                     </p>
@@ -451,8 +458,8 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                             }
                             className={`py-2.5 px-3 rounded-2xl text-xs font-bold border text-center transition-all cursor-pointer capitalize ${
                               isSelected
-                                ? "bg-slate-950 text-white border-slate-950 shadow-sm scale-[1.02]"
-                                : "bg-slate-50/80 text-slate-950 border-slate-200 hover:bg-slate-100"
+                                ? "bg-indigo-600 text-white border-indigo-500 shadow-xs scale-[1.02]"
+                                : "bg-slate-50/80 text-slate-900 border-slate-200 hover:bg-indigo-50/60"
                             }`}
                           >
                             {opt}
@@ -472,7 +479,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                             customPronouns: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-blue-600 mt-2"
+                        className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-indigo-600 mt-2"
                       />
                     )}
                   </div>
@@ -489,7 +496,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                         setFormData({ ...formData, bio: e.target.value })
                       }
                       placeholder="Write a brief intro about your experience, interests, or writing focus..."
-                      className="w-full p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200 text-xs text-slate-950 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 shadow-2xs transition resize-none"
+                      className="w-full p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200 text-xs text-slate-950 focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 shadow-2xs transition resize-none"
                     />
                   </div>
                 </motion.div>
@@ -511,18 +518,18 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                         "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120"
                       }
                       alt="Avatar Preview"
-                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-white shadow-md ring-2 ring-blue-500/20 shrink-0"
+                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-white shadow-md ring-2 ring-indigo-500/20 shrink-0"
                     />
                     <div className="space-y-2.5 text-center sm:text-left flex-1">
                       <div className="flex items-center justify-center sm:justify-start gap-2">
                         <h4 className="text-xs font-bold text-slate-900">
                           Profile Picture
                         </h4>
-                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
                           Active Preview
                         </span>
                       </div>
-                      <p className="text-[11px] text-black">
+                      <p className="text-[11px] text-slate-500">
                         Upload a file from your device
                       </p>
 
@@ -530,10 +537,10 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                         <button
                           type="button"
                           onClick={() => fileInputRef.current?.click()}
-                          className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+                          className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
                         >
                           <Upload className="h-3.5 w-3.5" />
-                          <span>Upload & Crop File</span>
+                          <span>Upload &amp; Crop File</span>
                         </button>
 
                         {user?.googleAvatar && (
@@ -542,7 +549,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                             onClick={handleUseGoogleAvatar}
                             className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
                           >
-                            <RefreshCw className="h-3.5 w-3.5 text-blue-600" />
+                            <RefreshCw className="h-3.5 w-3.5 text-indigo-600" />
                             <span>Google Sync</span>
                           </button>
                         )}
@@ -577,7 +584,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                       <div className="flex items-center justify-between">
                         <h4 className="text-xs font-bold flex items-center gap-2">
                           <Sparkles className="h-4 w-4 text-amber-400" />
-                          <span>Image Crop & Alignment</span>
+                          <span>Image Crop &amp; Alignment</span>
                         </h4>
                         <button
                           type="button"
@@ -592,7 +599,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                       <div className="flex justify-center p-4 bg-slate-900/90 rounded-2xl overflow-hidden">
                         <canvas
                           ref={canvasRef}
-                          className="w-40 h-40 sm:w-48 sm:h-48 rounded-full border-4 border-blue-500 shadow-2xl"
+                          className="w-40 h-40 sm:w-48 sm:h-48 rounded-full border-4 border-indigo-600 shadow-2xl"
                         />
                       </div>
 
@@ -612,7 +619,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                             onChange={(e) =>
                               setCropScale(parseFloat(e.target.value))
                             }
-                            className="w-full accent-blue-500 cursor-pointer"
+                            className="w-full accent-indigo-600 cursor-pointer"
                           />
                           <span className="text-xs font-mono text-slate-400 shrink-0">
                             {Math.round(cropScale * 100)}%
@@ -634,7 +641,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                           <button
                             type="button"
                             onClick={applyCrop}
-                            className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-md"
+                            className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-md"
                           >
                             <Check className="h-4 w-4" />
                             <span>Apply Cropped Picture</span>
@@ -654,7 +661,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                         onChange={(e) =>
                           setFormData({ ...formData, avatar: e.target.value })
                         }
-                        className="w-full px-4 py-2.5 sm:py-3 rounded-2xl bg-slate-50/80 border border-slate-200 text-xs text-slate-950 focus:outline-none focus:border-blue-600 transition"
+                        className="w-full px-4 py-2.5 sm:py-3 rounded-2xl bg-slate-50/80 border border-slate-200 text-xs text-slate-950 focus:outline-none focus:border-indigo-600 transition"
                       />
                     </div>
                   )}
@@ -669,7 +676,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                   transition={{ duration: 0.15 }}
                   className="space-y-4"
                 >
-                  <p className="text-xs text-black font-semibold">
+                  <p className="text-xs text-slate-600 font-semibold">
                     Connect your public profiles to display on author cards
                     across blog posts.
                   </p>
@@ -681,7 +688,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                         Twitter / X Handle
                       </label>
                       <div className="relative">
-                        <div className="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-xs text-blue-600">
+                        <div className="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-xs text-indigo-600">
                           𝕏
                         </div>
                         <input
@@ -697,7 +704,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                               },
                             })
                           }
-                          className="w-full pl-10 pr-4 py-2.5 sm:py-3 text-xs rounded-2xl bg-slate-50/80 border border-slate-200 text-slate-950 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition font-medium"
+                          className="w-full pl-10 pr-4 py-2.5 sm:py-3 text-xs rounded-2xl bg-slate-50/80 border border-slate-200 text-slate-950 focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 transition font-medium"
                         />
                       </div>
                     </div>
@@ -729,7 +736,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                               },
                             })
                           }
-                          className="w-full pl-10 pr-4 py-2.5 sm:py-3 text-xs rounded-2xl bg-slate-50/80 border border-slate-200 text-slate-950 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition font-medium"
+                          className="w-full pl-10 pr-4 py-2.5 sm:py-3 text-xs rounded-2xl bg-slate-50/80 border border-slate-200 text-slate-950 focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 transition font-medium"
                         />
                       </div>
                     </div>
@@ -740,7 +747,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                         LinkedIn Profile
                       </label>
                       <div className="relative">
-                        <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-blue-600">
+                        <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-indigo-600">
                           <svg
                             className="h-4 w-4 fill-current"
                             viewBox="0 0 24 24"
@@ -761,7 +768,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                               },
                             })
                           }
-                          className="w-full pl-10 pr-4 py-2.5 sm:py-3 text-xs rounded-2xl bg-slate-50/80 border border-slate-200 text-slate-950 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition font-medium"
+                          className="w-full pl-10 pr-4 py-2.5 sm:py-3 text-xs rounded-2xl bg-slate-50/80 border border-slate-200 text-slate-950 focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 transition font-medium"
                         />
                       </div>
                     </div>
@@ -788,7 +795,7 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
                               },
                             })
                           }
-                          className="w-full pl-10 pr-4 py-2.5 sm:py-3 text-xs rounded-2xl bg-slate-50/80 border border-slate-200 text-slate-950 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition font-medium"
+                          className="w-full pl-10 pr-4 py-2.5 sm:py-3 text-xs rounded-2xl bg-slate-50/80 border border-slate-200 text-slate-950 focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 transition font-medium"
                         />
                       </div>
                     </div>
@@ -798,21 +805,21 @@ export default function EditProfileModal({ user, onClose, onUpdateSuccess }) {
 
               {/* Modal Bottom Action Controls */}
               <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto sticky bottom-0 bg-white z-10 py-2">
-                <p className="text-[11px] text-black font-semibold hidden sm:block">
+                <p className="text-[11px] text-slate-500 font-semibold hidden sm:block">
                   Changes save to database immediately
                 </p>
                 <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
                   <button
                     type="button"
                     onClick={onClose}
-                    className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs font-bold text-slate-950 hover:bg-slate-100 transition cursor-pointer text-center"
+                    className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer text-center"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={saving}
-                    className="flex-1 sm:flex-none px-6 py-2.5 rounded-2xl bg-slate-950 hover:bg-blue-600 text-white text-xs font-bold transition shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="flex-1 sm:flex-none px-6 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-md shadow-indigo-600/20 flex items-center justify-center gap-2 cursor-pointer border border-indigo-500 disabled:opacity-50"
                   >
                     {saving ? (
                       <Loader2 className="h-4 w-4 animate-spin" />

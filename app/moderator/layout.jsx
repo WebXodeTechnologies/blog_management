@@ -1,5 +1,10 @@
-import { redirect } from "next/navigation";
+import DashboardLayout from "@/app/dashboard/layout";
 
-export default function ModeratorLayoutRedirect({ children }) {
-  redirect("/dashboard/articles");
+export const metadata = {
+  title: "Moderator Control Center | Texora Admin Workspace",
+  description: "Moderator queue, reported items, and safety enforcement workspace.",
+};
+
+export default function ModeratorLayout({ children }) {
+  return <DashboardLayout>{children}</DashboardLayout>;
 }

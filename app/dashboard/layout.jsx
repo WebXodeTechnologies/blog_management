@@ -1,33 +1,60 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import jwt from "jsonwebtoken";
-import MarketingNavbar from "@/components/layout/MarketingNavbar";
+"use client";
 
-export const metadata = {
-  title: "Dashboard | Texora Developer Workspace",
-  description: "User workspace for articles, bookmarks, and account profile.",
-};
+import { useState, useEffect } from "react";
+import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
 
-export default async function DashboardLayout({ children }) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+export default function DashboardLayout({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  if (!token) {
-    redirect("/login?callbackUrl=/dashboard/profile");
-  }
+  useEffect(() => {
+    fetch("/api/v1/auth/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) {
+          setUser(data.user);
+        } else {
+          window.location.href = "/login?callbackUrl=/dashboard";
+        }
+      })
+      .catch(() => {
+        window.location.href = "/login?callbackUrl=/dashboard";
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-  try {
-    jwt.verify(token, process.env.JWT_SECRET || "fallback_secret_key");
-  } catch (err) {
-    redirect("/login?callbackUrl=/dashboard/profile");
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center font-sans">
+        <div className="w-8 h-8 rounded-full border-2 border-blue-600 border-t-transparent animate-spin" />
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
-      <MarketingNavbar />
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {children}
-      </main>
+    <div className="min-h-screen bg-slate-50 text-slate-950 flex font-sans selection:bg-blue-600 selection:text-white">
+      {/* SaaS Sidebar Navigation Shell (Fixed on left) */}
+      <DashboardSidebar
+        user={user}
+        mobileOpen={mobileOpen}
+        setMobileOpen={setMobileOpen}
+      />
+
+      {/* Main Admin Content Wrapper */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* SaaS Top Header Navbar */}
+        <DashboardHeader
+          user={user}
+          onMobileToggle={() => setMobileOpen(true)}
+        />
+
+        {/* Dynamic Page Content */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

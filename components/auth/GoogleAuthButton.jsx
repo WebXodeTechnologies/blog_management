@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Loader2 } from "lucide-react";
 
 export default function GoogleAuthButton() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -37,12 +40,7 @@ export default function GoogleAuthButton() {
         if (!res.ok)
           throw new Error(data.message || "Google authentication failed");
 
-        // Role-based routing after Google Auth
-        if (data.user?.role === "moderator") {
-          router.push("/moderator");
-        } else {
-          router.push("/explore");
-        }
+        router.push(callbackUrl || "/explore");
       } catch (err) {
         setError(err.message);
       } finally {

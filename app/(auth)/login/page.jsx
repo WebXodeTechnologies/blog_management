@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import AuthLeftHero from "@/components/login/AuthLeftHero";
 import LoginForm from "@/components/login/LoginForm";
+import { Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const [selectedRole, setSelectedRole] = useState("user");
@@ -17,7 +18,9 @@ export default function LoginPage() {
 
       {/* Right 7 Columns: Responsive Modular Login Form (Centered on all screen sizes) */}
       <div className="lg:col-span-7 flex items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 relative z-10">
-        <LoginForm selectedRole={selectedRole} onRoleChange={setSelectedRole} />
+        <Suspense fallback={<Loader2 className="h-8 w-8 animate-spin text-blue-600" />}>
+          <LoginForm selectedRole={selectedRole} onRoleChange={setSelectedRole} />
+        </Suspense>
       </div>
     </div>
   );

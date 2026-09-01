@@ -1,7 +1,9 @@
 "use client";
 
+import { Suspense } from "react";
 import AuthLeftHero from "@/components/login/AuthLeftHero";
 import RegisterForm from "@/components/register/RegisterForm";
+import { Loader2 } from "lucide-react";
 
 export default function RegisterPage() {
   return (
@@ -14,7 +16,9 @@ export default function RegisterPage() {
 
       {/* Right 7 Columns: Responsive Modular Register Form */}
       <div className="lg:col-span-7 flex items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 relative z-10">
-        <RegisterForm />
+        <Suspense fallback={<Loader2 className="h-8 w-8 animate-spin text-blue-600" />}>
+          <RegisterForm />
+        </Suspense>
       </div>
     </div>
   );

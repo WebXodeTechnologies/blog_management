@@ -143,7 +143,7 @@ export default function MarketingNavbar() {
                           <span>Explore Blogs</span>
                         </Link>
                         <Link
-                          href="/profile"
+                          href="/dashboard/profile"
                           onClick={() => setDropdownOpen(false)}
                           className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition"
                         >
@@ -151,35 +151,22 @@ export default function MarketingNavbar() {
                           <span>Profile & Settings</span>
                         </Link>
 
-                        {user.role === "moderator" ? (
-                          <Link
-                            href="/moderator"
-                            onClick={() => setDropdownOpen(false)}
-                            className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-blue-600 hover:bg-blue-50 transition"
-                          >
-                            <ShieldAlert className="h-3.5 w-3.5 text-blue-500" />
-                            <span>Moderation Queue</span>
-                          </Link>
-                        ) : (
-                          <>
-                            <Link
-                              href="/dashboard/articles"
-                              onClick={() => setDropdownOpen(false)}
-                              className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition"
-                            >
-                              <FileText className="h-3.5 w-3.5 text-slate-400" />
-                              <span>My Articles</span>
-                            </Link>
-                            <Link
-                              href="/bookmarks"
-                              onClick={() => setDropdownOpen(false)}
-                              className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition"
-                            >
-                              <Bookmark className="h-3.5 w-3.5 text-slate-400" />
-                              <span>Saved Bookmarks</span>
-                            </Link>
-                          </>
-                        )}
+                        <Link
+                          href="/dashboard/articles"
+                          onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition"
+                        >
+                          <FileText className="h-3.5 w-3.5 text-slate-400" />
+                          <span>My Articles</span>
+                        </Link>
+                        <Link
+                          href="/bookmarks"
+                          onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition"
+                        >
+                          <Bookmark className="h-3.5 w-3.5 text-slate-400" />
+                          <span>Saved Bookmarks</span>
+                        </Link>
                       </div>
 
                       <div className="border-t border-slate-100 pt-1">
@@ -323,7 +310,7 @@ export default function MarketingNavbar() {
             {user && (
               <>
                 <Link
-                  href="/profile"
+                  href="/dashboard/profile"
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-white/60 rounded-xl transition"
                 >
@@ -331,35 +318,22 @@ export default function MarketingNavbar() {
                   <span>Profile</span>
                 </Link>
 
-                {user.role === "moderator" ? (
-                  <Link
-                    href="/moderator"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-xl transition"
-                  >
-                    <ShieldAlert className="h-4 w-4 text-blue-500" />
-                    <span>Moderation Queue</span>
-                  </Link>
-                ) : (
-                  <>
-                    <Link
-                      href="/dashboard/articles"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-white/60 rounded-xl transition"
-                    >
-                      <FileText className="h-4 w-4 text-slate-500" />
-                      <span>My Articles</span>
-                    </Link>
-                    <Link
-                      href="/bookmarks"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-white/60 rounded-xl transition"
-                    >
-                      <Bookmark className="h-4 w-4 text-slate-500" />
-                      <span>Bookmarks</span>
-                    </Link>
-                  </>
-                )}
+                <Link
+                  href="/dashboard/articles"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-white/60 rounded-xl transition"
+                >
+                  <FileText className="h-4 w-4 text-slate-500" />
+                  <span>My Articles</span>
+                </Link>
+                <Link
+                  href="/bookmarks"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-white/60 rounded-xl transition"
+                >
+                  <Bookmark className="h-4 w-4 text-slate-500" />
+                  <span>Bookmarks</span>
+                </Link>
               </>
             )}
 

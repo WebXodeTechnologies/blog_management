@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Mail,
   Lock,
@@ -19,6 +19,9 @@ import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 
 export default function LoginForm({ selectedRole, onRoleChange }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -37,15 +40,11 @@ export default function LoginForm({ selectedRole, onRoleChange }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...formData, role: selectedRole }),
       });
-      // Inside handleSubmit in LoginForm.jsx:
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Invalid credentials");
 
-      if (data.user?.role === "moderator") {
-        router.push("/moderator");
-      } else {
-        router.push("/explore");
-      }
+      router.push(callbackUrl || "/explore");
     } catch (err) {
       setError(err.message);
     } finally {

@@ -24,11 +24,65 @@ const RESERVED_SUBDOMAINS = new Set([
   "staging",
 ]);
 
+/**
+ * Helper to safely decode JWT payload in Edge runtime without external crypto dependencies
+ */
+function decodeJwtPayload(token) {
+  try {
+    if (!token) return null;
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+
+    let base64Url = parts[1];
+    let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    while (base64.length % 4 !== 0) {
+      base64 += "=";
+    }
+    const jsonPayload = atob(base64);
+    const decoded = JSON.parse(jsonPayload);
+
+    if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+      return null;
+    }
+
+    return decoded;
+  } catch (error) {
+    return null;
+  }
+}
+
 export default function proxy(req) {
   const url = req.nextUrl;
   const { pathname } = url;
+  const token = req.cookies.get("token")?.value;
+  const user = decodeJwtPayload(token);
 
-  // Support direct host or Nginx reverse proxy forwarded host
+  // --- Auth & Protected Route Access Control ---
+
+  // 1. Auth Page Redirection (If user is already logged in, redirect away to /explore)
+  const isAuthRoute = pathname === "/login" || pathname === "/register";
+  if (isAuthRoute && user) {
+    return NextResponse.redirect(new URL("/explore", req.url));
+  }
+
+  // 2. Redirect Legacy /moderator paths to /dashboard/articles (Unified Architecture)
+  if (pathname.startsWith("/moderator")) {
+    return NextResponse.redirect(new URL("/dashboard/articles", req.url));
+  }
+
+  // 3. Protected Dashboard & User Routes Check (/dashboard and /bookmarks)
+  const isDashboardRoute = pathname.startsWith("/dashboard");
+  const isBookmarksRoute = pathname.startsWith("/bookmarks");
+
+  if (isDashboardRoute || isBookmarksRoute) {
+    if (!user) {
+      const loginUrl = new URL("/login", req.url);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  // --- Domain & Subdomain Tenant Resolution ---
   const rawHost =
     req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
   const hostWithoutPort = rawHost.split(":")[0].toLowerCase();
@@ -43,13 +97,11 @@ export default function proxy(req) {
   // Tenant subdomain detection
   if (hostWithoutPort.endsWith("localhost")) {
     const parts = hostWithoutPort.split(".");
-    // Handles "tenant1.localhost" (2 parts)
     if (parts.length > 1 && !RESERVED_SUBDOMAINS.has(parts[0])) {
       tenantSlug = parts[0];
       isSubdomain = true;
     }
   } else if (hostWithoutPort.endsWith(rootDomain)) {
-    // Handles "tenant1.texora.com" (production/staging)
     const subdomain = hostWithoutPort.replace(`.${rootDomain}`, "");
     if (
       subdomain &&
@@ -61,7 +113,6 @@ export default function proxy(req) {
     }
   }
 
-  // Clone request headers to inject tenant metadata for downstream Server Components
   const requestHeaders = new Headers(req.headers);
   if (tenantSlug) {
     requestHeaders.set("x-tenant-slug", tenantSlug);
@@ -69,12 +120,10 @@ export default function proxy(req) {
 
   // --- Subdomain Routing Rules ---
   if (isSubdomain && tenantSlug) {
-    // 1. Block access to platform administration from a tenant subdomain
     if (pathname.startsWith("/platform-admin")) {
       return NextResponse.redirect(new URL("/", req.url));
     }
 
-    // 2. Prevent infinite rewriting loops if URL already contains the target path
     if (
       pathname.startsWith(`/dashboard/${tenantSlug}`) ||
       pathname.startsWith(`/public/${tenantSlug}`)
@@ -84,14 +133,12 @@ export default function proxy(req) {
       });
     }
 
-    // 3. Subdomain root ("tenant1.texora.com/") -> Rewrite to tenant's public landing/blog feed
     if (pathname === "/") {
       return NextResponse.rewrite(new URL(`/${tenantSlug}`, req.url), {
         request: { headers: requestHeaders },
       });
     }
 
-    // 4. Subdomain dashboard ("tenant1.texora.com/dashboard/...") -> Rewrite to /dashboard/[tenantSlug]/...
     if (pathname.startsWith("/dashboard")) {
       const dashboardPath = pathname.replace(/^\/dashboard/, "");
       return NextResponse.rewrite(
@@ -102,7 +149,6 @@ export default function proxy(req) {
       );
     }
 
-    // 5. General sub-path rewrites under tenant scope
     return NextResponse.rewrite(new URL(`/${tenantSlug}${pathname}`, req.url), {
       request: { headers: requestHeaders },
     });

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
-export default function ModeratorTicketsRedirect() {
+export default function ModeratorPageRedirect() {
   redirect("/dashboard/articles");
 }

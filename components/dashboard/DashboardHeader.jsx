@@ -68,7 +68,7 @@ export default function DashboardHeader({ user, onMobileToggle }) {
       <div className="flex items-center gap-3">
         {/* Stripe Indigo CTA Button */}
         <Link
-          href="/dashboard/tech-pulse/blog/create"
+          href="/dashboard/write"
           className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs border border-indigo-500 transition cursor-pointer"
         >
           <Plus className="h-3.5 w-3.5" />

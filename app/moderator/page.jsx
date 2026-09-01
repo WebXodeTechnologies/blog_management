@@ -195,7 +195,7 @@ export default function ModeratorControlCenterPage() {
             <div className="flex items-center gap-3 text-xs text-slate-500">
               <span>Author: <strong className="text-slate-900">{inspectingItem.author.name}</strong></span>
               <span>•</span>
-              <span>Risk Assessment: <strong className="text-rose-600 font-bold">{inspectingItem.riskScore}</strong></span>
+              <span>Risk Assessment: <strong className="text-slate-900 font-mono font-bold">{inspectingItem.riskScore}</strong></span>
             </div>
 
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 leading-relaxed">
@@ -217,7 +217,7 @@ export default function ModeratorControlCenterPage() {
 
               <button
                 onClick={() => handleOpenReject(inspectingItem)}
-                className="px-4 py-2 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 text-xs font-semibold hover:bg-rose-100 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-semibold cursor-pointer"
               >
                 Suspend Submission
               </button>

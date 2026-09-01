@@ -111,7 +111,7 @@ function DashboardArticlesContent() {
 
         {/* Deep Indigo Action Button */}
         <Link
-          href="/dashboard/tech-pulse/blog/create"
+          href="/dashboard/write"
           className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 border border-indigo-500 transition-all self-start md:self-auto cursor-pointer group"
         >
           <Plus className="h-4 w-4 stroke-3" />

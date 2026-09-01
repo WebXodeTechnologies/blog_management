@@ -206,7 +206,7 @@ export default function DashboardProfilePage() {
                     Published Stories
                   </h3>
                   <a
-                    href="/dashboard/tech-pulse/blog/create"
+                    href="/dashboard/write"
                     className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:underline"
                   >
                     <span>Create new</span>

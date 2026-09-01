@@ -44,7 +44,13 @@ export default function LoginForm({ selectedRole, onRoleChange }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Invalid credentials");
 
-      router.push(callbackUrl || "/explore");
+      if (callbackUrl) {
+        router.push(callbackUrl);
+      } else if (data.user?.role === "moderator") {
+        router.push("/moderator");
+      } else {
+        router.push("/explore");
+      }
     } catch (err) {
       setError(err.message);
     } finally {

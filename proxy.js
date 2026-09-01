@@ -65,16 +65,12 @@ export default function proxy(req) {
     return NextResponse.redirect(new URL("/explore", req.url));
   }
 
-  // 2. Redirect Legacy /moderator paths to /dashboard/articles (Unified Architecture)
-  if (pathname.startsWith("/moderator")) {
-    return NextResponse.redirect(new URL("/dashboard/articles", req.url));
-  }
-
-  // 3. Protected Dashboard & User Routes Check (/dashboard and /bookmarks)
+  // 2. Protected Routes Check (/dashboard, /bookmarks, /moderator)
   const isDashboardRoute = pathname.startsWith("/dashboard");
   const isBookmarksRoute = pathname.startsWith("/bookmarks");
+  const isModeratorRoute = pathname.startsWith("/moderator");
 
-  if (isDashboardRoute || isBookmarksRoute) {
+  if (isDashboardRoute || isBookmarksRoute || isModeratorRoute) {
     if (!user) {
       const loginUrl = new URL("/login", req.url);
       loginUrl.searchParams.set("callbackUrl", pathname);

@@ -8,7 +8,8 @@ export async function GET() {
   try {
     await connectDB();
     const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    const token =
+      cookieStore.get("adminToken")?.value || cookieStore.get("token")?.value;
 
     if (!token) {
       return NextResponse.json({ user: null }, { status: 200 });
@@ -21,7 +22,7 @@ export async function GET() {
 
     const user = await User.findById(decoded.id).select("-password");
 
-    if (!user) {
+    if (!user || user.role !== "admin") {
       return NextResponse.json({ user: null }, { status: 200 });
     }
 

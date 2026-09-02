@@ -22,11 +22,6 @@ export const CATEGORIES = [
     targetAudience: "Founders",
   },
   { id: "founders-notes", name: "Founder's Notes", targetAudience: "Founders" },
-  {
-    id: "career-learning",
-    name: "Career & Learning",
-    targetAudience: "Students",
-  },
 ];
 
 export const CATEGORY_NAMES = CATEGORIES.map((c) => c.name);

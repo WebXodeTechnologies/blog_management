@@ -3,7 +3,7 @@
 import BlogCard from "./BlogCard";
 import { BookOpen } from "lucide-react";
 
-export default function BlogFeed({ posts }) {
+export default function BlogFeed({ posts, onLike, onRepost, onShare }) {
   if (posts.length === 0) {
     return (
       <div className="text-center py-16 bg-white/60 backdrop-blur-xl rounded-3xl border border-slate-200/80 p-8 font-sans">
@@ -21,7 +21,13 @@ export default function BlogFeed({ posts }) {
   return (
     <div className="divide-y divide-slate-100">
       {posts.map((post, idx) => (
-        <BlogCard key={post.slug || idx} post={post} />
+        <BlogCard
+          key={post.slug || idx}
+          post={post}
+          onLike={() => onLike(post.id)}
+          onRepost={() => onRepost(post.id)}
+          onShare={() => onShare(post)}
+        />
       ))}
     </div>
   );

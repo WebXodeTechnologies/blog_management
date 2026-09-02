@@ -76,7 +76,10 @@ export default function PublishModal({
 
             <button
               type="button"
-              onClick={onConfirmPublish}
+              onClick={(e) => {
+                e.preventDefault();
+                onConfirmPublish();
+              }}
               disabled={publishing}
               className="px-6 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition flex items-center gap-2 cursor-pointer border border-indigo-500 disabled:opacity-50"
             >
@@ -85,7 +88,9 @@ export default function PublishModal({
               ) : (
                 <Send className="h-4 w-4" />
               )}
-              <span>{publishing ? "Publishing..." : "Confirm & Publish Now"}</span>
+              <span>
+                {publishing ? "Publishing..." : "Confirm & Publish Now"}
+              </span>
             </button>
           </div>
         </motion.div>

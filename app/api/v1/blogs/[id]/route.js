@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb/db";
-import {
-  BlogService,
-  updateBlogSchema,
-  authorizeBlogModification,
-} from "@/modules/blogs";
+import { BlogService, updateBlogSchema } from "@/modules/blogs";
 import { Tenant } from "@/modules/tenants";
 import mongoose from "mongoose";
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
+import { User } from "@/modules/auth/user.model";
 
 const blogService = new BlogService();
 
@@ -31,10 +30,7 @@ export async function GET(req, { params }) {
       blog = tenantId ? await blogService.getBlogBySlug(id, tenantId) : null;
     }
 
-    if (
-      !blog ||
-      (tenantId && blog.tenantId.toString() !== tenantId.toString())
-    ) {
+    if (!blog) {
       return NextResponse.json(
         { success: false, message: "Blog post not found" },
         { status: 404 }
@@ -55,36 +51,68 @@ export async function PUT(req, { params }) {
     await connectDB();
     const { id } = await params;
     const body = await req.json();
-    const tenantSlug = req.headers.get("x-tenant-slug") || body.tenantSlug;
 
-    if (!tenantSlug) {
+    // 1. Authenticate user via JWT Cookie
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    if (!token) {
       return NextResponse.json(
-        { success: false, message: "Tenant context is required" },
-        { status: 400 }
+        { success: false, message: "Authentication required" },
+        { status: 401 }
       );
     }
 
-    const tenant = await Tenant.findOne({ slug: tenantSlug });
-    if (!tenant) {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "fallback_secret_key"
+    );
+    const currentUser = await User.findById(decoded.id).select("-password");
+    if (!currentUser) {
       return NextResponse.json(
-        { success: false, message: "Tenant workspace not found" },
+        { success: false, message: "User not found" },
+        { status: 401 }
+      );
+    }
+
+    // 2. Verify blog exists
+    const existingBlog = await blogService.blogRepository.findById(id);
+    if (!existingBlog) {
+      return NextResponse.json(
+        { success: false, message: "Blog post not found" },
         { status: 404 }
       );
     }
 
-    const authResult = await authorizeBlogModification(req, tenant._id);
-    if (!authResult.authorized) {
-      return authResult.response;
+    // 3. Safely extract author ID whether populated as an object or stored as reference string
+    const blogAuthorId = existingBlog.authorId?._id
+      ? existingBlog.authorId._id.toString()
+      : existingBlog.authorId?.toString();
+
+    const isAuthor =
+      blogAuthorId && blogAuthorId === currentUser._id.toString();
+    const isPrivileged =
+      currentUser.role === "admin" || currentUser.role === "moderator";
+
+    if (!isAuthor && !isPrivileged) {
+      return NextResponse.json(
+        { success: false, message: "Forbidden: You cannot modify this story" },
+        { status: 403 }
+      );
     }
 
-    // Verify blog exists and belongs to this tenant
-    const existingBlog = await blogService.blogRepository.findById(id);
-    if (
-      !existingBlog ||
-      existingBlog.tenantId.toString() !== tenant._id.toString()
-    ) {
+    let tenantSlug = req.headers.get("x-tenant-slug") || body.tenantSlug;
+    let tenant = null;
+
+    if (tenantSlug) {
+      tenant = await Tenant.findOne({ slug: tenantSlug });
+    }
+    if (!tenant && existingBlog.tenantId) {
+      tenant = await Tenant.findById(existingBlog.tenantId);
+    }
+
+    if (!tenant) {
       return NextResponse.json(
-        { success: false, message: "Blog not found in this workspace" },
+        { success: false, message: "Tenant workspace not found" },
         { status: 404 }
       );
     }
@@ -101,6 +129,7 @@ export async function PUT(req, { params }) {
       { status: 200 }
     );
   } catch (error) {
+    console.error("🔥 [PUT /api/v1/blogs/[id]] Exception:", error);
     return NextResponse.json(
       { success: false, message: error.message },
       { status: 400 }
@@ -112,39 +141,49 @@ export async function DELETE(req, { params }) {
   try {
     await connectDB();
     const { id } = await params;
-    const { searchParams } = new URL(req.url);
-    const tenantSlug =
-      req.headers.get("x-tenant-slug") || searchParams.get("tenantSlug");
 
-    if (!tenantSlug) {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    if (!token) {
       return NextResponse.json(
-        { success: false, message: "Tenant context is required" },
-        { status: 400 }
+        { success: false, message: "Authentication required" },
+        { status: 401 }
       );
     }
 
-    const tenant = await Tenant.findOne({ slug: tenantSlug });
-    if (!tenant) {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "fallback_secret_key"
+    );
+    const currentUser = await User.findById(decoded.id).select("-password");
+    if (!currentUser) {
       return NextResponse.json(
-        { success: false, message: "Tenant workspace not found" },
-        { status: 404 }
+        { success: false, message: "User not found" },
+        { status: 401 }
       );
     }
 
-    const authResult = await authorizeBlogModification(req, tenant._id);
-    if (!authResult.authorized) {
-      return authResult.response;
-    }
-
-    // Verify blog exists and belongs to this tenant before deletion
     const existingBlog = await blogService.blogRepository.findById(id);
-    if (
-      !existingBlog ||
-      existingBlog.tenantId.toString() !== tenant._id.toString()
-    ) {
+    if (!existingBlog) {
       return NextResponse.json(
-        { success: false, message: "Blog not found in this workspace" },
+        { success: false, message: "Blog post not found" },
         { status: 404 }
+      );
+    }
+
+    const blogAuthorId = existingBlog.authorId?._id
+      ? existingBlog.authorId._id.toString()
+      : existingBlog.authorId?.toString();
+
+    const isAuthor =
+      blogAuthorId && blogAuthorId === currentUser._id.toString();
+    const isPrivileged =
+      currentUser.role === "admin" || currentUser.role === "moderator";
+
+    if (!isAuthor && !isPrivileged) {
+      return NextResponse.json(
+        { success: false, message: "Forbidden: You cannot delete this story" },
+        { status: 403 }
       );
     }
 
@@ -155,6 +194,7 @@ export async function DELETE(req, { params }) {
       { status: 200 }
     );
   } catch (error) {
+    console.error("🔥 [DELETE /api/v1/blogs/[id]] Exception:", error);
     return NextResponse.json(
       { success: false, message: error.message },
       { status: 400 }

@@ -262,7 +262,9 @@ export default function DashboardProfilePage() {
                         Authenticated via Secure HTTP-only Cookie JWT
                       </span>
                     </div>
-                    <span className="text-indigo-600 font-semibold">Active Session</span>
+                    <span className="text-indigo-600 font-semibold">
+                      Active Session
+                    </span>
                   </div>
                 </div>
               </motion.div>

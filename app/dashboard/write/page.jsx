@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 
 import EditorHeader from "@/components/editor/EditorHeader";
@@ -22,10 +22,14 @@ const CATEGORIES = [
   "Backend & APIs",
 ];
 
-export default function WriteBlogPage() {
+function WriteBlogContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const blogId = searchParams.get("id");
+
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Profile completion check state
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -40,7 +44,7 @@ export default function WriteBlogPage() {
 
   // TipTap Rich HTML Content
   const [editorContent, setEditorContent] = useState(
-    "<h3>Building Scalable Technical Applications</h3><p>Start writing your technical story here... Describe the problem, architectural tradeoffs, code implementations, and performance benchmarks.</p>"
+    "<h3>Building Scalable Technical Applications</h3><p>Start writing your technical story here...</p>"
   );
 
   const [savingDraft, setSavingDraft] = useState(false);
@@ -65,6 +69,42 @@ export default function WriteBlogPage() {
       .catch(() => {})
       .finally(() => setLoadingUser(false));
   }, []);
+
+  // Fetch existing article data if editing ID is provided in search params
+  useEffect(() => {
+    if (blogId) {
+      setIsEditing(true);
+      fetch(`/api/v1/blogs/${blogId}?tenantSlug=general`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.blog) {
+            const b = data.blog;
+            setTitle(b.title || "");
+            setSubtitle(b.excerpt || "");
+            setCoverImage(b.coverImage || "");
+            setCategory(b.category || "Architecture");
+            setTags(b.tags || ["nextjs", "react", "architecture"]);
+            if (b.content) {
+              setEditorContent(b.content);
+            }
+          } else {
+            toast.error("Failed to load article details");
+          }
+        })
+        .catch(() => toast.error("Error fetching article for editing"));
+    }
+  }, [blogId]);
+
+  // Helper to extract or fallback tenant slug
+  const getActiveTenantSlug = () => {
+    if (typeof window === "undefined") return "general";
+    const pathSegments = window.location.pathname.split("/");
+    const tenantIndex = pathSegments.indexOf("tenant");
+    if (tenantIndex !== -1 && pathSegments[tenantIndex + 1]) {
+      return pathSegments[tenantIndex + 1];
+    }
+    return user?.activeTenantSlug || "general";
+  };
 
   // Plain text stripping for word count & reading time
   const plainText = (
@@ -96,11 +136,46 @@ export default function WriteBlogPage() {
     setTags(tags.filter((t) => t !== tagToRemove));
   };
 
-  // Save Draft
+  // Unified save or update request helper
+  const saveOrUpdateBlog = async (targetStatus) => {
+    const endpoint = isEditing ? `/api/v1/blogs/${blogId}` : "/api/v1/blogs";
+    const method = isEditing ? "PUT" : "POST";
+
+    const payload = {
+      title,
+      excerpt: subtitle,
+      content: editorContent,
+      category,
+      tags,
+      coverImage,
+      status: targetStatus,
+      tenantSlug: getActiveTenantSlug(),
+    };
+
+    const res = await fetch(endpoint, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.message || "Failed to save story");
+    }
+    return data.blog;
+  };
+
+  // Save Draft API Call
   const handleSaveDraft = async () => {
+    if (!title.trim()) {
+      toast.error("Please enter a title to save your draft");
+      return;
+    }
+
     setSavingDraft(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 600));
+      await saveOrUpdateBlog("draft");
+
       setLastSavedTime(
         new Date().toLocaleTimeString([], {
           hour: "2-digit",
@@ -109,13 +184,13 @@ export default function WriteBlogPage() {
       );
       toast.success("Draft saved successfully to workspace!");
     } catch (err) {
-      toast.error("Failed to save draft");
+      toast.error(err.message || "Failed to save draft");
     } finally {
       setSavingDraft(false);
     }
   };
 
-  // Publish Story Trigger
+  // Publish Story API Call
   const handlePublishStory = async () => {
     if (!title.trim()) {
       toast.error("Please enter a title for your story");
@@ -130,12 +205,14 @@ export default function WriteBlogPage() {
 
     setPublishing(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      await saveOrUpdateBlog("published");
+
       toast.success("Congratulations! Your story has been published!");
       setShowPublishModal(false);
       router.push("/dashboard/articles");
+      router.refresh();
     } catch (err) {
-      toast.error("Failed to publish story");
+      toast.error(err.message || "Failed to publish story");
     } finally {
       setPublishing(false);
     }
@@ -219,5 +296,19 @@ export default function WriteBlogPage() {
         onConfirmPublish={handlePublishStory}
       />
     </div>
+  );
+}
+
+export default function WriteBlogPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-[50vh] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+        </div>
+      }
+    >
+      <WriteBlogContent />
+    </Suspense>
   );
 }

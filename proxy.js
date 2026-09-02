@@ -3,16 +3,16 @@ import { NextResponse } from "next/server";
 export const config = {
   matcher: [
     /*
-     * Match all paths except:
-     * - api routes (/api/*)
-     * - Next.js internal static assets (_next/static, _next/image)
-     * - favicon, robots, sitemap, public asset extensions
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico, sitemap.xml, robots.txt (common files)
      */
-    "/((?!api/|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };
 
-// Subdomains that must never be resolved as tenant slugs
 const RESERVED_SUBDOMAINS = new Set([
   "www",
   "app",
@@ -25,7 +25,7 @@ const RESERVED_SUBDOMAINS = new Set([
 ]);
 
 /**
- * Helper to safely decode JWT payload in Edge runtime without external crypto dependencies
+ * Fast Edge JWT payload decoder without blocking heavy thread loops
  */
 function decodeJwtPayload(token) {
   try {
@@ -38,15 +38,12 @@ function decodeJwtPayload(token) {
     while (base64.length % 4 !== 0) {
       base64 += "=";
     }
-    const jsonPayload = atob(base64);
-    const decoded = JSON.parse(jsonPayload);
-
+    const decoded = JSON.parse(atob(base64));
     if (decoded.exp && decoded.exp * 1000 < Date.now()) {
       return null;
     }
-
     return decoded;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -57,110 +54,71 @@ export default function proxy(req) {
   const token = req.cookies.get("token")?.value;
   const user = decodeJwtPayload(token);
 
-  // --- Auth & Protected Route Access Control ---
-
-  // 1. Auth Page Redirection (If user is already logged in, redirect away to /explore)
-  const isAuthRoute = pathname === "/login" || pathname === "/register";
-  if (isAuthRoute && user) {
-    return NextResponse.redirect(new URL("/explore", req.url));
+  // --- Auth Route Guards ---
+  if ((pathname === "/login" || pathname === "/register") && user) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  // 2. Protected Routes Check (/dashboard, /bookmarks, /moderator, /admin)
-  const isDashboardRoute = pathname.startsWith("/dashboard");
-  const isBookmarksRoute = pathname.startsWith("/bookmarks");
-  const isModeratorRoute = pathname.startsWith("/moderator");
-  const isAdminRoute = pathname.startsWith("/admin") && pathname !== "/admin/login";
+  const isProtected =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/bookmarks") ||
+    pathname.startsWith("/moderator");
 
-  if (isAdminRoute && !user) {
-    const adminLoginUrl = new URL("/admin/login", req.url);
-    adminLoginUrl.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(adminLoginUrl);
+  if (isProtected && !user) {
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
-  if (isDashboardRoute || isBookmarksRoute || isModeratorRoute) {
-    if (!user) {
-      const loginUrl = new URL("/login", req.url);
-      loginUrl.searchParams.set("callbackUrl", pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-  }
-
-  // --- Domain & Subdomain Tenant Resolution ---
+  // --- Subdomain Tenant Resolution ---
   const rawHost =
     req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
   const hostWithoutPort = rawHost.split(":")[0].toLowerCase();
-
   const rootDomain = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost")
     .split(":")[0]
     .toLowerCase();
 
   let tenantSlug = null;
-  let isSubdomain = false;
-
-  // Tenant subdomain detection
-  if (hostWithoutPort.endsWith("localhost")) {
+  if (
+    hostWithoutPort.endsWith("localhost") ||
+    hostWithoutPort.endsWith(rootDomain)
+  ) {
     const parts = hostWithoutPort.split(".");
-    if (parts.length > 1 && !RESERVED_SUBDOMAINS.has(parts[0])) {
-      tenantSlug = parts[0];
-      isSubdomain = true;
-    }
-  } else if (hostWithoutPort.endsWith(rootDomain)) {
-    const subdomain = hostWithoutPort.replace(`.${rootDomain}`, "");
     if (
-      subdomain &&
-      subdomain !== rootDomain &&
-      !RESERVED_SUBDOMAINS.has(subdomain)
+      parts.length > 2 ||
+      (hostWithoutPort.endsWith("localhost") && parts.length > 1)
     ) {
-      tenantSlug = subdomain;
-      isSubdomain = true;
+      const subdomain = parts[0];
+      if (
+        subdomain &&
+        !RESERVED_SUBDOMAINS.has(subdomain) &&
+        subdomain !== rootDomain
+      ) {
+        tenantSlug = subdomain;
+      }
     }
   }
 
   const requestHeaders = new Headers(req.headers);
   if (tenantSlug) {
     requestHeaders.set("x-tenant-slug", tenantSlug);
-  }
 
-  // --- Subdomain Routing Rules ---
-  if (isSubdomain && tenantSlug) {
-    if (pathname.startsWith("/admin")) {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
-
+    // Prevent rewriting internal Next.js paths or API calls to avoid infinite loops
     if (
-      pathname.startsWith(`/dashboard/${tenantSlug}`) ||
-      pathname.startsWith(`/public/${tenantSlug}`)
+      !pathname.startsWith("/_next") &&
+      !pathname.startsWith("/api") &&
+      !pathname.startsWith(`/${tenantSlug}`)
     ) {
-      return NextResponse.next({
-        request: { headers: requestHeaders },
-      });
-    }
-
-    if (pathname === "/") {
-      return NextResponse.rewrite(new URL(`/${tenantSlug}`, req.url), {
-        request: { headers: requestHeaders },
-      });
-    }
-
-    if (pathname.startsWith("/dashboard")) {
-      const dashboardPath = pathname.replace(/^\/dashboard/, "");
       return NextResponse.rewrite(
-        new URL(`/dashboard/${tenantSlug}${dashboardPath}`, req.url),
+        new URL(`/${tenantSlug}${pathname === "/" ? "" : pathname}`, req.url),
         {
           request: { headers: requestHeaders },
         }
       );
     }
-
-    return NextResponse.rewrite(new URL(`/${tenantSlug}${pathname}`, req.url), {
-      request: { headers: requestHeaders },
-    });
   }
 
-  // --- Standard Root Domain Request ---
   return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
+    request: { headers: requestHeaders },
   });
 }

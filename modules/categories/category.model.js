@@ -20,7 +20,7 @@ const CategorySchema = new mongoose.Schema(
     },
     color: {
       type: String,
-      default: "#3B82F6", // blue-500 default
+      default: "#3B82F6",
     },
     icon: {
       type: String,

@@ -10,8 +10,8 @@ const BlogSchema = new mongoose.Schema(
     slug: {
       type: String,
       required: true,
-      unique: true,
       lowercase: true,
+      trim: true, // Removed global unique: true
     },
     content: {
       type: String,
@@ -29,11 +29,13 @@ const BlogSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       default: null,
+      index: true,
     },
     tags: [
       {
@@ -45,11 +47,13 @@ const BlogSchema = new mongoose.Schema(
       type: String,
       enum: ["draft", "published", "archived", "rejected"],
       default: "draft",
+      index: true,
     },
     tenantId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Tenant",
       default: null,
+      index: true,
     },
     views: {
       type: Number,
@@ -59,5 +63,7 @@ const BlogSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const Blog =
-  mongoose.models.Blog || mongoose.model("Blog", BlogSchema);
+// Compound unique index ensuring slugs are unique per tenant workspace
+BlogSchema.index({ tenantId: 1, slug: 1 }, { unique: true });
+
+export const Blog = mongoose.models.Blog || mongoose.model("Blog", BlogSchema);

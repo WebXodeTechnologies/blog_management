@@ -24,14 +24,16 @@ function ExploreStationContent() {
     {
       id: "HL-1",
       articleTitle: "Microservices Architecture in 2026",
-      quote: "Single-tenant databases reduce noisy neighbor latency spikes by 40% under spike load.",
+      quote:
+        "Single-tenant databases reduce noisy neighbor latency spikes by 40% under spike load.",
       note: "Important takeaway for our Texora database schema optimization.",
       date: "Yesterday",
     },
     {
       id: "HL-2",
       articleTitle: "Building Asynchronous Event Loops in Rust",
-      quote: "Lock-free MPMC channels prevent thread contention during peak throughput.",
+      quote:
+        "Lock-free MPMC channels prevent thread contention during peak throughput.",
       note: "Benchmark test candidate for our socket worker infrastructure.",
       date: "3 days ago",
     },
@@ -42,7 +44,8 @@ function ExploreStationContent() {
       id: "RES-1",
       articleTitle: "Optimizing MongoDB Atlas Aggregation Pipelines",
       author: "Alex Rivera",
-      comment: "Great breakdown of compound index ordering! Made a 3x speedup in our user query latency.",
+      comment:
+        "Great breakdown of compound index ordering! Made a 3x speedup in our user query latency.",
       date: "2 hours ago",
     },
   ]);
@@ -60,7 +63,8 @@ function ExploreStationContent() {
             Explore Station
           </h1>
           <p className="text-slate-500 text-xs sm:text-sm mt-1 max-w-xl">
-            Access your curated lists, saved reading history, key article highlights, and community responses.
+            Access your curated lists, saved reading history, key article
+            highlights, and community responses.
           </p>
         </div>
       </div>
@@ -68,11 +72,32 @@ function ExploreStationContent() {
       {/* Tab Navigation Controls */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-slate-200/80 scrollbar-none">
         {[
-          { id: "your-list", label: "Your List", icon: <BookOpen className="h-4 w-4" /> },
-          { id: "saved", label: "Saved List", href: "/bookmarks", icon: <Bookmark className="h-4 w-4" /> },
-          { id: "highlights", label: "Highlights", icon: <Highlighter className="h-4 w-4" /> },
-          { id: "history", label: "Reading History", icon: <History className="h-4 w-4" /> },
-          { id: "responses", label: "Responses", icon: <MessageSquare className="h-4 w-4" /> },
+          {
+            id: "your-list",
+            label: "Your List",
+            icon: <BookOpen className="h-4 w-4" />,
+          },
+          {
+            id: "saved",
+            label: "Saved List",
+            href: "/bookmarks",
+            icon: <Bookmark className="h-4 w-4" />,
+          },
+          {
+            id: "highlights",
+            label: "Highlights",
+            icon: <Highlighter className="h-4 w-4" />,
+          },
+          {
+            id: "history",
+            label: "Reading History",
+            icon: <History className="h-4 w-4" />,
+          },
+          {
+            id: "responses",
+            label: "Responses",
+            icon: <MessageSquare className="h-4 w-4" />,
+          },
         ].map((tab) => {
           if (tab.href) {
             return (
@@ -135,9 +160,11 @@ function ExploreStationContent() {
               </div>
 
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span className="text-[11px] text-slate-500">{article.readTime}</span>
+                <span className="text-[11px] text-slate-500">
+                  {article.readTime}
+                </span>
                 <Link
-                  href={`/blog/${article.slug}`}
+                  href={`/articles/${article.slug}`}
                   className="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 transition"
                 >
                   <ArrowUpRight className="h-4 w-4" />
@@ -156,7 +183,9 @@ function ExploreStationContent() {
               className="p-6 rounded-3xl bg-white border border-slate-200/80 space-y-3 shadow-2xs"
             >
               <div className="flex items-center justify-between text-xs text-slate-500">
-                <span className="font-semibold text-indigo-600">{hl.articleTitle}</span>
+                <span className="font-semibold text-indigo-600">
+                  {hl.articleTitle}
+                </span>
                 <span>{hl.date}</span>
               </div>
               <blockquote className="p-4 rounded-2xl bg-amber-50 border-l-4 border-amber-400 text-slate-800 text-xs italic leading-relaxed">
@@ -186,7 +215,7 @@ function ExploreStationContent() {
                 </h4>
               </div>
               <Link
-                href={`/blog/${art.slug}`}
+                href={`/articles/${art.slug}`}
                 className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold text-xs transition border border-indigo-200"
               >
                 Revisit
@@ -204,7 +233,9 @@ function ExploreStationContent() {
               className="p-5 rounded-3xl bg-white border border-slate-200/80 space-y-2 text-xs shadow-2xs"
             >
               <div className="flex items-center justify-between text-slate-500">
-                <span className="font-semibold text-slate-900">{res.author}</span>
+                <span className="font-semibold text-slate-900">
+                  {res.author}
+                </span>
                 <span>{res.date}</span>
               </div>
               <p className="text-slate-700 font-medium">{res.comment}</p>
@@ -221,11 +252,13 @@ function ExploreStationContent() {
 
 export default function ExploreStationPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-[50vh] flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-[50vh] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+        </div>
+      }
+    >
       <ExploreStationContent />
     </Suspense>
   );

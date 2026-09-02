@@ -17,8 +17,8 @@ import {
   Edit,
   ShieldAlert,
   CheckCircle2,
+  Loader2,
 } from "lucide-react";
-import { STANDARDIZED_ARTICLES } from "@/constants/categories";
 import toast from "react-hot-toast";
 
 function DashboardArticlesContent() {
@@ -26,24 +26,10 @@ function DashboardArticlesContent() {
   const initialTab = searchParams.get("tab") || "all";
 
   const [user, setUser] = useState(null);
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(initialTab);
   const [searchQuery, setSearchQuery] = useState("");
-
-  const [articles, setArticles] = useState(() =>
-    STANDARDIZED_ARTICLES.map((art, idx) => ({
-      ...art,
-      lifecycle:
-        idx === 0
-          ? "published"
-          : idx === 1
-            ? "drafts"
-            : idx === 2
-              ? "scheduled"
-              : idx === 3
-                ? "unlisted"
-                : "submissions",
-    }))
-  );
 
   useEffect(() => {
     fetch("/api/v1/auth/me")
@@ -54,36 +40,95 @@ function DashboardArticlesContent() {
       .catch(() => {});
   }, []);
 
+  const fetchArticles = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/v1/blogs");
+      const data = await res.json();
+      if (data.success) {
+        setArticles(
+          data.blogs.map((b) => ({
+            ...b,
+            id: b._id,
+            image:
+              b.coverImage ||
+              "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
+            readTime: `${Math.max(1, Math.ceil((b.content?.length || 100) / 1000))} min read`,
+            likes: b.likes || 0,
+            lifecycle: b.status || "draft",
+          }))
+        );
+      } else {
+        toast.error(data.message || "Failed to load articles");
+      }
+    } catch (err) {
+      toast.error("Error connecting to database");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
   const isModerator = user?.role === "moderator";
 
   const filteredArticles = articles.filter((article) => {
     const matchesSearch =
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.category.toLowerCase().includes(searchQuery.toLowerCase());
+      article.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      article.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      article.category?.toLowerCase().includes(searchQuery.toLowerCase());
 
     if (!matchesSearch) return false;
     if (activeTab === "all") return true;
     return article.lifecycle === activeTab;
   });
 
-  const handleDelete = (id, title) => {
-    if (confirm(`Are you sure you want to delete "${title}"?`)) {
-      setArticles((prev) => prev.filter((a) => a.id !== id));
-      toast.success(`Deleted "${title}" successfully.`);
+  const handleDelete = async (id, title) => {
+    if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
+
+    try {
+      const res = await fetch(`/api/v1/blogs/${id}?tenantSlug=general`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setArticles((prev) => prev.filter((a) => a.id !== id));
+        toast.success(`Deleted "${title}" successfully.`);
+      } else {
+        toast.error(data.message || "Failed to delete article");
+      }
+    } catch (err) {
+      toast.error("Error deleting article");
     }
   };
 
-  const handleApprove = (id, title) => {
-    setArticles((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, lifecycle: "published" } : a))
-    );
-    toast.success(`Approved "${title}" for public release.`);
+  const handleApprove = async (id, title) => {
+    try {
+      const res = await fetch(`/api/v1/blogs/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "published", tenantSlug: "general" }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setArticles((prev) =>
+          prev.map((a) => (a.id === id ? { ...a, lifecycle: "published" } : a))
+        );
+        toast.success(`Approved "${title}" for public release.`);
+      } else {
+        toast.error(data.message || "Failed to approve article");
+      }
+    } catch (err) {
+      toast.error("Error approving article");
+    }
   };
 
   return (
     <div className="pb-16 text-slate-900 font-sans">
-      {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-6 border-b border-slate-200/80">
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -109,7 +154,6 @@ function DashboardArticlesContent() {
           </p>
         </div>
 
-        {/* Deep Indigo Action Button */}
         <Link
           href="/dashboard/write"
           className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 border border-indigo-500 transition-all self-start md:self-auto cursor-pointer group"
@@ -119,12 +163,11 @@ function DashboardArticlesContent() {
         </Link>
       </div>
 
-      {/* Lifecycle Filter Tabs + Search */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
         <div className="flex flex-wrap items-center gap-1 p-1 bg-indigo-50/50 rounded-2xl border border-indigo-100 w-full sm:w-auto">
           {[
             { id: "all", label: "All Stories" },
-            { id: "drafts", label: "Drafts" },
+            { id: "draft", label: "Drafts" },
             { id: "scheduled", label: "Scheduled" },
             { id: "published", label: "Published" },
             { id: "unlisted", label: "Unlisted" },
@@ -156,15 +199,18 @@ function DashboardArticlesContent() {
         </div>
       </div>
 
-      {/* Stories Grid */}
-      {filteredArticles.length === 0 ? (
+      {loading ? (
+        <div className="flex h-64 items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        </div>
+      ) : filteredArticles.length === 0 ? (
         <div className="p-16 rounded-3xl bg-white border border-dashed border-slate-200 text-center space-y-4">
           <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center mx-auto text-indigo-600">
             <PenTool className="h-6 w-6" />
           </div>
           <div>
             <h3 className="font-bold text-sm text-slate-900">
-              No stories in this tab
+              No stories found
             </h3>
             <p className="text-xs text-slate-500 mt-1">
               Select another lifecycle stage or create a new story.
@@ -188,7 +234,7 @@ function DashboardArticlesContent() {
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-indigo-700/90 backdrop-blur-md text-white text-[10px] font-semibold border border-white/20">
-                    {article.category}
+                    {article.category || "Architecture"}
                   </span>
                 </div>
 
@@ -197,7 +243,6 @@ function DashboardArticlesContent() {
                     <Clock className="h-3 w-3 text-slate-400" />{" "}
                     {article.readTime}
                   </span>
-
                   <span className="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-bold text-[10px] border border-indigo-200 capitalize">
                     {article.lifecycle}
                   </span>
@@ -208,7 +253,9 @@ function DashboardArticlesContent() {
                 </h3>
 
                 <p className="text-xs text-slate-500 line-clamp-2 mb-4 leading-relaxed">
-                  {article.excerpt}
+                  {article.excerpt ||
+                    article.subtitle ||
+                    "No excerpt provided..."}
                 </p>
               </div>
 
@@ -217,7 +264,7 @@ function DashboardArticlesContent() {
                   <div className="flex items-center gap-3 text-[11px]">
                     <span className="flex items-center gap-1">
                       <Eye className="h-3.5 w-3.5 text-slate-400" />{" "}
-                      {article.views}
+                      {article.views || 0}
                     </span>
                     <span className="flex items-center gap-1 text-rose-500 font-medium">
                       <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" />{" "}
@@ -226,7 +273,7 @@ function DashboardArticlesContent() {
                   </div>
 
                   <Link
-                    href={`/blog/${article.slug}`}
+                    href={`/articles/${article.slug}`}
                     target="_blank"
                     className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition"
                   >
@@ -236,7 +283,7 @@ function DashboardArticlesContent() {
 
                 <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
                   <Link
-                    href="/dashboard/tech-pulse/blog/create"
+                    href={`/dashboard/write?id=${article.id}`}
                     className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold transition border border-indigo-200"
                   >
                     <Edit className="h-3.5 w-3.5 text-indigo-600" />

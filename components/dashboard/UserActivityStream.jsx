@@ -159,7 +159,7 @@ export default function UserActivityStream() {
 
                     <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
                       <Link
-                        href={`/blog/${article.slug}`}
+                        href={`/articles/${article.slug}`}
                         target="_blank"
                         className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface-hover transition border border-border"
                         title="Preview Article"

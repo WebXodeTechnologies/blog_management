@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb/db";
-import {
-  BlogService,
-  createBlogSchema,
-  authorizeBlogCreation,
-} from "@/modules/blogs";
+import { CategoryService, createCategorySchema } from "@/modules/categories";
 import { Tenant } from "@/modules/tenants";
+import { verifyTenantPermission } from "@/modules/rbac";
+import { PERMISSIONS } from "@/modules/rbac";
 
-const blogService = new BlogService();
+const categoryService = new CategoryService();
 
 export async function GET(req) {
   try {
@@ -19,15 +17,11 @@ export async function GET(req) {
     let tenantId = null;
     if (tenantSlug) {
       const tenant = await Tenant.findOne({ slug: tenantSlug });
-      if (tenant) {
-        tenantId = tenant._id;
-      }
+      if (tenant) tenantId = tenant._id;
     }
 
-    const query = tenantId ? { tenantId } : {};
-    const blogs = await blogService.getTenantBlogs(tenantId, query);
-
-    return NextResponse.json({ success: true, blogs }, { status: 200 });
+    const categories = await categoryService.getTenantCategories(tenantId);
+    return NextResponse.json({ success: true, categories }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { success: false, message: error.message },
@@ -57,20 +51,23 @@ export async function POST(req) {
       );
     }
 
-    // Authorize user has BLOG_CREATE permission in this tenant
-    const authResult = await authorizeBlogCreation(req, tenant._id);
+    // Only Admin can manage categories
+    const authResult = await verifyTenantPermission(
+      req,
+      tenant._id,
+      PERMISSIONS.MANAGE_CATEGORIES || "admin"
+    );
     if (!authResult.authorized) {
       return authResult.response;
     }
 
-    const validatedData = createBlogSchema.parse(body);
-    const blog = await blogService.createBlog(
-      authResult.user._id,
+    const validatedData = createCategorySchema.parse(body);
+    const category = await categoryService.createCategory(
       tenant._id,
       validatedData
     );
 
-    return NextResponse.json({ success: true, blog }, { status: 201 });
+    return NextResponse.json({ success: true, category }, { status: 201 });
   } catch (error) {
     return NextResponse.json(
       { success: false, message: error.message },

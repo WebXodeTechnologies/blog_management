@@ -3,22 +3,23 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { connectDB } from "@/lib/mongodb/db";
 import { User } from "@/modules/auth/user.model";
-import { ROLES } from "./rbac.constants";
+import { Membership } from "@/modules/memberships/membership.model";
+import { ROLE_PERMISSIONS } from "./rbac.constants";
 
-export async function verifyAdminRequest(req) {
+export async function verifyTenantPermission(
+  req,
+  tenantId,
+  requiredPermission
+) {
   try {
     await connectDB();
     const cookieStore = await cookies();
-    const token =
-      cookieStore.get("adminToken")?.value || cookieStore.get("token")?.value;
+    const token = cookieStore.get("token")?.value;
 
     if (!token) {
       return {
         authorized: false,
-        response: NextResponse.json(
-          { error: "Unauthorized: Admin session token required" },
-          { status: 401 }
-        ),
+        response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
       };
     }
 
@@ -28,19 +29,91 @@ export async function verifyAdminRequest(req) {
     );
 
     const user = await User.findById(decoded.id).select("-password");
-
     if (!user) {
       return {
         authorized: false,
-        response: NextResponse.json({ error: "User not found" }, { status: 404 }),
+        response: NextResponse.json(
+          { error: "User not found" },
+          { status: 404 }
+        ),
       };
     }
 
-    if (user.role !== ROLES.ADMIN) {
+    const membership = await Membership.findOne({
+      userId: user._id,
+      tenantId,
+      status: "active",
+    });
+
+    if (!membership) {
       return {
         authorized: false,
         response: NextResponse.json(
-          { error: "Forbidden: Admin access required" },
+          { error: "Forbidden: Not an active member of this tenant" },
+          { status: 403 }
+        ),
+      };
+    }
+
+    const permissions = ROLE_PERMISSIONS[membership.role] || [];
+    if (requiredPermission && !permissions.includes(requiredPermission)) {
+      return {
+        authorized: false,
+        response: NextResponse.json(
+          {
+            error: `Forbidden: Missing required permission [${requiredPermission}]`,
+          },
+          { status: 403 }
+        ),
+      };
+    }
+
+    return { authorized: true, user, membership };
+  } catch (error) {
+    return {
+      authorized: false,
+      response: NextResponse.json(
+        { error: "Authorization error" },
+        { status: 401 }
+      ),
+    };
+  }
+}
+
+export async function verifyAdminRequest(req) {
+  try {
+    await connectDB();
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
+    if (!token) {
+      return {
+        authorized: false,
+        response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+      };
+    }
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "fallback_secret_key"
+    );
+
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) {
+      return {
+        authorized: false,
+        response: NextResponse.json(
+          { error: "User not found" },
+          { status: 404 }
+        ),
+      };
+    }
+
+    if (user.role !== "admin" && user.role !== "superadmin") {
+      return {
+        authorized: false,
+        response: NextResponse.json(
+          { error: "Forbidden: Platform administrator access required" },
           { status: 403 }
         ),
       };
@@ -51,7 +124,7 @@ export async function verifyAdminRequest(req) {
     return {
       authorized: false,
       response: NextResponse.json(
-        { error: "Invalid token or server error" },
+        { error: "Authorization error" },
         { status: 401 }
       ),
     };

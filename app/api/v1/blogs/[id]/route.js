@@ -31,7 +31,10 @@ export async function GET(req, { params }) {
       blog = tenantId ? await blogService.getBlogBySlug(id, tenantId) : null;
     }
 
-    if (!blog) {
+    if (
+      !blog ||
+      (tenantId && blog.tenantId.toString() !== tenantId.toString())
+    ) {
       return NextResponse.json(
         { success: false, message: "Blog post not found" },
         { status: 404 }
@@ -72,6 +75,18 @@ export async function PUT(req, { params }) {
     const authResult = await authorizeBlogModification(req, tenant._id);
     if (!authResult.authorized) {
       return authResult.response;
+    }
+
+    // Verify blog exists and belongs to this tenant
+    const existingBlog = await blogService.blogRepository.findById(id);
+    if (
+      !existingBlog ||
+      existingBlog.tenantId.toString() !== tenant._id.toString()
+    ) {
+      return NextResponse.json(
+        { success: false, message: "Blog not found in this workspace" },
+        { status: 404 }
+      );
     }
 
     const validatedData = updateBlogSchema.parse(body);
@@ -119,6 +134,18 @@ export async function DELETE(req, { params }) {
     const authResult = await authorizeBlogModification(req, tenant._id);
     if (!authResult.authorized) {
       return authResult.response;
+    }
+
+    // Verify blog exists and belongs to this tenant before deletion
+    const existingBlog = await blogService.blogRepository.findById(id);
+    if (
+      !existingBlog ||
+      existingBlog.tenantId.toString() !== tenant._id.toString()
+    ) {
+      return NextResponse.json(
+        { success: false, message: "Blog not found in this workspace" },
+        { status: 404 }
+      );
     }
 
     await blogService.deleteBlog(id);

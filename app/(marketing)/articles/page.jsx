@@ -99,10 +99,13 @@ export default async function PublicArticlesPage() {
                         {readTimeMin} min read
                       </span>
                       <span className="text-[11px] text-slate-400">
-                        {new Date(article.createdAt).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })}
+                        {new Date(article.createdAt).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "short",
+                            day: "numeric",
+                          }
+                        )}
                       </span>
                     </div>
 
@@ -121,13 +124,12 @@ export default async function PublicArticlesPage() {
                   {/* Card Footer */}
                   <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold overflow-hidden">
+                      <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold overflow-hidden relative">
                         {article.authorId?.avatar ? (
                           <Image
                             src={article.authorId.avatar}
                             alt={article.authorId.name || "Author"}
-                            width={24}
-                            height={24}
+                            fill
                             className="object-cover"
                           />
                         ) : (

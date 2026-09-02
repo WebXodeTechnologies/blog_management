@@ -21,6 +21,15 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 
+function getActiveTenantSlug() {
+  if (typeof window === "undefined") return "general";
+  try {
+    return localStorage.getItem("activeTenantSlug") || "general";
+  } catch {
+    return "general";
+  }
+}
+
 function DashboardArticlesContent() {
   const searchParams = useSearchParams();
   const initialTab = searchParams.get("tab") || "all";
@@ -43,7 +52,10 @@ function DashboardArticlesContent() {
   const fetchArticles = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/v1/blogs");
+      const tenantSlug = getActiveTenantSlug();
+      const res = await fetch(`/api/v1/blogs?tenantSlug=${tenantSlug}`, {
+        headers: { "x-tenant-slug": tenantSlug },
+      });
       const data = await res.json();
       if (data.success) {
         setArticles(
@@ -89,8 +101,10 @@ function DashboardArticlesContent() {
     if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
 
     try {
-      const res = await fetch(`/api/v1/blogs/${id}?tenantSlug=general`, {
+      const tenantSlug = getActiveTenantSlug();
+      const res = await fetch(`/api/v1/blogs/${id}?tenantSlug=${tenantSlug}`, {
         method: "DELETE",
+        headers: { "x-tenant-slug": tenantSlug },
       });
       const data = await res.json();
 
@@ -107,10 +121,14 @@ function DashboardArticlesContent() {
 
   const handleApprove = async (id, title) => {
     try {
+      const tenantSlug = getActiveTenantSlug();
       const res = await fetch(`/api/v1/blogs/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "published", tenantSlug: "general" }),
+        headers: {
+          "Content-Type": "application/json",
+          "x-tenant-slug": tenantSlug,
+        },
+        body: JSON.stringify({ status: "published", tenantSlug }),
       });
       const data = await res.json();
 
@@ -283,7 +301,7 @@ function DashboardArticlesContent() {
 
                 <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
                   <Link
-                    href={`/dashboard/write?id=${article.id}`}
+                    href={`/dashboard/articles/${article.id}/edit`}
                     className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold transition border border-indigo-200"
                   >
                     <Edit className="h-3.5 w-3.5 text-indigo-600" />

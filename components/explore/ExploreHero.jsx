@@ -44,13 +44,13 @@ export default function ExploreHero({ searchQuery, setSearchQuery }) {
           transition={{ delay: 0.25 }}
           className="relative w-full md:w-80 shrink-0"
         >
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-950 z-10 pointer-events-none" />
           <input
             type="text"
             placeholder="Search publications, topics, authors..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white/90 backdrop-blur-xl border border-slate-200/90 text-xs sm:text-sm text-slate-950 placeholder-slate-400 focus:outline-none focus:border-blue-500 shadow-xs transition-all"
+            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white/90 backdrop-blur-xl border border-slate-200/90 text-xs sm:text-sm text-slate-950 placeholder-slate-400 focus:outline-none focus:border-blue-500 shadow-xs transition-all relative"
           />
         </motion.div>
       </div>

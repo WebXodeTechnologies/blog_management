@@ -11,7 +11,7 @@ const BlogSchema = new mongoose.Schema(
       type: String,
       required: true,
       lowercase: true,
-      trim: true, // Removed global unique: true
+      trim: true,
     },
     content: {
       type: String,
@@ -56,6 +56,18 @@ const BlogSchema = new mongoose.Schema(
       index: true,
     },
     views: {
+      type: Number,
+      default: 0,
+    },
+    likes: {
+      type: Number,
+      default: 0,
+    },
+    commentsCount: {
+      type: Number,
+      default: 0,
+    },
+    reposts: {
       type: Number,
       default: 0,
     },

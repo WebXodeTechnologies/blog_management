@@ -7,7 +7,7 @@ export default function ExploreSearchFilter({
   setSelectedCategory,
 }) {
   return (
-    <div className="flex items-center gap-2 overflow-x-auto overflow-y-hidden pb-4 mb-6 border-b border-slate-200/60 font-sans [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="flex items-center gap-2 overflow-x-auto overflow-y-hidden pb-4 mb-6 border-b border-slate-200/60 font-sans [-ms-overflow-style:none] scrollbar-none [&::-webkit-scrollbar]:hidden">
       {CATEGORY_NAMES.map((catName, idx) => {
         const isActive =
           selectedCategory === catName ||

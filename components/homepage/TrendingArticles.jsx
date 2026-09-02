@@ -86,7 +86,7 @@ export default function TrendingArticles() {
             {/* Left Column (7 cols): Main Featured Spotlight Card */}
             <div className="lg:col-span-7 flex">
               <Link
-                href={`/blog/${featuredArticle.slug}`}
+                href={`/articles/${featuredArticle.slug}`}
                 className="relative w-full rounded-3xl border border-slate-200/70 bg-white/80 backdrop-blur-xl p-6 sm:p-8 shadow-[0_15px_40px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_60px_rgba(59,130,246,0.12)] hover:border-blue-500/50 transition-all group overflow-hidden flex flex-col justify-between"
               >
                 {/* Subtle Ambient Hover Glow */}
@@ -184,7 +184,7 @@ export default function TrendingArticles() {
               {sideArticles.map((article, idx) => (
                 <Link
                   key={article.id}
-                  href={`/blog/${article.slug}`}
+                  href={`/articles/${article.slug}`}
                   className="relative rounded-3xl border border-slate-200/70 bg-white/80 backdrop-blur-xl p-5 shadow-[0_10px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(59,130,246,0.08)] hover:border-blue-500/40 transition-all group overflow-hidden flex flex-col justify-between flex-1"
                 >
                   <div className="flex items-start gap-4">

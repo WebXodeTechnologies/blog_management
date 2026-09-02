@@ -176,7 +176,7 @@ export default function BookmarksPage() {
                   </button>
 
                   <Link
-                    href={`/blog/${article.slug}`}
+                    href={`/articles/${article.slug}`}
                     className="p-1.5 rounded-lg text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition"
                     title="Read Article"
                   >

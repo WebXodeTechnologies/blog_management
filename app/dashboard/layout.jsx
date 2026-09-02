@@ -16,11 +16,15 @@ export default function DashboardLayout({ children }) {
         if (data.user) {
           setUser(data.user);
         } else {
-          window.location.href = "/login?callbackUrl=/dashboard";
+          window.location.href = `/login?callbackUrl=${encodeURIComponent(
+            window.location.pathname
+          )}`;
         }
       })
       .catch(() => {
-        window.location.href = "/login?callbackUrl=/dashboard";
+        window.location.href = `/login?callbackUrl=${encodeURIComponent(
+          window.location.pathname
+        )}`;
       })
       .finally(() => setLoading(false));
   }, []);

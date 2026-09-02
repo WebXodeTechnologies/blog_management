@@ -297,7 +297,7 @@ export default function MarketingNavbar() {
             </Link>
 
             <Link
-              href="/dashboard/tech-pulse/blog/create"
+              href="/dashboard/write"
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-white/60 rounded-xl transition"
             >

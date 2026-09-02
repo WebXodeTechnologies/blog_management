@@ -54,7 +54,7 @@ export default function ExploreSidebar({ onSelectTopic, selectedTopic }) {
           {staffPicks.map((story) => (
             <Link
               key={story.id}
-              href={`/blog/${story.slug}`}
+              href={`/articles/${story.slug}`}
               className="block group"
             >
               <div className="flex items-center gap-2 mb-1.5">

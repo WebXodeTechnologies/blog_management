@@ -1,13 +1,34 @@
-export const ROLES = {
-  USER: "user",
-  MODERATOR: "moderator",
+export const TENANT_ROLES = {
   ADMIN: "admin",
+  MODERATOR: "moderator",
+  USER: "user",
 };
 
 export const PERMISSIONS = {
-  MANAGE_USERS: "manage_users",
-  MANAGE_TENANTS: "manage_tenants",
-  MANAGE_CATEGORIES: "manage_categories",
-  VIEW_AUDIT_LOGS: "view_audit_logs",
-  MODERATE_CONTENT: "moderate_content",
+  BLOG_CREATE: "BLOG_CREATE",
+  BLOG_EDIT: "BLOG_EDIT",
+  BLOG_UPDATE: "BLOG_UPDATE",
+  BLOG_PUBLISH: "BLOG_PUBLISH",
+  BLOG_APPROVE: "BLOG_APPROVE",
+  USER_MANAGE: "USER_MANAGE",
+  MODERATOR_MANAGE: "MODERATOR_MANAGE",
+  PAYMENT_MANAGE: "PAYMENT_MANAGE",
+  CONTENT_REMOVE: "CONTENT_REMOVE",
+};
+
+export const ROLE_PERMISSIONS = {
+  admin: Object.values(PERMISSIONS),
+  moderator: [
+    PERMISSIONS.BLOG_EDIT,
+    PERMISSIONS.BLOG_UPDATE,
+    PERMISSIONS.BLOG_PUBLISH,
+    PERMISSIONS.BLOG_APPROVE,
+    PERMISSIONS.CONTENT_REMOVE,
+  ],
+  user: [
+    PERMISSIONS.BLOG_CREATE,
+    PERMISSIONS.BLOG_EDIT,
+    PERMISSIONS.BLOG_UPDATE,
+    PERMISSIONS.BLOG_PUBLISH,
+  ],
 };

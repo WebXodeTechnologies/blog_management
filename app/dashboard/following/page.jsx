@@ -11,7 +11,8 @@ export default function FollowingPage() {
     {
       id: "AUT-1",
       name: "Alex Rivera",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
+      avatar:
+        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
       role: "Lead Systems Architect",
       articlesCount: 42,
       isFollowing: true,
@@ -19,7 +20,8 @@ export default function FollowingPage() {
     {
       id: "AUT-2",
       name: "Elena Rostova",
-      avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
+      avatar:
+        "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150",
       role: "Distributed Database Eng",
       articlesCount: 28,
       isFollowing: true,
@@ -67,7 +69,8 @@ export default function FollowingPage() {
           Following
         </h1>
         <p className="text-muted-foreground text-xs sm:text-sm mt-1 max-w-xl">
-          Manage your subscribed authors, tech publications, and topic feeds across the Texora platform.
+          Manage your subscribed authors, tech publications, and topic feeds
+          across the Texora platform.
         </p>
       </div>
 
@@ -75,7 +78,9 @@ export default function FollowingPage() {
       <div className="space-y-4">
         <h3 className="font-heading font-bold text-lg text-foreground flex items-center gap-2">
           <Users className="h-4 w-4 text-primary" />
-          <span>Followed Developers &amp; Authors ({followedAuthors.length})</span>
+          <span>
+            Followed Developers &amp; Authors ({followedAuthors.length})
+          </span>
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -94,7 +99,9 @@ export default function FollowingPage() {
                   <h4 className="font-heading font-bold text-sm text-foreground truncate">
                     {author.name}
                   </h4>
-                  <p className="text-xs text-muted-foreground truncate">{author.role}</p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {author.role}
+                  </p>
                   <p className="text-[10px] text-primary font-semibold mt-0.5">
                     {author.articlesCount} technical articles
                   </p>
@@ -152,9 +159,9 @@ export default function FollowingPage() {
               </div>
 
               <Link
-                href={`/dashboard/${pub.slug}/analytics`}
+                href="/dashboard/analytics"
                 className="p-2.5 rounded-xl bg-muted hover:bg-surface-hover text-foreground transition border border-border"
-                title="View Tenant Workspace"
+                title="View Analytics Workspace"
               >
                 <ArrowUpRight className="h-4 w-4" />
               </Link>

@@ -89,7 +89,7 @@ export default function BlogCard({ post }) {
 
   const handleCopyLink = () => {
     if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(window.location.origin + `/blog/${post.slug}`);
+      navigator.clipboard.writeText(window.location.origin + `/articles/${post.slug}`);
       toast.success("Link copied to clipboard!");
       setShowShareModal(false);
     }
@@ -173,7 +173,7 @@ export default function BlogCard({ post }) {
 
           {/* Article Title */}
           <Link
-            href={`/blog/${post.slug}`}
+            href={`/articles/${post.slug}`}
             className="block group-hover:text-blue-600 transition-colors"
           >
             <h2 className="font-heading font-extrabold text-lg sm:text-2xl text-slate-950 mb-2 leading-snug tracking-tight">
@@ -281,7 +281,7 @@ export default function BlogCard({ post }) {
         {/* Right Side: Cover Image */}
         {post.image && (
           <Link
-            href={`/blog/${post.slug}`}
+            href={`/articles/${post.slug}`}
             className="relative w-28 h-20 sm:w-44 sm:h-32 rounded-2xl overflow-hidden shrink-0 border border-slate-200/80 bg-slate-100 shadow-2xs group-hover:shadow-md transition-all"
           >
             <Image
@@ -316,7 +316,7 @@ export default function BlogCard({ post }) {
                 🔗 Copy Direct Link
               </button>
               <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(`https://texora.dev/blog/${post.slug}`)}`}
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(`https://texora.dev/articles/${post.slug}`)}`}
                 target="_blank"
                 rel="noreferrer"
                 className="block w-full p-3 rounded-2xl bg-slate-950 text-white text-xs font-semibold transition text-left hover:bg-slate-800"
@@ -324,7 +324,7 @@ export default function BlogCard({ post }) {
                 𝕏 Share on Twitter / X
               </a>
               <a
-                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://texora.dev/blog/${post.slug}`)}`}
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://texora.dev/articles/${post.slug}`)}`}
                 target="_blank"
                 rel="noreferrer"
                 className="block w-full p-3 rounded-2xl bg-blue-600 text-white text-xs font-semibold transition text-left hover:bg-blue-500"

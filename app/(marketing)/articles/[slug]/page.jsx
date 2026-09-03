@@ -63,10 +63,10 @@ export default async function PublicArticleDetailPage({ params }) {
 
   return (
     <SmoothScrollProvider>
-      <article className="min-h-screen bg-slate-50 text-slate-900 font-sans pt-12 pb-32 px-6 sm:px-12">
-        <div className="max-w-4xl mx-auto">
+      <article className="min-h-screen text-slate-950 font-sans pt-6 sm:pt-12 pb-20 sm:pb-32 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        <div>
           {/* Back Navigation */}
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <Link
               href="/articles"
               className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition"
@@ -76,8 +76,8 @@ export default async function PublicArticleDetailPage({ params }) {
           </div>
 
           {/* Article Header */}
-          <header className="space-y-6 mb-10 bg-white p-8 sm:p-12 rounded-3xl border border-slate-200/80 shadow-2xs">
-            <div className="flex flex-wrap items-center gap-3">
+          <header className="space-y-4 sm:space-y-6 mb-8 sm:mb-10 bg-white/90 backdrop-blur-xl p-5 sm:p-8 lg:p-12 rounded-3xl border border-slate-200/80 shadow-2xs">
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
               <span className="px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold">
                 {blog.category || "Architecture"}
               </span>
@@ -89,25 +89,26 @@ export default async function PublicArticleDetailPage({ params }) {
               </span>
             </div>
 
-            <h1 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight leading-tight">
+            <h1 className="font-heading font-extrabold text-2xl sm:text-4xl lg:text-5xl text-slate-950 tracking-tight leading-snug sm:leading-tight">
               {blog.title}
             </h1>
 
             {blog.excerpt && (
-              <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
+              <p className="text-sm sm:text-base lg:text-lg text-slate-600 leading-relaxed font-normal">
                 {blog.excerpt}
               </p>
             )}
 
             {/* Author Profile Bar */}
-            <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-5 sm:pt-6 border-t border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="relative w-10 h-10 rounded-full overflow-hidden bg-indigo-100 border border-indigo-200 flex items-center justify-center font-bold text-indigo-700">
+                <div className="relative w-10 h-10 rounded-full overflow-hidden bg-indigo-100 border border-indigo-200 flex items-center justify-center font-bold text-indigo-700 shrink-0">
                   {blog.authorId?.avatar ? (
                     <Image
                       src={blog.authorId.avatar}
                       alt={blog.authorId.name || "Author"}
                       fill
+                      sizes="40px"
                       className="object-cover"
                     />
                   ) : (
@@ -139,29 +140,29 @@ export default async function PublicArticleDetailPage({ params }) {
 
           {/* Cover Image */}
           {blog.coverImage && (
-            <div className="relative aspect-video w-full rounded-3xl overflow-hidden mb-12 shadow-sm border border-slate-200/80 bg-white">
+            <div className="relative aspect-video w-full rounded-3xl overflow-hidden mb-8 sm:mb-12 shadow-sm border border-slate-200/80 bg-white">
               <Image
                 src={blog.coverImage}
                 alt={blog.title}
                 fill
                 priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                 className="object-cover"
               />
             </div>
           )}
 
           {/* Rendered Content Body */}
-          <div className="bg-white p-8 sm:p-12 rounded-3xl border border-slate-200/80 shadow-2xs">
+          <div className="bg-white/90 backdrop-blur-xl p-5 sm:p-8 lg:p-12 rounded-3xl border border-slate-200/80 shadow-2xs">
             <div
-              className="prose prose-slate max-w-none prose-headings:font-heading prose-headings:font-bold prose-a:text-indigo-600 prose-img:rounded-2xl leading-relaxed text-slate-700 text-sm sm:text-base space-y-4"
+              className="prose prose-slate max-w-none prose-headings:font-heading prose-headings:font-bold prose-a:text-indigo-600 prose-img:rounded-2xl leading-relaxed text-slate-700 text-xs sm:text-base space-y-4 overflow-x-auto"
               dangerouslySetInnerHTML={{ __html: blog.content }}
             />
 
             {/* Live Engagement Toolbar */}
             <ArticleInteractions
               articleId={blog._id.toString()}
-              initialLikes={blog.likes || 0}
-              initialCommentsCount={blog.commentsCount || 0}
+              initialPost={JSON.parse(JSON.stringify(blog))}
             />
           </div>
         </div>

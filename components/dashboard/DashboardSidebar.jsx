@@ -28,6 +28,8 @@ import {
   Plus,
   ShieldCheck,
   CheckSquare,
+  ShieldAlert,
+  LayoutDashboard,
 } from "lucide-react";
 import logo from "@/public/logos/logo2.png";
 
@@ -61,7 +63,8 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
     window.location.href = "/login";
   };
 
-  const isModerator = user?.role === "moderator";
+  const isAdmin = user?.role === "admin";
+  const isModerator = user?.role === "moderator" || isAdmin;
 
   const checkActive = (href, exact = false) => {
     if (exact) return pathname === href;
@@ -121,7 +124,37 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
 
         {/* Navigation Items */}
         <nav className="space-y-1.5 pt-2 overflow-y-auto max-h-[calc(100vh-300px)] scrollbar-none">
-          {/* MODERATOR DYNAMIC SECTION (Standard SaaS Palette) */}
+          {/* ADMIN CONTROLS SECTION */}
+          {isAdmin && (
+            <div className="mb-4 pb-3 border-b border-slate-100 space-y-1">
+              <p className="px-3 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1">
+                <ShieldAlert className="h-3 w-3 text-rose-600" />
+                <span>Admin Controls</span>
+              </p>
+
+              <Link
+                href="/admin"
+                onClick={() => setMobileOpen && setMobileOpen(false)}
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition cursor-pointer ${
+                  checkActive("/admin", true)
+                    ? "bg-slate-900 text-white font-bold shadow-md border border-slate-800"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <LayoutDashboard
+                    className={`h-4 w-4 ${checkActive("/admin", true) ? "text-white" : "text-slate-500"}`}
+                  />
+                  <span>Platform Admin</span>
+                </div>
+                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
+                  ROOT
+                </span>
+              </Link>
+            </div>
+          )}
+
+          {/* MODERATOR DYNAMIC SECTION */}
           {isModerator && (
             <div className="mb-4 pb-3 border-b border-slate-100 space-y-1">
               <p className="px-3 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1">
@@ -151,7 +184,7 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
                       : "bg-indigo-50 text-indigo-700 border-indigo-200"
                   }`}
                 >
-                  14 Queue
+                  Queue
                 </span>
               </Link>
 

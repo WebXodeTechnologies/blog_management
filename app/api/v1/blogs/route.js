@@ -152,6 +152,11 @@ export async function POST(req) {
     }
 
     const validatedData = createBlogSchema.parse(body);
+    const isPrivileged = currentUser.role === "admin" || currentUser.role === "moderator";
+    if (!isPrivileged && (validatedData.status === "published" || !validatedData.status)) {
+      validatedData.status = "pending";
+    }
+
     const blog = await blogService.createBlog(
       currentUser._id,
       tenant._id,

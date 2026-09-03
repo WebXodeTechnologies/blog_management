@@ -24,6 +24,15 @@ const UserSchema = new mongoose.Schema(
       enum: ["user", "moderator", "admin"],
       default: "user",
     },
+    seniorityLevel: {
+      type: String,
+      enum: ["founder", "senior_developer", "tech_enthusiast", "veteran"],
+      default: "tech_enthusiast",
+    },
+    yearsOfExperience: {
+      type: Number,
+      default: 0,
+    },
     avatar: {
       type: String,
       default: "",

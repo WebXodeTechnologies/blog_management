@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,47 +8,37 @@ import {
   Sparkles,
   Bookmark,
   Highlighter,
-  History,
+  History as HistoryIcon,
   MessageSquare,
   BookOpen,
   ArrowUpRight,
+  Loader2,
 } from "lucide-react";
-import { STANDARDIZED_ARTICLES } from "@/constants/categories";
 
 function ExploreStationContent() {
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get("tab") || "your-list";
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const tabParam = searchParams.get("tab") || "your-list";
+  const [activeTab, setActiveTab] = useState(tabParam);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [highlights] = useState([
-    {
-      id: "HL-1",
-      articleTitle: "Microservices Architecture in 2026",
-      quote:
-        "Single-tenant databases reduce noisy neighbor latency spikes by 40% under spike load.",
-      note: "Important takeaway for our Texora database schema optimization.",
-      date: "Yesterday",
-    },
-    {
-      id: "HL-2",
-      articleTitle: "Building Asynchronous Event Loops in Rust",
-      quote:
-        "Lock-free MPMC channels prevent thread contention during peak throughput.",
-      note: "Benchmark test candidate for our socket worker infrastructure.",
-      date: "3 days ago",
-    },
-  ]);
+  // Sync state automatically when sidebar query params change
+  useEffect(() => {
+    setActiveTab(tabParam);
+  }, [tabParam]);
 
-  const [responses] = useState([
-    {
-      id: "RES-1",
-      articleTitle: "Optimizing MongoDB Atlas Aggregation Pipelines",
-      author: "Alex Rivera",
-      comment:
-        "Great breakdown of compound index ordering! Made a 3x speedup in our user query latency.",
-      date: "2 hours ago",
-    },
-  ]);
+  useEffect(() => {
+    setLoading(true);
+    fetch(`/api/v1/user/explore?tab=${activeTab}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setItems(data.items || []);
+        }
+      })
+      .catch(() => setItems([]))
+      .finally(() => setLoading(false));
+  }, [activeTab]);
 
   return (
     <div className="pb-16 text-slate-900 font-sans space-y-8">
@@ -80,7 +70,6 @@ function ExploreStationContent() {
           {
             id: "saved",
             label: "Saved List",
-            href: "/bookmarks",
             icon: <Bookmark className="h-4 w-4" />,
           },
           {
@@ -91,7 +80,7 @@ function ExploreStationContent() {
           {
             id: "history",
             label: "Reading History",
-            icon: <History className="h-4 w-4" />,
+            icon: <HistoryIcon className="h-4 w-4" />,
           },
           {
             id: "responses",
@@ -99,23 +88,11 @@ function ExploreStationContent() {
             icon: <MessageSquare className="h-4 w-4" />,
           },
         ].map((tab) => {
-          if (tab.href) {
-            return (
-              <Link
-                key={tab.id}
-                href={tab.href}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-semibold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/60 transition shrink-0"
-              >
-                {tab.icon}
-                <span>{tab.label}</span>
-              </Link>
-            );
-          }
           const isActive = activeTab === tab.id;
           return (
-            <button
+            <Link
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              href={`/dashboard/explore-station?tab=${tab.id}`}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-semibold transition cursor-pointer shrink-0 ${
                 isActive
                   ? "bg-indigo-600 text-white font-bold shadow-xs border border-indigo-500"
@@ -124,127 +101,158 @@ function ExploreStationContent() {
             >
               {tab.icon}
               <span>{tab.label}</span>
-            </button>
+            </Link>
           );
         })}
       </div>
 
-      {/* Tab Content Display */}
-      {activeTab === "your-list" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {STANDARDIZED_ARTICLES.slice(0, 3).map((article) => (
-            <div
-              key={article.id}
-              className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-2xs flex flex-col justify-between group hover:border-indigo-300 transition"
-            >
-              <div>
-                <div className="relative aspect-video w-full rounded-2xl overflow-hidden mb-4 bg-indigo-50/50">
-                  <Image
-                    src={article.image}
-                    alt={article.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-indigo-700/90 backdrop-blur-md text-white text-[10px] font-semibold border border-white/20">
-                    {article.category}
-                  </span>
-                </div>
+      {/* Dynamic Tab Content Display */}
+      {loading ? (
+        <div className="flex justify-center items-center py-24">
+          <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        </div>
+      ) : items.length === 0 ? (
+        <div className="text-center py-20 bg-white border border-slate-200/80 rounded-3xl text-slate-400 text-xs font-medium">
+          No records found under this section yet.
+        </div>
+      ) : (
+        <>
+          {(activeTab === "your-list" || activeTab === "saved") && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {items.map((article) => {
+                const imageUrl =
+                  article.image && article.image.startsWith("http")
+                    ? article.image
+                    : "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop";
+                return (
+                  <div
+                    key={article._id}
+                    className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-2xs flex flex-col justify-between group hover:border-indigo-300 transition"
+                  >
+                    <div>
+                      <div className="relative aspect-video w-full rounded-2xl overflow-hidden mb-4 bg-indigo-50/50">
+                        <Image
+                          src={imageUrl}
+                          alt={article.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-indigo-700/90 backdrop-blur-md text-white text-[10px] font-semibold border border-white/20">
+                          {article.category || "General"}
+                        </span>
+                      </div>
 
-                <h3 className="font-heading font-bold text-base text-slate-900 mb-2 line-clamp-2">
-                  {article.title}
-                </h3>
-                <p className="text-xs text-slate-500 line-clamp-2 mb-4 leading-relaxed">
-                  {article.excerpt}
-                </p>
-              </div>
+                      <h3 className="font-heading font-bold text-base text-slate-900 mb-2 line-clamp-2">
+                        {article.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 line-clamp-2 mb-4 leading-relaxed">
+                        {article.excerpt}
+                      </p>
+                    </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span className="text-[11px] text-slate-500">
-                  {article.readTime}
-                </span>
-                <Link
-                  href={`/articles/${article.slug}`}
-                  className="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 transition"
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                      <span className="text-[11px] text-slate-500">
+                        {article.readTime || "5 min read"}
+                      </span>
+                      <Link
+                        href={`/articles/${article.slug}`}
+                        className="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 transition"
+                      >
+                        <ArrowUpRight className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {activeTab === "highlights" && (
+            <div className="space-y-4 max-w-4xl">
+              {items.map((hl) => (
+                <div
+                  key={hl._id}
+                  className="p-6 rounded-3xl bg-white border border-slate-200/80 space-y-3 shadow-2xs"
                 >
-                  <ArrowUpRight className="h-4 w-4" />
-                </Link>
-              </div>
+                  <div className="flex items-center justify-between text-xs text-slate-500">
+                    <span className="font-semibold text-indigo-600">
+                      {hl.blogId?.title || "Referenced Article"}
+                    </span>
+                    <span>{new Date(hl.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <blockquote className="p-4 rounded-2xl bg-amber-50 border-l-4 border-amber-400 text-slate-800 text-xs italic leading-relaxed">
+                    &ldquo;{hl.quote}&rdquo;
+                  </blockquote>
+                  {hl.note && (
+                    <p className="text-xs text-slate-600">
+                      <strong className="text-slate-900">Note:</strong>{" "}
+                      {hl.note}
+                    </p>
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+          )}
 
-      {activeTab === "highlights" && (
-        <div className="space-y-4 max-w-4xl">
-          {highlights.map((hl) => (
-            <div
-              key={hl.id}
-              className="p-6 rounded-3xl bg-white border border-slate-200/80 space-y-3 shadow-2xs"
-            >
-              <div className="flex items-center justify-between text-xs text-slate-500">
-                <span className="font-semibold text-indigo-600">
-                  {hl.articleTitle}
-                </span>
-                <span>{hl.date}</span>
-              </div>
-              <blockquote className="p-4 rounded-2xl bg-amber-50 border-l-4 border-amber-400 text-slate-800 text-xs italic leading-relaxed">
-                &ldquo;{hl.quote}&rdquo;
-              </blockquote>
-              <p className="text-xs text-slate-600">
-                <strong className="text-slate-900">Note:</strong> {hl.note}
-              </p>
+          {activeTab === "history" && (
+            <div className="space-y-3 max-w-3xl">
+              {items.map((historyItem) => {
+                const art = historyItem.blogId;
+                if (!art) return null;
+                return (
+                  <div
+                    key={historyItem._id}
+                    className="p-4 rounded-2xl bg-white border border-slate-200/80 flex items-center justify-between gap-4 text-xs shadow-2xs"
+                  >
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-slate-400 font-semibold">
+                        Visited{" "}
+                        {new Date(historyItem.updatedAt).toLocaleTimeString(
+                          [],
+                          { hour: "2-digit", minute: "2-digit" }
+                        )}
+                      </span>
+                      <h4 className="font-heading font-bold text-sm text-slate-900">
+                        {art.title}
+                      </h4>
+                    </div>
+                    <Link
+                      href={`/articles/${art.slug}`}
+                      className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold text-xs transition border border-indigo-200 shrink-0"
+                    >
+                      Revisit
+                    </Link>
+                  </div>
+                );
+              })}
             </div>
-          ))}
-        </div>
-      )}
+          )}
 
-      {activeTab === "history" && (
-        <div className="space-y-3 max-w-3xl">
-          {STANDARDIZED_ARTICLES.slice(0, 4).map((art, idx) => (
-            <div
-              key={art.id}
-              className="p-4 rounded-2xl bg-white border border-slate-200/80 flex items-center justify-between gap-4 text-xs shadow-2xs"
-            >
-              <div className="space-y-1">
-                <span className="text-[10px] text-slate-400 font-semibold">
-                  Read {idx === 0 ? "20 mins ago" : `${idx + 1} hours ago`}
-                </span>
-                <h4 className="font-heading font-bold text-sm text-slate-900">
-                  {art.title}
-                </h4>
-              </div>
-              <Link
-                href={`/articles/${art.slug}`}
-                className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold text-xs transition border border-indigo-200"
-              >
-                Revisit
-              </Link>
+          {activeTab === "responses" && (
+            <div className="space-y-4 max-w-3xl">
+              {items.map((res) => (
+                <div
+                  key={res._id}
+                  className="p-5 rounded-3xl bg-white border border-slate-200/80 space-y-2 text-xs shadow-2xs"
+                >
+                  <div className="flex items-center justify-between text-slate-500">
+                    <span className="font-semibold text-slate-900">
+                      Your Comment
+                    </span>
+                    <span>{new Date(res.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <p className="text-slate-700 font-medium">
+                    {res.comment || res.text}
+                  </p>
+                  <p className="text-[11px] text-indigo-600 font-semibold pt-1">
+                    On: {res.blogId?.title || "Article Thread"}
+                  </p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
-
-      {activeTab === "responses" && (
-        <div className="space-y-4 max-w-3xl">
-          {responses.map((res) => (
-            <div
-              key={res.id}
-              className="p-5 rounded-3xl bg-white border border-slate-200/80 space-y-2 text-xs shadow-2xs"
-            >
-              <div className="flex items-center justify-between text-slate-500">
-                <span className="font-semibold text-slate-900">
-                  {res.author}
-                </span>
-                <span>{res.date}</span>
-              </div>
-              <p className="text-slate-700 font-medium">{res.comment}</p>
-              <p className="text-[11px] text-indigo-600 font-semibold pt-1">
-                On: {res.articleTitle}
-              </p>
-            </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
     </div>
   );

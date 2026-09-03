@@ -63,6 +63,12 @@ const BlogSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    likesList: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     commentsCount: {
       type: Number,
       default: 0,
@@ -71,6 +77,12 @@ const BlogSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    repostsList: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );
@@ -78,4 +90,7 @@ const BlogSchema = new mongoose.Schema(
 // Compound unique index ensuring slugs are unique per tenant workspace
 BlogSchema.index({ tenantId: 1, slug: 1 }, { unique: true });
 
-export const Blog = mongoose.models.Blog || mongoose.model("Blog", BlogSchema);
+if (mongoose.models.Blog) {
+  delete mongoose.models.Blog;
+}
+export const Blog = mongoose.model("Blog", BlogSchema);

@@ -246,7 +246,7 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
                     },
                     {
                       label: "Saved List",
-                      href: "/bookmarks",
+                      tab: "saved",
                       icon: <Bookmark className="h-3.5 w-3.5" />,
                     },
                     {
@@ -265,8 +265,7 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
                       icon: <MessageSquare className="h-3.5 w-3.5" />,
                     },
                   ].map((sub) => {
-                    const subHref =
-                      sub.href || `/dashboard/explore-station?tab=${sub.tab}`;
+                    const subHref = `/dashboard/explore-station?tab=${sub.tab}`;
                     const active = checkActive(subHref);
                     return (
                       <Link

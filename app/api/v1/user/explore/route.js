@@ -37,12 +37,17 @@ export async function GET(request) {
 
     if (tab === "your-list") {
       data = await Blog.find({ authorId: userId })
+        .populate("authorId", "name avatar")
         .sort({ createdAt: -1 })
-        .select("title slug excerpt category image readTime createdAt views");
+        .select(
+          "title slug excerpt category image coverImage readTime createdAt views likes status"
+        );
     } else if (tab === "saved") {
       const user = await User.findById(userId).populate({
         path: "savedBlogs",
-        select: "title slug excerpt category image readTime createdAt views",
+        populate: { path: "authorId", select: "name avatar" },
+        select:
+          "title slug excerpt category image coverImage readTime createdAt views likes",
       });
       data = user?.savedBlogs || [];
       console.log("Fetched Saved Blogs Count:", data.length);
@@ -50,13 +55,13 @@ export async function GET(request) {
       data = await Highlight.find({
         $or: [{ userId: userId }, { authorId: userId }],
       })
-        .populate("blogId", "title slug")
+        .populate("blogId", "title slug coverImage image category")
         .sort({ createdAt: -1 });
     } else if (tab === "history") {
       data = await History.find({
         $or: [{ userId: userId }, { authorId: userId }],
       })
-        .populate("blogId", "title slug readTime image category")
+        .populate("blogId", "title slug readTime image coverImage category authorId")
         .sort({ updatedAt: -1 })
         .limit(20);
     } else if (tab === "reposts") {
@@ -72,10 +77,9 @@ export async function GET(request) {
       }
       console.log("Fetched Reposted Blogs Count:", data.length);
     } else if (tab === "responses") {
-      data = await Comment.find({
-        $or: [{ userId: userId }, { authorId: userId }],
-      })
-        .populate("blogId", "title slug")
+      data = await Comment.find({ userId: userId })
+        .populate("userId", "name avatar")
+        .populate("blogId", "title slug coverImage image category")
         .sort({ createdAt: -1 });
       console.log("Fetched Responses/Comments Count:", data.length);
     }

@@ -16,6 +16,7 @@ import {
   Repeat2,
   Share2,
   Award,
+  MapPin,
 } from "lucide-react";
 import EditProfileModal from "@/components/profile/EditProfileModal";
 import toast from "react-hot-toast";
@@ -96,56 +97,153 @@ export default function DashboardProfilePage() {
 
   return (
     <div className="pb-16 text-slate-900 font-sans space-y-8">
-      {/* Stripe & Supabase Indigo Banner */}
-      <div className="relative rounded-3xl bg-linear-to-r from-indigo-600 via-indigo-700 to-violet-700 text-white p-6 sm:p-10 overflow-hidden border border-indigo-500/30 shadow-xl shadow-indigo-600/20">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Light Glassmorphic Hero Card */}
+      <div className="relative rounded-3xl bg-white/70 backdrop-blur-2xl border border-white/80 p-6 sm:p-8 lg:p-10 shadow-xl shadow-indigo-500/5 space-y-8 overflow-hidden font-sans">
+        {/* Soft Pastel Animated Ambient Orbs */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-tr from-indigo-200/50 to-sky-200/50 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-purple-200/40 to-pink-200/40 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-gradient-to-tr from-cyan-100/30 via-indigo-100/30 to-purple-100/30 rounded-full blur-3xl pointer-events-none -z-10" />
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative z-10">
-          <div className="flex items-center gap-6">
-            {user?.avatar ? (
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-white/40 shadow-2xl"
-              />
-            ) : (
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white text-indigo-600 flex items-center justify-center font-brand font-black text-3xl shadow-2xl">
-                {user?.name?.[0]?.toUpperCase()}
-              </div>
-            )}
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-semibold border border-white/30">
-                <Sparkles className="h-3 w-3 text-amber-300 animate-pulse" />
-                <span className="capitalize">
-                  {user?.role || "user"} Workspace
-                </span>
-              </div>
-              <h1 className="font-brand font-black text-2xl sm:text-4xl tracking-tight text-white">
-                {user?.name}
-              </h1>
-              <p className="text-xs text-indigo-100 font-medium flex flex-wrap items-center gap-2">
-                <span className="flex items-center gap-1">
-                  <Mail className="h-3.5 w-3.5 text-indigo-200" /> {user?.email}
-                </span>
-                {user?.pronouns && (
-                  <>
-                    <span>•</span>
-                    <span className="text-white bg-white/20 px-2 py-0.5 rounded-md font-semibold">
-                      {user.pronouns}
-                    </span>
-                  </>
+        <div className="relative z-10 space-y-6">
+          {/* Main Profile Info Row */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-6">
+              {/* Glassmorphic Avatar Container */}
+              <div className="relative shrink-0 p-1.5 rounded-3xl bg-white/80 backdrop-blur-xl border border-indigo-200/60 shadow-md shadow-indigo-500/10">
+                {user?.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border border-white shadow-xs bg-slate-50"
+                  />
+                ) : (
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-indigo-50 to-sky-50 text-indigo-700 flex items-center justify-center font-heading font-black text-3xl border border-indigo-200/60 shadow-xs">
+                    {user?.name?.[0]?.toUpperCase()}
+                  </div>
                 )}
-              </p>
+                <span
+                  className="absolute -bottom-1 -right-1 p-1 bg-emerald-500 rounded-full text-white ring-4 ring-white shadow-xs"
+                  title="Verified Member"
+                >
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                </span>
+              </div>
+
+              {/* Identity Metadata */}
+              <div className="space-y-1.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-700 text-xs font-bold border border-indigo-200/80 backdrop-blur-md">
+                    <Sparkles className="h-3.5 w-3.5 text-indigo-600 animate-pulse" />
+                    <span className="capitalize">
+                      {user?.role || "user"} Workspace
+                    </span>
+                  </span>
+                  {user?.location && (
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-500/10 text-slate-700 text-xs font-medium border border-slate-200/80 backdrop-blur-md">
+                      <MapPin className="h-3 w-3 text-slate-500" />
+                      {user.location}
+                    </span>
+                  )}
+                </div>
+
+                <h1 className="font-heading font-black text-2xl sm:text-3xl lg:text-4xl text-black tracking-tight">
+                  {user?.name}
+                </h1>
+
+                {user?.headline ? (
+                  <p className="text-xs sm:text-sm text-slate-900 font-semibold max-w-xl leading-relaxed">
+                    {user.headline}
+                  </p>
+                ) : (
+                  user?.bio && (
+                    <p className="text-xs sm:text-sm text-slate-900 font-medium line-clamp-2 max-w-xl leading-relaxed">
+                      {user.bio}
+                    </p>
+                  )
+                )}
+
+                <div className="flex flex-wrap items-center gap-3 text-xs text-slate-900 font-semibold pt-0.5">
+                  <span className="flex items-center gap-1.5 text-black">
+                    <Mail className="h-3.5 w-3.5 text-indigo-600" />{" "}
+                    {user?.email}
+                  </span>
+                  {user?.pronouns && (
+                    <>
+                      <span className="text-slate-400">•</span>
+                      <span className="text-black bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-md font-bold text-[11px] border border-slate-300">
+                        {user.pronouns}
+                      </span>
+                    </>
+                  )}
+                  <span className="text-slate-400">•</span>
+                  <span className="flex items-center gap-1 text-slate-900 font-semibold">
+                    <Calendar className="h-3.5 w-3.5 text-slate-700" />
+                    Joined {formatJoinedDate(user?.createdAt)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2.5 shrink-0 self-start lg:self-center">
+              <button
+                onClick={() => setIsEditing(true)}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-black hover:bg-slate-900 text-white font-bold text-xs transition-all cursor-pointer shadow-md shadow-slate-900/20 border border-slate-900 hover:scale-105 active:scale-95"
+              >
+                <Edit3 className="h-3.5 w-3.5" />
+                <span>Edit Profile</span>
+              </button>
+
+              <button
+                onClick={handleCopyProfileLink}
+                className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-white/90 hover:bg-white text-black font-bold text-xs transition-all border border-slate-300 cursor-pointer backdrop-blur-md shadow-xs hover:shadow-md"
+                title="Share Profile Link"
+              >
+                <Share2 className="h-3.5 w-3.5 text-indigo-600" />
+                <span className="hidden sm:inline">Share</span>
+              </button>
             </div>
           </div>
 
-          <button
-            onClick={() => setIsEditing(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white hover:bg-indigo-50 text-indigo-700 font-bold text-xs transition-all shadow-md border border-white/40 cursor-pointer"
-          >
-            <Edit3 className="h-3.5 w-3.5" />
-            <span>Edit Profile</span>
-          </button>
+          {/* Light Glassmorphic Metrics Bar */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-slate-200/80">
+            <div className="p-3.5 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200 shadow-2xs hover:border-indigo-400 transition">
+              <span className="text-[11px] font-bold text-slate-800 block">
+                Published Stories
+              </span>
+              <span className="font-heading font-black text-2xl text-black mt-0.5 block">
+                {userStories.length}
+              </span>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200 shadow-2xs hover:border-emerald-400 transition">
+              <span className="text-[11px] font-bold text-slate-800 block">
+                Reposts Stream
+              </span>
+              <span className="font-heading font-black text-2xl text-emerald-700 mt-0.5 block">
+                {repostedStories.length}
+              </span>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200 shadow-2xs hover:border-indigo-400 transition">
+              <span className="text-[11px] font-bold text-slate-800 block">
+                Profile Completion
+              </span>
+              <span className="font-heading font-black text-2xl text-indigo-700 mt-0.5 block">
+                {calculateCompletion()}%
+              </span>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200 shadow-2xs hover:border-emerald-400 transition">
+              <span className="text-[11px] font-bold text-slate-800 block">
+                Account Status
+              </span>
+              <span className="font-bold text-xs text-emerald-800 mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                Verified
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -268,7 +366,8 @@ export default function DashboardProfilePage() {
                         No stories published yet
                       </p>
                       <p className="text-[11px] text-slate-500 mt-0.5">
-                        Share your engineering thoughts with the Texora community.
+                        Share your engineering thoughts with the Texora
+                        community.
                       </p>
                     </div>
                   </div>

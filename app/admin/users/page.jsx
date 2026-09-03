@@ -87,12 +87,13 @@ export default function AdminUsersPage() {
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-950 tracking-tight flex items-center gap-2">
+          <h2 className="text-2xl font-extrabold text-slate-950 tracking-tight flex items-center gap-2">
             <Users className="w-6 h-6 text-indigo-600" />
             User & Access Management
-          </h1>
+          </h2>
           <p className="text-xs text-slate-500">
-            Inspect all registered users, manage platform privileges, and elevate admin/moderator roles.
+            Inspect all registered users, manage platform privileges, and
+            elevate admin/moderator roles.
           </p>
         </div>
       </div>
@@ -165,15 +166,22 @@ export default function AdminUsersPage() {
                 </tr>
               ) : (
                 users.map((u) => (
-                  <tr key={u._id} className="hover:bg-slate-50/70 transition-colors">
+                  <tr
+                    key={u._id}
+                    className="hover:bg-slate-50/70 transition-colors"
+                  >
                     <td className="px-4 py-3.5 font-medium text-slate-900">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-slate-950 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
                           {u.name?.[0]?.toUpperCase()}
                         </div>
                         <div className="flex flex-col">
-                          <span className="font-bold text-sm text-slate-900">{u.name}</span>
-                          <span className="text-[11px] text-slate-500 font-mono">{u.email}</span>
+                          <span className="font-bold text-sm text-slate-900">
+                            {u.name}
+                          </span>
+                          <span className="text-[11px] text-slate-500 font-mono">
+                            {u.email}
+                          </span>
                         </div>
                       </div>
                     </td>
@@ -183,8 +191,8 @@ export default function AdminUsersPage() {
                           u.role === "admin"
                             ? "bg-purple-50 text-purple-700 border border-purple-200"
                             : u.role === "moderator"
-                            ? "bg-amber-50 text-amber-700 border border-amber-200"
-                            : "bg-slate-100 text-slate-700 border border-slate-200"
+                              ? "bg-amber-50 text-amber-700 border border-amber-200"
+                              : "bg-slate-100 text-slate-700 border border-slate-200"
                         }`}
                       >
                         {u.role}
@@ -213,7 +221,9 @@ export default function AdminUsersPage() {
 
         {/* Pagination Footer */}
         <div className="p-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
-          <span>Page {page} of {pagination.totalPages || 1}</span>
+          <span>
+            Page {page} of {pagination.totalPages || 1}
+          </span>
           <div className="flex items-center gap-2">
             <button
               disabled={page <= 1}
@@ -252,11 +262,17 @@ export default function AdminUsersPage() {
 
             <form onSubmit={handleUpdateRole} className="space-y-4 text-xs">
               <p className="text-slate-600">
-                Updating permissions for <strong className="text-slate-950 font-mono">{selectedUser.email}</strong>.
+                Updating permissions for{" "}
+                <strong className="text-slate-950 font-mono">
+                  {selectedUser.email}
+                </strong>
+                .
               </p>
 
               <div className="space-y-2">
-                <label className="text-slate-700 font-semibold">Select Role</label>
+                <label className="text-slate-700 font-semibold">
+                  Select Role
+                </label>
                 <div className="space-y-2">
                   <label className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer hover:border-slate-300">
                     <input
@@ -267,8 +283,12 @@ export default function AdminUsersPage() {
                       onChange={(e) => setNewRole(e.target.value)}
                     />
                     <div>
-                      <span className="font-bold text-slate-900 block">Standard User</span>
-                      <span className="text-[11px] text-slate-500">Can view & post blogs on assigned tenant</span>
+                      <span className="font-bold text-slate-900 block">
+                        Standard User
+                      </span>
+                      <span className="text-[11px] text-slate-500">
+                        Can view & post blogs on assigned tenant
+                      </span>
                     </div>
                   </label>
 
@@ -281,8 +301,12 @@ export default function AdminUsersPage() {
                       onChange={(e) => setNewRole(e.target.value)}
                     />
                     <div>
-                      <span className="font-bold text-amber-700 block">Moderator</span>
-                      <span className="text-[11px] text-slate-500">Can access moderation queue & reported content</span>
+                      <span className="font-bold text-amber-700 block">
+                        Moderator
+                      </span>
+                      <span className="text-[11px] text-slate-500">
+                        Can access moderation queue & reported content
+                      </span>
                     </div>
                   </label>
 
@@ -295,8 +319,13 @@ export default function AdminUsersPage() {
                       onChange={(e) => setNewRole(e.target.value)}
                     />
                     <div>
-                      <span className="font-bold text-purple-700 block">Platform Admin</span>
-                      <span className="text-[11px] text-slate-500">Full administrative control over tenants, users, and global settings</span>
+                      <span className="font-bold text-purple-700 block">
+                        Platform Admin
+                      </span>
+                      <span className="text-[11px] text-slate-500">
+                        Full administrative control over tenants, users, and
+                        global settings
+                      </span>
                     </div>
                   </label>
                 </div>

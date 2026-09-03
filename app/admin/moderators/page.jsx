@@ -52,12 +52,13 @@ export default function AdminModeratorsPage() {
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-950 tracking-tight flex items-center gap-2">
+          <h2 className="text-2xl font-extrabold text-slate-950 tracking-tight flex items-center gap-2">
             <ShieldCheck className="w-6 h-6 text-purple-600" />
             Moderator Control & Operations Center
-          </h1>
+          </h2>
           <p className="text-xs text-slate-500">
-            Monitor flagged items, open support tickets, and manage assigned platform moderators.
+            Monitor flagged items, open support tickets, and manage assigned
+            platform moderators.
           </p>
         </div>
 
@@ -66,7 +67,9 @@ export default function AdminModeratorsPage() {
           disabled={loading}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 text-xs font-bold shadow-xs transition-colors shrink-0"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+          <RefreshCw
+            className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`}
+          />
           <span>Refresh Queue</span>
         </button>
       </div>
@@ -115,7 +118,9 @@ export default function AdminModeratorsPage() {
               <Ticket className="w-5 h-5 text-purple-600" />
               Active Support & Safety Tickets
             </h2>
-            <span className="text-[11px] font-mono text-slate-400">Queue Stream</span>
+            <span className="text-[11px] font-mono text-slate-400">
+              Queue Stream
+            </span>
           </div>
 
           <div className="overflow-x-auto">
@@ -136,45 +141,50 @@ export default function AdminModeratorsPage() {
                       Loading tickets...
                     </td>
                   </tr>
-                ) : data?.tickets?.map((t) => (
-                  <tr key={t.id} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="px-4 py-3.5 font-mono text-xs font-bold text-slate-900">
-                      {t.id}
-                    </td>
-                    <td className="px-4 py-3.5 font-bold text-slate-900 max-w-xs truncate">
-                      {t.subject}
-                    </td>
-                    <td className="px-4 py-3.5 text-slate-500 font-mono text-[11px]">
-                      {t.reporter}
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                          t.priority === "urgent"
-                            ? "bg-rose-50 text-rose-700 border border-rose-200"
-                            : t.priority === "high"
-                            ? "bg-amber-50 text-amber-700 border border-amber-200"
-                            : "bg-slate-100 text-slate-700 border border-slate-200"
-                        }`}
-                      >
-                        {t.priority}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                          t.status === "open"
-                            ? "bg-purple-50 text-purple-700 border border-purple-200"
-                            : t.status === "resolved"
-                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                            : "bg-blue-50 text-blue-700 border border-blue-200"
-                        }`}
-                      >
-                        {t.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                ) : (
+                  data?.tickets?.map((t) => (
+                    <tr
+                      key={t.id}
+                      className="hover:bg-slate-50/70 transition-colors"
+                    >
+                      <td className="px-4 py-3.5 font-mono text-xs font-bold text-slate-900">
+                        {t.id}
+                      </td>
+                      <td className="px-4 py-3.5 font-bold text-slate-900 max-w-xs truncate">
+                        {t.subject}
+                      </td>
+                      <td className="px-4 py-3.5 text-slate-500 font-mono text-[11px]">
+                        {t.reporter}
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                            t.priority === "urgent"
+                              ? "bg-rose-50 text-rose-700 border border-rose-200"
+                              : t.priority === "high"
+                                ? "bg-amber-50 text-amber-700 border border-amber-200"
+                                : "bg-slate-100 text-slate-700 border border-slate-200"
+                          }`}
+                        >
+                          {t.priority}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                            t.status === "open"
+                              ? "bg-purple-50 text-purple-700 border border-purple-200"
+                              : t.status === "resolved"
+                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                : "bg-blue-50 text-blue-700 border border-blue-200"
+                          }`}
+                        >
+                          {t.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -189,7 +199,9 @@ export default function AdminModeratorsPage() {
 
           <div className="space-y-3 font-sans">
             {loading ? (
-              <div className="py-8 text-center text-slate-400">Loading moderators...</div>
+              <div className="py-8 text-center text-slate-400">
+                Loading moderators...
+              </div>
             ) : data?.moderators?.length === 0 ? (
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-500 text-center text-xs font-medium">
                 No moderators assigned yet.
@@ -205,8 +217,12 @@ export default function AdminModeratorsPage() {
                       {mod.name?.[0]}
                     </div>
                     <div className="flex flex-col">
-                      <span className="font-bold text-xs text-slate-900">{mod.name}</span>
-                      <span className="text-[10px] text-slate-500 font-mono">{mod.email}</span>
+                      <span className="font-bold text-xs text-slate-900">
+                        {mod.name}
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-mono">
+                        {mod.email}
+                      </span>
                     </div>
                   </div>
                   <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-purple-50 text-purple-700 border border-purple-200">

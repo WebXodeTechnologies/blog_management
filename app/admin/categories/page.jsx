@@ -85,10 +85,10 @@ export default function AdminCategoriesPage() {
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-950 tracking-tight flex items-center gap-2">
+          <h2 className="text-2xl font-extrabold text-slate-950 tracking-tight flex items-center gap-2">
             <Tags className="w-6 h-6 text-emerald-600" />
             Categories & Taxonomy
-          </h1>
+          </h2>
           <p className="text-xs text-slate-500">
             Manage global content categories and taxonomy classifications across
             the platform.

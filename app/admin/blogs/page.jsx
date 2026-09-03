@@ -73,12 +73,13 @@ export default function AdminBlogsPage() {
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-950 tracking-tight flex items-center gap-2">
+          <h2 className="text-2xl font-extrabold text-slate-950 tracking-tight flex items-center gap-2">
             <FileText className="w-6 h-6 text-amber-600" />
             Content & Articles Control
-          </h1>
-          <p className="text-xs text-slate-500">
-            Monitor, moderate, and manage platform-wide blog publications across all tenant organizations.
+          </h2>
+          <p className="text-xs text-slate-900">
+            Monitor, moderate, and manage platform-wide blog publications across
+            all tenant organizations.
           </p>
         </div>
       </div>
@@ -153,33 +154,50 @@ export default function AdminBlogsPage() {
                 </tr>
               ) : (
                 blogs.map((b) => (
-                  <tr key={b._id} className="hover:bg-slate-50/70 transition-colors">
+                  <tr
+                    key={b._id}
+                    className="hover:bg-slate-50/70 transition-colors"
+                  >
                     <td className="px-4 py-3.5 font-medium text-slate-900 max-w-xs">
                       <div className="flex flex-col">
-                        <span className="font-bold text-slate-900 line-clamp-1">{b.title}</span>
-                        <span className="text-[11px] text-slate-400 font-mono">/{b.slug}</span>
+                        <span className="font-bold text-slate-900 line-clamp-1">
+                          {b.title}
+                        </span>
+                        <span className="text-[11px] text-slate-400 font-mono">
+                          /{b.slug}
+                        </span>
                       </div>
                     </td>
                     <td className="px-4 py-3.5">
                       {b.authorId ? (
                         <div className="flex flex-col">
-                          <span className="font-bold text-slate-900">{b.authorId.name}</span>
-                          <span className="text-[11px] text-slate-500 font-mono">{b.authorId.email}</span>
+                          <span className="font-bold text-slate-900">
+                            {b.authorId.name}
+                          </span>
+                          <span className="text-[11px] text-slate-500 font-mono">
+                            {b.authorId.email}
+                          </span>
                         </div>
                       ) : (
-                        <span className="text-slate-400 font-mono">Anonymous</span>
+                        <span className="text-slate-400 font-mono">
+                          Anonymous
+                        </span>
                       )}
                     </td>
                     <td className="px-4 py-3.5">
                       {b.categoryId ? (
                         <span
                           className="px-2.5 py-0.5 rounded-full text-[10px] font-bold text-white shadow-xs"
-                          style={{ backgroundColor: b.categoryId.color || "#3B82F6" }}
+                          style={{
+                            backgroundColor: b.categoryId.color || "#3B82F6",
+                          }}
                         >
                           {b.categoryId.name}
                         </span>
                       ) : (
-                        <span className="text-slate-400 font-mono text-[11px]">Uncategorized</span>
+                        <span className="text-slate-400 font-mono text-[11px]">
+                          Uncategorized
+                        </span>
                       )}
                     </td>
                     <td className="px-4 py-3.5">
@@ -188,10 +206,10 @@ export default function AdminBlogsPage() {
                           b.status === "published"
                             ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                             : b.status === "rejected"
-                            ? "bg-red-50 text-red-700 border border-red-200"
-                            : b.status === "archived"
-                            ? "bg-slate-100 text-slate-700 border border-slate-200"
-                            : "bg-amber-50 text-amber-700 border border-amber-200"
+                              ? "bg-red-50 text-red-700 border border-red-200"
+                              : b.status === "archived"
+                                ? "bg-slate-100 text-slate-700 border border-slate-200"
+                                : "bg-amber-50 text-amber-700 border border-amber-200"
                         }`}
                       >
                         {b.status}
@@ -235,7 +253,9 @@ export default function AdminBlogsPage() {
 
         {/* Pagination Footer */}
         <div className="p-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
-          <span>Page {page} of {pagination.totalPages || 1}</span>
+          <span>
+            Page {page} of {pagination.totalPages || 1}
+          </span>
           <div className="flex items-center gap-2">
             <button
               disabled={page <= 1}

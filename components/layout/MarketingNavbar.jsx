@@ -15,6 +15,7 @@ import {
   ShieldAlert,
   Bookmark,
   FileText,
+  BookOpenText,
 } from "lucide-react";
 import logo from "@/public/logos/logo2.png";
 import Image from "next/image";
@@ -77,6 +78,13 @@ export default function MarketingNavbar() {
               >
                 <Compass className="h-4 w-4 text-slate-500" />
                 <span>Explore</span>
+              </Link>
+              <Link
+                href="/articles"
+                className="flex items-center gap-1.5 hover:text-slate-950 transition-colors"
+              >
+                <BookOpenText className="h-4 w-4 text-slate-500" />
+                <span>Articles</span>
               </Link>
               <Link
                 href="/topics"

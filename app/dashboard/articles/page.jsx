@@ -168,7 +168,7 @@ function DashboardArticlesContent() {
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 text-slate-900 font-sans relative overflow-x-hidden">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-6 border-b border-slate-200/85">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-6">
         <div>
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-semibold">

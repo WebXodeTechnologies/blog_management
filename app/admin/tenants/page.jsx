@@ -101,12 +101,13 @@ export default function AdminTenantsPage() {
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-950 tracking-tight flex items-center gap-2">
+          <h2 className="text-3xl font-extrabold text-slate-950 tracking-tight flex items-center gap-2">
             <Building2 className="w-6 h-6 text-indigo-600" />
             Tenant Management
-          </h1>
-          <p className="text-xs text-slate-500">
-            Create, monitor, and configure multi-tenant organizations on the platform.
+          </h2>
+          <p className="text-xs text-slate-900">
+            Create, monitor, and configure multi-tenant organizations on the
+            platform.
           </p>
         </div>
 
@@ -169,11 +170,18 @@ export default function AdminTenantsPage() {
                 </tr>
               ) : (
                 filteredTenants.map((t) => (
-                  <tr key={t._id} className="hover:bg-slate-50/70 transition-colors">
+                  <tr
+                    key={t._id}
+                    className="hover:bg-slate-50/70 transition-colors"
+                  >
                     <td className="px-4 py-3.5 font-medium text-slate-900">
                       <div className="flex flex-col">
-                        <span className="font-bold text-sm text-slate-900">{t.name}</span>
-                        <span className="text-[11px] text-indigo-600 font-mono">/{t.slug}</span>
+                        <span className="font-bold text-sm text-slate-900">
+                          {t.name}
+                        </span>
+                        <span className="text-[11px] text-indigo-600 font-mono">
+                          /{t.slug}
+                        </span>
                       </div>
                     </td>
                     <td className="px-4 py-3.5 text-slate-500 font-mono text-[11px]">
@@ -183,17 +191,25 @@ export default function AdminTenantsPage() {
                           {t.domain}
                         </span>
                       ) : (
-                        <span className="text-slate-400">Default Subdomain</span>
+                        <span className="text-slate-400">
+                          Default Subdomain
+                        </span>
                       )}
                     </td>
                     <td className="px-4 py-3.5">
                       {t.ownerId ? (
                         <div className="flex flex-col">
-                          <span className="text-slate-900 font-bold">{t.ownerId.name}</span>
-                          <span className="text-[11px] text-slate-500 font-mono">{t.ownerId.email}</span>
+                          <span className="text-slate-900 font-bold">
+                            {t.ownerId.name}
+                          </span>
+                          <span className="text-[11px] text-slate-500 font-mono">
+                            {t.ownerId.email}
+                          </span>
                         </div>
                       ) : (
-                        <span className="text-slate-400 font-medium">System Admin</span>
+                        <span className="text-slate-400 font-medium">
+                          System Admin
+                        </span>
                       )}
                     </td>
                     <td className="px-4 py-3.5">
@@ -211,7 +227,9 @@ export default function AdminTenantsPage() {
                       >
                         <span
                           className={`w-1.5 h-1.5 rounded-full ${
-                            t.status === "active" ? "bg-emerald-600" : "bg-red-600"
+                            t.status === "active"
+                              ? "bg-emerald-600"
+                              : "bg-red-600"
                           }`}
                         />
                         {t.status}
@@ -256,7 +274,9 @@ export default function AdminTenantsPage() {
 
             <form onSubmit={handleCreateTenant} className="space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="text-slate-700 font-semibold">Tenant Name *</label>
+                <label className="text-slate-700 font-semibold">
+                  Tenant Name *
+                </label>
                 <input
                   type="text"
                   required
@@ -268,7 +288,9 @@ export default function AdminTenantsPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-slate-700 font-semibold">Custom Domain (Optional)</label>
+                <label className="text-slate-700 font-semibold">
+                  Custom Domain (Optional)
+                </label>
                 <input
                   type="text"
                   placeholder="e.g. blog.acme.com"
@@ -279,7 +301,9 @@ export default function AdminTenantsPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-slate-700 font-semibold">Subscription Plan</label>
+                <label className="text-slate-700 font-semibold">
+                  Subscription Plan
+                </label>
                 <select
                   value={plan}
                   onChange={(e) => setPlan(e.target.value)}

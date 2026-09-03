@@ -11,7 +11,7 @@ export const createBlogSchema = z.object({
     .or(z.literal("")),
   categoryId: z.string().optional().nullable(),
   tags: z.array(z.string()).optional(),
-  status: z.enum(["draft", "published", "archived", "rejected"]).optional(),
+  status: z.enum(["draft", "pending", "published", "archived", "rejected"]).optional(),
 });
 
 export const updateBlogSchema = createBlogSchema.partial();

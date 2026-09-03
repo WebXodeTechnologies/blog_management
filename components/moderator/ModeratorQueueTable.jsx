@@ -120,21 +120,49 @@ export default function ModeratorQueueTable({
                     </div>
                   </td>
 
-                  {/* Author Info */}
+                  {/* Author Info & Seniority Rank */}
                   <td className="py-4 px-4 whitespace-nowrap">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs overflow-hidden border border-indigo-100">
-                        {item.author.avatar ? (
+                      <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs overflow-hidden border border-indigo-100 shrink-0">
+                        {item.author?.avatar ? (
                           <img
                             src={item.author.avatar}
                             alt={item.author.name}
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          item.author.name[0]
+                          item.author?.name?.[0] || "A"
                         )}
                       </div>
-                      <span className="font-medium text-slate-900">{item.author.name}</span>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-slate-900 text-xs">{item.author?.name || "Anonymous Dev"}</span>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span
+                            className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase border ${
+                              item.author?.seniorityLevel === "founder"
+                                ? "bg-amber-50 text-amber-700 border-amber-200"
+                                : item.author?.seniorityLevel === "senior_developer"
+                                ? "bg-indigo-50 text-indigo-700 border-indigo-200"
+                                : item.author?.seniorityLevel === "veteran"
+                                ? "bg-purple-50 text-purple-700 border-purple-200"
+                                : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            }`}
+                          >
+                            {item.author?.seniorityLevel === "senior_developer"
+                              ? "Senior Dev"
+                              : item.author?.seniorityLevel === "founder"
+                              ? "Founder"
+                              : item.author?.seniorityLevel === "veteran"
+                              ? "Veteran"
+                              : "Tech Enthusiast"}
+                          </span>
+                          {item.author?.yearsOfExperience > 0 && (
+                            <span className="text-[9px] font-mono font-semibold text-slate-500">
+                              {item.author.yearsOfExperience}y exp
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </td>
 

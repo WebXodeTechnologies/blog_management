@@ -100,9 +100,9 @@ export default function DashboardProfilePage() {
       {/* Light Glassmorphic Hero Card */}
       <div className="relative rounded-3xl bg-white/70 backdrop-blur-2xl border border-white/80 p-6 sm:p-8 lg:p-10 shadow-xl shadow-indigo-500/5 space-y-8 overflow-hidden font-sans">
         {/* Soft Pastel Animated Ambient Orbs */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-tr from-indigo-200/50 to-sky-200/50 rounded-full blur-3xl pointer-events-none -z-10" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-purple-200/40 to-pink-200/40 rounded-full blur-3xl pointer-events-none -z-10" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-gradient-to-tr from-cyan-100/30 via-indigo-100/30 to-purple-100/30 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-linear-to-tr from-indigo-200/50 to-sky-200/50 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-linear-to-tr from-purple-200/40 to-pink-200/40 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-75 bg-linear-to-tr from-cyan-100/30 via-indigo-100/30 to-purple-100/30 rounded-full blur-3xl pointer-events-none -z-10" />
 
         <div className="relative z-10 space-y-6">
           {/* Main Profile Info Row */}
@@ -117,7 +117,7 @@ export default function DashboardProfilePage() {
                     className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border border-white shadow-xs bg-slate-50"
                   />
                 ) : (
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-indigo-50 to-sky-50 text-indigo-700 flex items-center justify-center font-heading font-black text-3xl border border-indigo-200/60 shadow-xs">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-linear-to-tr from-indigo-50 to-sky-50 text-indigo-700 flex items-center justify-center font-heading font-black text-3xl border border-indigo-200/60 shadow-xs">
                     {user?.name?.[0]?.toUpperCase()}
                   </div>
                 )}

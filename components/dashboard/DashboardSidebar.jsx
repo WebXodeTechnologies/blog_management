@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -39,6 +39,21 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
   );
   const [storiesOpen, setStoriesOpen] = useState(pathname.includes("articles"));
 
+  const [followingCount, setFollowingCount] = useState(
+    user?.following?.length || user?.followingCount || 0
+  );
+
+  useEffect(() => {
+    fetch("/api/v1/user/following")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.following)) {
+          setFollowingCount(data.following.length);
+        }
+      })
+      .catch(() => {});
+  }, [pathname]);
+
   const handleLogout = async () => {
     try {
       await fetch("/api/v1/auth/logout", { method: "POST" });
@@ -71,14 +86,14 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-sans font-black text-xl tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">
+                <span className="font-orbitron font-black text-xl tracking-tight text-slate-900 group-hover:text-indigo-600 transition-colors">
                   Texora
                 </span>
                 <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md shadow-2xs bg-indigo-600 text-white">
                   {isModerator ? "MOD" : "PRO"}
                 </span>
               </div>
-              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mt-0.5">
+              <span className="text-[10px] font-semibold text-slate-900 uppercase tracking-wider block mt-0.5">
                 {isModerator ? "Moderator Workspace" : "Author Workspace"}
               </span>
             </div>
@@ -159,7 +174,7 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
             </div>
           )}
 
-          <p className="px-3 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-2">
+          <p className="px-3 text-[12px] font-orbitron font-black uppercase tracking-wider text-slate-900 mb-2">
             Workspace Menu
           </p>
 
@@ -408,7 +423,7 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
                   : "bg-indigo-50 text-indigo-700 border-indigo-200"
               }`}
             >
-              24
+              {followingCount}
             </span>
           </Link>
         </nav>

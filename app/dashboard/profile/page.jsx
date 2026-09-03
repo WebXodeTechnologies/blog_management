@@ -101,7 +101,9 @@ export default function DashboardProfilePage() {
             <div className="space-y-2">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-semibold border border-white/30">
                 <Sparkles className="h-3 w-3 text-amber-300 animate-pulse" />
-                <span className="capitalize">{user?.role || "user"} Workspace</span>
+                <span className="capitalize">
+                  {user?.role || "user"} Workspace
+                </span>
               </div>
               <h1 className="font-brand font-black text-2xl sm:text-4xl tracking-tight text-white">
                 {user?.name}
@@ -133,9 +135,9 @@ export default function DashboardProfilePage() {
       </div>
 
       {/* Main Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-1 xl:grid-cols-8 gap-8">
         {/* Left Column: Navigation Tabs & Feed Content */}
-        <div className="lg:col-span-8 space-y-6">
+        <div className="lg:col-span-10 space-y-6">
           {/* Surface Navigation Tab Bar */}
           <div className="bg-white border border-slate-200/80 rounded-2xl p-1.5 shadow-2xs flex items-center gap-1 overflow-x-auto">
             {[
@@ -291,7 +293,7 @@ export default function DashboardProfilePage() {
         </div>
 
         {/* Right Column: Account Overview Metadata Card */}
-        <div className="lg:col-span-4 space-y-6">
+        <div className="lg:col-span-10 space-y-6">
           <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs space-y-6">
             <div className="flex items-center justify-between">
               <div>

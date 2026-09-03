@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   FileText,
@@ -8,63 +9,75 @@ import {
   BookOpenCheck,
   Users,
   Vote,
-  TrendingUp,
   Sparkles,
 } from "lucide-react";
 
-export default function UserDashboardHero({ user }) {
+export default function UserDashboardHero({ user: initialUser }) {
+  const [user, setUser] = useState(initialUser);
+  const [loading, setLoading] = useState(!initialUser);
+
+  useEffect(() => {
+    if (!initialUser) {
+      fetch("/api/v1/auth/me")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.user) {
+            setUser(data.user);
+          }
+        })
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    }
+  }, [initialUser]);
+
+  const statsValues = user?.stats || {};
+
   const stats = [
     {
       id: "stories",
       label: "Total Stories",
-      value: "14",
-      change: "+2 this month",
-      trend: "up",
+      value: loading ? "..." : (statsValues.totalStories ?? 0),
+      change: `${statsValues.draftStories ?? 0} drafts`,
       icon: <FileText className="h-5 w-5 text-indigo-600" />,
       badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200",
     },
     {
       id: "presentations",
       label: "Presentations",
-      value: "6",
+      value: loading ? "..." : (statsValues.presentations ?? 0),
       change: "Slides & Demos",
-      trend: "up",
       icon: <Presentation className="h-5 w-5 text-indigo-600" />,
       badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200",
     },
     {
       id: "views",
       label: "Total Views",
-      value: "28.4k",
-      change: "+18.2%",
-      trend: "up",
+      value: loading ? "..." : (statsValues.totalViews ?? 0),
+      change: "Live traffic",
       icon: <Eye className="h-5 w-5 text-emerald-600" />,
       badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
     },
     {
       id: "reads",
       label: "Full Reads",
-      value: "19.2k",
+      value: loading ? "..." : (statsValues.totalReads ?? 0),
       change: "68% completion",
-      trend: "up",
       icon: <BookOpenCheck className="h-5 w-5 text-indigo-600" />,
       badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200",
     },
     {
       id: "followers",
       label: "Followers",
-      value: "1,290",
-      change: "+124 new",
-      trend: "up",
+      value: loading ? "..." : (statsValues.followers ?? "0"),
+      change: "Community",
       icon: <Users className="h-5 w-5 text-indigo-600" />,
       badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200",
     },
     {
       id: "fanpolls",
       label: "Fan Poll Votes",
-      value: "842",
-      change: "3 active polls",
-      trend: "up",
+      value: loading ? "..." : (statsValues.fanPolls ?? 0),
+      change: "Active polls",
       icon: <Vote className="h-5 w-5 text-amber-600" />,
       badgeColor: "bg-amber-50 text-amber-700 border-amber-200",
     },
@@ -72,7 +85,6 @@ export default function UserDashboardHero({ user }) {
 
   return (
     <div className="space-y-6 font-sans">
-      {/* Stripe & Supabase Indigo Gradient Welcome Banner */}
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
@@ -83,15 +95,18 @@ export default function UserDashboardHero({ user }) {
 
         <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-semibold border border-white/30">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/25 backdrop-blur-md text-white text-xs font-semibold border border-white/30">
               <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-pulse" />
-              <span className="capitalize">{user?.role || "user"} Personal Workspace</span>
+              <span className="capitalize">
+                {user?.role || "user"} Personal Workspace
+              </span>
             </div>
             <h1 className="font-brand font-black text-2xl sm:text-4xl text-white tracking-tight">
               Welcome back, {user?.name || "Developer"} 👋
             </h1>
             <p className="text-xs sm:text-sm text-indigo-100 max-w-xl leading-relaxed">
-              Real-time analytics dashboard tracking stories, views, reads, follower growth, and fan poll engagement.
+              Real-time analytics dashboard tracking stories, views, reads,
+              follower growth, and fan poll engagement.
             </p>
           </div>
 
@@ -106,7 +121,6 @@ export default function UserDashboardHero({ user }) {
         </div>
       </motion.div>
 
-      {/* 6 Clean Analytics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         {stats.map((stat, idx) => (
           <motion.div

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import UserDashboardHero from "@/components/dashboard/UserDashboardHero";
 import UserQuickActions from "@/components/dashboard/UserQuickActions";
 import UserActivityStream from "@/components/dashboard/UserActivityStream";
+import UserAdvancedInsights from "@/components/dashboard/UserAdvancedInsights";
 
 export default function UserDashboardPage() {
   const [user, setUser] = useState(null);
@@ -37,6 +38,7 @@ export default function UserDashboardPage() {
 
       {/* Activity Stream & Reader Engagement Visuals */}
       <UserActivityStream />
+      <UserAdvancedInsights />
     </div>
   );
 }

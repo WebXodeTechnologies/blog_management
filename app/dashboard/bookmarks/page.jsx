@@ -42,7 +42,6 @@ export default function BookmarksPage() {
 
   return (
     <div className="pb-16 text-slate-900 font-sans">
-      {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-6 border-b border-slate-200/80">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-semibold mb-3">
@@ -53,11 +52,11 @@ export default function BookmarksPage() {
             Saved Bookmarks
           </h1>
           <p className="text-slate-500 text-xs sm:text-sm mt-1 max-w-xl">
-            Quick access to technical articles, tutorials, and system design patterns you have saved for later.
+            Quick access to technical articles, tutorials, and system design
+            patterns you have saved for later.
           </p>
         </div>
 
-        {/* Search Bar */}
         <div className="relative w-full md:w-72">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-400" />
           <input
@@ -70,7 +69,6 @@ export default function BookmarksPage() {
         </div>
       </div>
 
-      {/* Category Filters */}
       <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2 scrollbar-none">
         {categories.map((cat) => (
           <button
@@ -87,16 +85,18 @@ export default function BookmarksPage() {
         ))}
       </div>
 
-      {/* Bookmarks Grid */}
       {filteredBookmarks.length === 0 ? (
         <div className="p-16 rounded-3xl bg-white border border-dashed border-slate-200 text-center space-y-4 max-w-xl mx-auto my-8">
           <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto shadow-2xs">
             <BookOpen className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="font-bold text-base text-slate-900">No saved bookmarks</h3>
+            <h3 className="font-bold text-base text-slate-900">
+              No saved bookmarks
+            </h3>
             <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-              You haven&apos;t added any articles to your reading list matching this filter. Explore articles to save your favorites.
+              You haven&apos;t added any articles to your reading list matching
+              this filter. Explore articles to save your favorites.
             </p>
           </div>
           <Link
@@ -159,16 +159,20 @@ export default function BookmarksPage() {
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
                 <div className="flex items-center gap-3 text-slate-500 text-[11px]">
                   <span className="flex items-center gap-1">
-                    <Eye className="h-3.5 w-3.5 text-slate-400" /> {article.views}
+                    <Eye className="h-3.5 w-3.5 text-slate-400" />{" "}
+                    {article.views}
                   </span>
                   <span className="flex items-center gap-1 text-rose-500 font-medium">
-                    <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" /> {article.likes}
+                    <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" />{" "}
+                    {article.likes}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-1.5">
                   <button
-                    onClick={() => handleRemoveBookmark(article.id, article.title)}
+                    onClick={() =>
+                      handleRemoveBookmark(article.id, article.title)
+                    }
                     className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
                     title="Remove Bookmark"
                   >

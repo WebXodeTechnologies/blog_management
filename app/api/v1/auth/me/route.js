@@ -51,9 +51,11 @@ export async function GET() {
     const presentationsCount = user.presentationsCount || 0;
     const followersCount = user.followersCount || 0;
     const pollVotesCount = user.pollVotesCount || 0;
+    const followingCount = Array.isArray(user.following) ? user.following.length : 0;
 
     const enrichedUser = {
       ...user.toObject(),
+      followingCount,
       stats: {
         totalStories,
         publishedStories,

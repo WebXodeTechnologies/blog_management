@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -12,29 +12,60 @@ import {
   BookOpen,
   Eye,
   Heart,
+  Loader2,
 } from "lucide-react";
-import { STANDARDIZED_ARTICLES } from "@/constants/categories";
 import toast from "react-hot-toast";
 
 export default function BookmarksPage() {
-  const [savedArticles, setSavedArticles] = useState(
-    STANDARDIZED_ARTICLES.slice(0, 4)
-  );
+  const [savedArticles, setSavedArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedTag, setSelectedTag] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleRemoveBookmark = (id, title) => {
-    setSavedArticles(savedArticles.filter((a) => a.id !== id));
-    toast.success(`Removed "${title}" from your bookmarks.`);
+  useEffect(() => {
+    fetchBookmarks();
+  }, []);
+
+  const fetchBookmarks = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/v1/user/bookmarks");
+      const data = await res.json();
+      if (data.success) {
+        setSavedArticles(data.items || []);
+      }
+    } catch {
+      toast.error("Failed to load saved bookmarks.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemoveBookmark = async (blogId, title) => {
+    try {
+      const res = await fetch(`/api/v1/user/bookmarks?blogId=${blogId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSavedArticles((prev) => prev.filter((item) => item._id !== blogId));
+        toast.success(`Removed "${title}" from your bookmarks.`);
+      } else {
+        toast.error(data.message || "Failed to remove bookmark.");
+      }
+    } catch {
+      toast.error("Network error while removing bookmark.");
+    }
   };
 
   const filteredBookmarks = savedArticles.filter((article) => {
     const matchesTag =
       selectedTag === "All" ||
-      article.category.toLowerCase() === selectedTag.toLowerCase();
+      (article.category &&
+        article.category.toLowerCase() === selectedTag.toLowerCase());
     const matchesSearch =
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
+      article.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      article.excerpt?.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesTag && matchesSearch;
   });
 
@@ -85,7 +116,11 @@ export default function BookmarksPage() {
         ))}
       </div>
 
-      {filteredBookmarks.length === 0 ? (
+      {loading ? (
+        <div className="flex justify-center items-center py-24">
+          <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        </div>
+      ) : filteredBookmarks.length === 0 ? (
         <div className="p-16 rounded-3xl bg-white border border-dashed border-slate-200 text-center space-y-4 max-w-xl mx-auto my-8">
           <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto shadow-2xs">
             <BookOpen className="h-6 w-6" />
@@ -108,88 +143,100 @@ export default function BookmarksPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredBookmarks.map((article) => (
-            <div
-              key={article.id}
-              className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-2xs hover:shadow-md hover:border-indigo-300 transition flex flex-col justify-between group"
-            >
-              <div>
-                <div className="relative aspect-video w-full rounded-2xl overflow-hidden mb-4 bg-indigo-50/50 border border-indigo-100">
-                  <Image
-                    src={article.image}
-                    alt={article.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-indigo-700/90 backdrop-blur-md text-white text-[10px] font-semibold border border-white/20">
-                    {article.category}
-                  </span>
-                </div>
+          {filteredBookmarks.map((article) => {
+            const imageUrl =
+              article.image && article.image.startsWith("http")
+                ? article.image
+                : "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop";
+            const authorName = article.authorId?.name || "Tech Author";
+            const authorAvatar =
+              article.authorId?.avatar ||
+              "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop";
 
-                <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                  <div className="flex items-center gap-2">
-                    <div className="relative h-5 w-5 rounded-full overflow-hidden shrink-0 border border-indigo-200">
-                      <Image
-                        src={article.author.avatar}
-                        alt={article.author.name}
-                        width={20}
-                        height={20}
-                        className="object-cover h-full w-full"
-                      />
-                    </div>
-                    <span className="text-[11px] font-medium text-slate-700">
-                      {article.author.name}
+            return (
+              <div
+                key={article._id}
+                className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-2xs hover:shadow-md hover:border-indigo-300 transition flex flex-col justify-between group"
+              >
+                <div>
+                  <div className="relative aspect-video w-full rounded-2xl overflow-hidden mb-4 bg-indigo-50/50 border border-indigo-100">
+                    <Image
+                      src={imageUrl}
+                      alt={article.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-indigo-700/90 backdrop-blur-md text-white text-[10px] font-semibold border border-white/20">
+                      {article.category || "General"}
                     </span>
                   </div>
-                  <span className="text-[11px] flex items-center gap-1">
-                    <Clock className="h-3 w-3" /> {article.readTime}
-                  </span>
+
+                  <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="relative h-5 w-5 rounded-full overflow-hidden shrink-0 border border-indigo-200">
+                        <Image
+                          src={authorAvatar}
+                          alt={authorName}
+                          width={20}
+                          height={20}
+                          className="object-cover h-full w-full"
+                        />
+                      </div>
+                      <span className="text-[11px] font-medium text-slate-700">
+                        {authorName}
+                      </span>
+                    </div>
+                    <span className="text-[11px] flex items-center gap-1">
+                      <Clock className="h-3 w-3" />{" "}
+                      {article.readTime || "5 min read"}
+                    </span>
+                  </div>
+
+                  <h3 className="font-heading font-bold text-base text-slate-900 group-hover:text-indigo-600 transition-colors mb-2 line-clamp-2 leading-snug">
+                    {article.title}
+                  </h3>
+
+                  <p className="text-xs text-slate-500 line-clamp-2 mb-4 leading-relaxed">
+                    {article.excerpt}
+                  </p>
                 </div>
 
-                <h3 className="font-heading font-bold text-base text-slate-900 group-hover:text-indigo-600 transition-colors mb-2 line-clamp-2 leading-snug">
-                  {article.title}
-                </h3>
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-3 text-slate-500 text-[11px]">
+                    <span className="flex items-center gap-1">
+                      <Eye className="h-3.5 w-3.5 text-slate-400" />{" "}
+                      {article.views || 0}
+                    </span>
+                    <span className="flex items-center gap-1 text-rose-500 font-medium">
+                      <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" />{" "}
+                      {article.likes || 0}
+                    </span>
+                  </div>
 
-                <p className="text-xs text-slate-500 line-clamp-2 mb-4 leading-relaxed">
-                  {article.excerpt}
-                </p>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() =>
+                        handleRemoveBookmark(article._id, article.title)
+                      }
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
+                      title="Remove Bookmark"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+
+                    <Link
+                      href={`/articles/${article.slug}`}
+                      className="p-1.5 rounded-lg text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition"
+                      title="Read Article"
+                    >
+                      <ArrowUpRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </div>
               </div>
-
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-3 text-slate-500 text-[11px]">
-                  <span className="flex items-center gap-1">
-                    <Eye className="h-3.5 w-3.5 text-slate-400" />{" "}
-                    {article.views}
-                  </span>
-                  <span className="flex items-center gap-1 text-rose-500 font-medium">
-                    <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" />{" "}
-                    {article.likes}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={() =>
-                      handleRemoveBookmark(article.id, article.title)
-                    }
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
-                    title="Remove Bookmark"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-
-                  <Link
-                    href={`/articles/${article.slug}`}
-                    className="p-1.5 rounded-lg text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition"
-                    title="Read Article"
-                  >
-                    <ArrowUpRight className="h-4 w-4" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

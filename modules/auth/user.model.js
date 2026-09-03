@@ -72,10 +72,25 @@ const UserSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    savedBlogs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Blog",
+      },
+    ],
+    repostedBlogs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Blog",
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
 
-export const User = mongoose.models.User || mongoose.model("User", UserSchema);
+if (mongoose.models.User) {
+  delete mongoose.models.User;
+}
+export const User = mongoose.model("User", UserSchema);

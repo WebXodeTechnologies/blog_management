@@ -26,6 +26,10 @@ export default function DashboardProfilePage() {
   const [activeTab, setActiveTab] = useState("home");
   const [isEditing, setIsEditing] = useState(false);
 
+  const [userStories, setUserStories] = useState([]);
+  const [repostedStories, setRepostedStories] = useState([]);
+  const [loadingStories, setLoadingStories] = useState(true);
+
   useEffect(() => {
     fetch("/api/v1/auth/me")
       .then((res) => res.json())
@@ -34,6 +38,17 @@ export default function DashboardProfilePage() {
       })
       .catch(() => toast.error("Failed to load user profile"))
       .finally(() => setLoading(false));
+
+    Promise.all([
+      fetch("/api/v1/user/explore?tab=your-list").then((res) => res.json()),
+      fetch("/api/v1/user/explore?tab=reposts").then((res) => res.json()),
+    ])
+      .then(([publishedData, repostedData]) => {
+        if (publishedData.success) setUserStories(publishedData.items || []);
+        if (repostedData.success) setRepostedStories(repostedData.items || []);
+      })
+      .catch(() => {})
+      .finally(() => setLoadingStories(false));
   }, []);
 
   const calculateCompletion = () => {
@@ -215,19 +230,49 @@ export default function DashboardProfilePage() {
                     <ArrowUpRight className="h-3.5 w-3.5" />
                   </a>
                 </div>
-                <div className="p-12 rounded-2xl bg-indigo-50/50 border border-dashed border-indigo-200 text-center space-y-3">
-                  <div className="w-12 h-12 rounded-2xl bg-white shadow-2xs border border-indigo-100 flex items-center justify-center mx-auto text-indigo-600">
-                    <FileText className="h-5 w-5" />
+
+                {userStories.length > 0 ? (
+                  <div className="space-y-4">
+                    {userStories.map((story) => (
+                      <div
+                        key={story._id}
+                        className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-4"
+                      >
+                        <div>
+                          <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700">
+                            {story.category || "General"}
+                          </span>
+                          <h4 className="font-heading font-bold text-sm text-slate-900 mt-1">
+                            {story.title}
+                          </h4>
+                          <p className="text-xs text-slate-500 line-clamp-1">
+                            {story.excerpt}
+                          </p>
+                        </div>
+                        <a
+                          href={`/articles/${story.slug}`}
+                          className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 transition shrink-0"
+                        >
+                          <ArrowUpRight className="h-4 w-4" />
+                        </a>
+                      </div>
+                    ))}
                   </div>
-                  <div>
-                    <p className="text-xs font-semibold text-slate-900">
-                      No stories published yet
-                    </p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
-                      Share your engineering thoughts with the Texora community.
-                    </p>
+                ) : (
+                  <div className="p-12 rounded-2xl bg-indigo-50/50 border border-dashed border-indigo-200 text-center space-y-3">
+                    <div className="w-12 h-12 rounded-2xl bg-white shadow-2xs border border-indigo-100 flex items-center justify-center mx-auto text-indigo-600">
+                      <FileText className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-slate-900">
+                        No stories published yet
+                      </p>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        Share your engineering thoughts with the Texora community.
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
               </motion.div>
             )}
 
@@ -237,11 +282,60 @@ export default function DashboardProfilePage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-2xs text-center py-16"
+                className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-2xs space-y-6"
               >
-                <p className="text-xs text-slate-500 font-medium">
-                  No reposted articles found in your stream.
-                </p>
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                  <h3 className="font-heading font-bold text-lg text-slate-900 flex items-center gap-2">
+                    <Repeat2 className="h-5 w-5 text-emerald-600" />
+                    <span>Reposted Stories</span>
+                  </h3>
+                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    {repostedStories.length}{" "}
+                    {repostedStories.length === 1 ? "Repost" : "Reposts"}
+                  </span>
+                </div>
+
+                {repostedStories.length > 0 ? (
+                  <div className="space-y-4">
+                    {repostedStories.map((story) => (
+                      <div
+                        key={story._id}
+                        className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-4"
+                      >
+                        <div>
+                          <div className="flex items-center gap-2 text-[11px] text-slate-500 mb-1">
+                            <span>By {story.authorId?.name || "Author"}</span>
+                            <span>•</span>
+                            <span className="text-indigo-600 font-medium">
+                              {story.category || "General"}
+                            </span>
+                          </div>
+                          <h4 className="font-heading font-bold text-sm text-slate-900">
+                            {story.title}
+                          </h4>
+                          <p className="text-xs text-slate-500 line-clamp-1">
+                            {story.excerpt}
+                          </p>
+                        </div>
+                        <a
+                          href={`/articles/${story.slug}`}
+                          className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 transition shrink-0"
+                        >
+                          <ArrowUpRight className="h-4 w-4" />
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-12 rounded-2xl bg-slate-50 border border-dashed border-slate-200 text-center space-y-3">
+                    <div className="w-12 h-12 rounded-2xl bg-white shadow-2xs border border-slate-200 flex items-center justify-center mx-auto text-emerald-600">
+                      <Repeat2 className="h-5 w-5" />
+                    </div>
+                    <p className="text-xs text-slate-500 font-medium">
+                      No reposted articles found in your stream.
+                    </p>
+                  </div>
+                )}
               </motion.div>
             )}
 

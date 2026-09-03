@@ -42,37 +42,10 @@ export default function ExplorePage() {
       });
       const data = await res.json();
       if (data.success && data.blogs) {
-        const formattedPosts = data.blogs
-          .filter((b) => b.status === "published")
-          .map((b) => ({
-            id: b._id,
-            slug: b.slug,
-            title: b.title,
-            excerpt: b.excerpt || "Explore technical insights...",
-            category: b.category || "Architecture",
-            image:
-              b.coverImage ||
-              "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
-            readTime: `${Math.max(1, Math.ceil((b.content?.length || 1000) / 1000))} min read`,
-            views: b.views || 0,
-            likes: b.likes || 0,
-            commentsCount: b.commentsCount || 0,
-            reposts: b.reposts || 0,
-            createdAt: b.createdAt,
-            author: b.authorId
-              ? {
-                  name: b.authorId.name || "Technical Author",
-                  avatar:
-                    b.authorId.avatar ||
-                    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
-                }
-              : {
-                  name: "Technical Author",
-                  avatar:
-                    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
-                },
-          }));
-        setPosts(formattedPosts);
+        const publishedBlogs = data.blogs.filter(
+          (b) => b.status === "published"
+        );
+        setPosts(publishedBlogs);
       }
     } catch {
       toast.error("Failed to load community stream");
@@ -85,91 +58,19 @@ export default function ExplorePage() {
     fetchExplorePosts();
   }, []);
 
-  const handleLike = async (postId) => {
-    try {
-      const res = await fetch(`/api/v1/blogs/${postId}/reactions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "clap", increment: 1 }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setPosts((prev) =>
-          prev.map((p) => (p.id === postId ? { ...p, likes: data.count } : p))
-        );
-      }
-    } catch {
-      toast.error("Failed to register reaction");
-    }
-  };
-
-  const handleRepost = async (postId) => {
-    try {
-      const res = await fetch(`/api/v1/blogs/${postId}/reactions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "repost" }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success(
-          data.active ? "Story reposted successfully!" : "Repost removed"
-        );
-        setPosts((prev) =>
-          prev.map((p) =>
-            p.id === postId
-              ? {
-                  ...p,
-                  reposts: data.active
-                    ? p.reposts + 1
-                    : Math.max(0, p.reposts - 1),
-                }
-              : p
-          )
-        );
-      }
-    } catch {
-      toast.error("Failed to process repost");
-    }
-  };
-
-  const handleShare = async (post) => {
-    const shareData = {
-      title: post.title,
-      text: post.excerpt,
-      url: `${window.location.origin}/articles/${post.slug}`,
-    };
-
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          fallbackCopy(shareData.url);
-        }
-      }
-    } else {
-      fallbackCopy(shareData.url);
-    }
-  };
-
-  const fallbackCopy = (url) => {
-    navigator.clipboard.writeText(url);
-    toast.success("Article link copied to clipboard!");
-  };
-
   const filteredPosts = posts.filter((post) => {
     const matchesCategory =
       selectedCategory === "All" ||
-      post.category.toLowerCase() === selectedCategory.toLowerCase();
+      (post.category &&
+        post.category.toLowerCase() === selectedCategory.toLowerCase());
 
     const query = searchQuery.toLowerCase().trim();
     const matchesSearch =
       !query ||
-      post.title.toLowerCase().includes(query) ||
-      post.excerpt.toLowerCase().includes(query) ||
-      post.author?.name?.toLowerCase().includes(query) ||
-      post.category.toLowerCase().includes(query);
+      post.title?.toLowerCase().includes(query) ||
+      post.excerpt?.toLowerCase().includes(query) ||
+      post.authorId?.name?.toLowerCase().includes(query) ||
+      post.category?.toLowerCase().includes(query);
 
     return matchesCategory && matchesSearch;
   });
@@ -197,12 +98,7 @@ export default function ExplorePage() {
               setSelectedCategory={setSelectedCategory}
             />
 
-            <BlogFeed
-              posts={filteredPosts}
-              onLike={handleLike}
-              onRepost={handleRepost}
-              onShare={handleShare}
-            />
+            <BlogFeed posts={filteredPosts} setPosts={setPosts} />
           </div>
 
           <div className="lg:col-span-4">

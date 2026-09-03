@@ -21,6 +21,18 @@ function ExploreStationContent() {
   const [activeTab, setActiveTab] = useState(tabParam);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    fetch("/api/v1/auth/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) {
+          setCurrentUser(data.user);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Sync state automatically when sidebar query params change
   useEffect(() => {
@@ -121,9 +133,10 @@ function ExploreStationContent() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {items.map((article) => {
                 const imageUrl =
-                  article.image && article.image.startsWith("http")
+                  article.coverImage ||
+                  (article.image && article.image.startsWith("http")
                     ? article.image
-                    : "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop";
+                    : "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop");
                 return (
                   <div
                     key={article._id}
@@ -231,25 +244,65 @@ function ExploreStationContent() {
 
           {activeTab === "responses" && (
             <div className="space-y-4 max-w-3xl">
-              {items.map((res) => (
-                <div
-                  key={res._id}
-                  className="p-5 rounded-3xl bg-white border border-slate-200/80 space-y-2 text-xs shadow-2xs"
-                >
-                  <div className="flex items-center justify-between text-slate-500">
-                    <span className="font-semibold text-slate-900">
-                      Your Comment
-                    </span>
-                    <span>{new Date(res.createdAt).toLocaleDateString()}</span>
+              {items.map((res) => {
+                const avatarImg =
+                  res.userId?.avatar ||
+                  currentUser?.avatar ||
+                  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop";
+                const userName = res.userId?.name || currentUser?.name || "You";
+
+                return (
+                  <div
+                    key={res._id}
+                    className="p-5 rounded-3xl bg-white border border-slate-200/80 space-y-3 text-xs shadow-2xs hover:border-indigo-200 transition"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className="relative w-8 h-8 rounded-full overflow-hidden border border-slate-200 shrink-0 bg-slate-100">
+                          <Image
+                            src={avatarImg}
+                            alt={userName}
+                            fill
+                            sizes="32px"
+                            className="object-cover"
+                          />
+                        </div>
+                        <div>
+                          <span className="font-bold text-slate-900 block text-xs">
+                            {userName}
+                          </span>
+                          <span className="text-[10px] text-slate-400 block font-normal">
+                            Author Response
+                          </span>
+                        </div>
+                      </div>
+                      <span className="text-[11px] text-slate-400">
+                        {new Date(res.createdAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </div>
+
+                    <p className="text-slate-700 font-medium pl-10 leading-relaxed bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                      {res.comment || res.text}
+                    </p>
+
+                    {res.blogId && (
+                      <div className="pl-10 flex items-center justify-between pt-1">
+                        <Link
+                          href={`/articles/${res.blogId.slug}`}
+                          className="text-[11px] font-semibold text-indigo-600 hover:underline flex items-center gap-1"
+                        >
+                          <span>On story: {res.blogId.title}</span>
+                          <ArrowUpRight className="h-3 w-3" />
+                        </Link>
+                      </div>
+                    )}
                   </div>
-                  <p className="text-slate-700 font-medium">
-                    {res.comment || res.text}
-                  </p>
-                  <p className="text-[11px] text-indigo-600 font-semibold pt-1">
-                    On: {res.blogId?.title || "Article Thread"}
-                  </p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </>

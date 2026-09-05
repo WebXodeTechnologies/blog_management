@@ -1,3 +1,3 @@
 export { Moderation } from "./moderation.model";
-export { ModerationRepository } from "./moderation.repo";
+export { ModerationRepository } from "./moderation.repository";
 export { ModerationService } from "./moderation.service";

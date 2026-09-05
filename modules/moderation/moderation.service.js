@@ -1,4 +1,4 @@
-import { ModerationRepository } from "./moderation.repo";
+import { ModerationRepository } from "./moderation.repository";
 import { AuditLog } from "@/modules/audit-logs/audit-log.model";
 
 export class ModerationService {

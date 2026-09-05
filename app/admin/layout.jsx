@@ -6,6 +6,7 @@ import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminHeader from "@/components/admin/AdminHeader";
 import { ShieldAlert, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { SocketProvider } from "@/components/providers/SocketProvider";
 
 export default function PlatformAdminLayout({ children }) {
   const pathname = usePathname();
@@ -61,9 +62,12 @@ export default function PlatformAdminLayout({ children }) {
             <ShieldAlert className="w-7 h-7" />
           </div>
           <div className="space-y-1.5">
-            <h1 className="text-xl font-bold text-slate-950">Access Restricted</h1>
+            <h1 className="text-xl font-bold text-slate-950">
+              Access Restricted
+            </h1>
             <p className="text-xs text-slate-600 leading-relaxed">
-              You do not have administrator permissions to view the Platform Control Center.
+              You do not have administrator permissions to view the Platform
+              Control Center.
             </p>
           </div>
           <div className="pt-2">
@@ -81,23 +85,25 @@ export default function PlatformAdminLayout({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950 flex font-sans selection:bg-slate-900 selection:text-white">
-      {/* Admin Sidebar Navigation */}
-      <AdminSidebar
-        user={user}
-        mobileOpen={mobileOpen}
-        setMobileOpen={setMobileOpen}
-      />
+    <SocketProvider>
+      <div className="min-h-screen bg-slate-50 text-slate-950 flex font-sans selection:bg-slate-900 selection:text-white">
+        {/* Admin Sidebar Navigation */}
+        <AdminSidebar
+          user={user}
+          mobileOpen={mobileOpen}
+          setMobileOpen={setMobileOpen}
+        />
 
-      {/* Main Admin Wrapper */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <AdminHeader user={user} onMobileToggle={() => setMobileOpen(true)} />
+        {/* Main Admin Wrapper */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <AdminHeader user={user} onMobileToggle={() => setMobileOpen(true)} />
 
-        {/* Dynamic Page Content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          {children}
-        </main>
+          {/* Dynamic Page Content */}
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </SocketProvider>
   );
 }

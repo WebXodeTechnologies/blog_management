@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   Menu,
   Search,
-  Bell,
   ChevronDown,
   User,
   FileText,
@@ -15,6 +14,7 @@ import {
   Plus,
   Command,
 } from "lucide-react";
+import NotificationDropdown from "@/components/shared/NotificationDropdown";
 
 export default function DashboardHeader({ user, onMobileToggle }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -38,7 +38,6 @@ export default function DashboardHeader({ user, onMobileToggle }) {
           <Menu className="h-5 w-5" />
         </button>
 
-        {/* Tenant Breadcrumb Indicator */}
         <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
           <span className="hidden sm:inline text-slate-900 font-brand font-bold">
             Texora Admin
@@ -66,7 +65,6 @@ export default function DashboardHeader({ user, onMobileToggle }) {
 
       {/* Right: Notifications & User Profile Dropdown */}
       <div className="flex items-center gap-3">
-        {/* Stripe Indigo CTA Button */}
         <Link
           href="/dashboard/write"
           className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs border border-indigo-500 transition cursor-pointer"
@@ -75,15 +73,8 @@ export default function DashboardHeader({ user, onMobileToggle }) {
           <span>New Story</span>
         </Link>
 
-        {/* Notifications Bell */}
-        <button
-          className="relative p-2 rounded-xl border border-indigo-100 bg-indigo-50/40 text-indigo-700 hover:text-indigo-900 hover:bg-indigo-100/60 transition cursor-pointer shadow-2xs"
-          title="Notifications"
-        >
-          <Bell className="h-4 w-4" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-600 animate-ping" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-600" />
-        </button>
+        {/* Integrated Real-Time Notification Dropdown */}
+        <NotificationDropdown />
 
         {/* User Profile Dropdown Menu */}
         <div className="relative">

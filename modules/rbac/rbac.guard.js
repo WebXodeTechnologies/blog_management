@@ -154,7 +154,9 @@ export async function verifyModeratorRequest(req) {
 
     // Fallback: lookup active admin or moderator user in MongoDB if available
     if (!user) {
-      user = await User.findOne({ role: { $in: ["admin", "moderator", "superadmin"] } }).select("-password");
+      user = await User.findOne({
+        role: { $in: ["admin", "moderator", "superadmin"] },
+      }).select("-password");
     }
 
     if (!user) {
@@ -166,8 +168,53 @@ export async function verifyModeratorRequest(req) {
       return {
         authorized: false,
         response: NextResponse.json(
-          { error: "Unauthorized: Active user session or moderator account required" },
+          {
+            error:
+              "Unauthorized: Active user session or moderator account required",
+          },
           { status: 401 }
+        ),
+      };
+    }
+
+    return { authorized: true, user };
+  } catch (error) {
+    return {
+      authorized: false,
+      response: NextResponse.json(
+        { error: "Authorization error" },
+        { status: 401 }
+      ),
+    };
+  }
+}
+
+export async function verifyUserRequest(req) {
+  try {
+    await connectDB();
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
+    if (!token) {
+      return {
+        authorized: false,
+        response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+      };
+    }
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "fallback_secret_key"
+    );
+    const userId = decoded.id || decoded.userId;
+
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return {
+        authorized: false,
+        response: NextResponse.json(
+          { error: "User session not found" },
+          { status: 404 }
         ),
       };
     }

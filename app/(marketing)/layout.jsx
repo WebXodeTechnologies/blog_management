@@ -14,7 +14,6 @@ export default function MarketingLayout({ children }) {
     mouseY.set(clientY - top);
   }
 
-  // Continuous floating cursor spotlight across entire marketing page
   const spotlightBackground = useMotionTemplate`
     radial-gradient(
       650px circle at ${mouseX}px ${mouseY}px,
@@ -29,13 +28,11 @@ export default function MarketingLayout({ children }) {
       onMouseMove={handleMouseMove}
       className="relative min-h-screen flex flex-col bg-slate-50 text-slate-950 selection:bg-blue-600 selection:text-white overflow-x-hidden"
     >
-      {/* Global Interactive Cursor Spotlight Glow */}
       <motion.div
         className="fixed inset-0 pointer-events-none z-0"
         style={{ background: spotlightBackground }}
       />
 
-      {/* Global Floating Animated Ambient Light Orbs (Flow seamlessly across all page sections) */}
       <motion.div
         animate={{
           y: [0, -60, 0],
@@ -63,7 +60,6 @@ export default function MarketingLayout({ children }) {
         className="fixed top-[45%] right-[10%] w-137.5 h-112.5 bg-linear-to-tr from-purple-400/18 to-pink-400/18 blur-[160px] rounded-full pointer-events-none z-0"
       />
 
-      {/* Page Layout Shell */}
       <div className="relative z-10 flex flex-col min-h-screen">
         <MarketingNavbar />
         <main className="flex-1">{children}</main>

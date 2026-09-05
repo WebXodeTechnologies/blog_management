@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { SocketProvider } from "@/components/providers/SocketProvider";
 
 export default function DashboardLayout({ children }) {
   const [user, setUser] = useState(null);
@@ -38,27 +39,29 @@ export default function DashboardLayout({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950 flex font-sans selection:bg-blue-600 selection:text-white">
-      {/* SaaS Sidebar Navigation Shell (Fixed on left) */}
-      <DashboardSidebar
-        user={user}
-        mobileOpen={mobileOpen}
-        setMobileOpen={setMobileOpen}
-      />
-
-      {/* Main Admin Content Wrapper */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* SaaS Top Header Navbar */}
-        <DashboardHeader
+    <SocketProvider>
+      <div className="min-h-screen bg-slate-50 text-slate-950 flex font-sans selection:bg-blue-600 selection:text-white">
+        {/* SaaS Sidebar Navigation Shell (Fixed on left) */}
+        <DashboardSidebar
           user={user}
-          onMobileToggle={() => setMobileOpen(true)}
+          mobileOpen={mobileOpen}
+          setMobileOpen={setMobileOpen}
         />
 
-        {/* Dynamic Page Content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          {children}
-        </main>
+        {/* Main Admin Content Wrapper */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* SaaS Top Header Navbar */}
+          <DashboardHeader
+            user={user}
+            onMobileToggle={() => setMobileOpen(true)}
+          />
+
+          {/* Dynamic Page Content */}
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </SocketProvider>
   );
 }

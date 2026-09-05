@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb/db";
 import { Blog } from "@/modules/blogs/blog.model";
-import { User } from "@/modules/users/user.model";
 import { AuditLog } from "@/modules/audit-logs/audit-log.model";
 import { verifyModeratorRequest } from "@/modules/rbac/rbac.guard";
+import { ModerationService } from "@/modules/moderation";
+
+const moderationService = new ModerationService();
 
 export async function GET(req) {
   const guard = await verifyModeratorRequest(req);
@@ -12,49 +14,9 @@ export async function GET(req) {
   try {
     await connectDB();
 
-    // Fetch real blogs pending approval directly from MongoDB
-    const pendingBlogs = await Blog.find({
-      status: { $in: ["pending", "draft"] },
-    })
-      .populate("authorId", "name email avatar seniorityLevel yearsOfExperience headline")
-      .populate("tenantId", "name slug")
-      .populate("categoryId", "name slug")
-      .sort({ createdAt: -1 });
+    const queueItems = await moderationService.getPendingQueue();
 
-    const queueItems = pendingBlogs.map((b) => {
-      const author = b.authorId || {};
-      const tenant = b.tenantId || {};
-      const category = b.categoryId || {};
-
-      return {
-        id: `SUB-${b._id.toString().slice(-4).toUpperCase()}`,
-        rawId: b._id.toString(),
-        title: b.title,
-        slug: b.slug,
-        content: b.content,
-        category: category.name || "General",
-        tenantId: tenant.slug || tenant.name || "general",
-        author: {
-          id: author._id ? author._id.toString() : "",
-          name: author.name || "Anonymous Dev",
-          email: author.email || "",
-          avatar: author.avatar || "",
-          seniorityLevel: author.seniorityLevel || "tech_enthusiast",
-          yearsOfExperience: author.yearsOfExperience || 0,
-        },
-        submittedAt: b.createdAt
-          ? new Date(b.createdAt).toLocaleString()
-          : "Recently",
-        riskScore: "Low (4%)",
-        riskLevel: "low",
-        snippet:
-          b.excerpt ||
-          (b.content ? b.content.substring(0, 150) + "..." : "No snippet"),
-        status: b.status,
-      };
-    });
-
-    // Compute real MongoDB stats
+    // Compute real MongoDB stats for dashboard analytics
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
 
@@ -74,7 +36,7 @@ export async function GET(req) {
       },
     });
 
-    // Fetch real AuditLog documents from MongoDB
+    // Fetch real immutable audit log documents from MongoDB
     const auditLogs = await AuditLog.find({
       entityType: "Blog",
     })
@@ -98,8 +60,8 @@ export async function GET(req) {
         log.action === "APPROVED_POST"
           ? "success"
           : log.action === "SUSPENDED_POST"
-          ? "danger"
-          : "warning",
+            ? "danger"
+            : "warning",
     }));
 
     return NextResponse.json(
@@ -141,48 +103,19 @@ export async function POST(req) {
       );
     }
 
-    const newStatus = actionType === "approve" ? "published" : "rejected";
-    const blog = await Blog.findByIdAndUpdate(
+    const result = await moderationService.processModerationAction(
       blogId,
-      { status: newStatus },
-      { new: true }
+      actionType,
+      reason,
+      title,
+      guard.user
     );
-
-    if (!blog) {
-      return NextResponse.json(
-        { success: false, message: "Blog post not found in MongoDB" },
-        { status: 404 }
-      );
-    }
-
-    // Record real audit log entry in MongoDB
-    const auditAction =
-      actionType === "approve" ? "APPROVED_POST" : "SUSPENDED_POST";
-    const auditEntry = await AuditLog.create({
-      actorId: guard.user._id,
-      action: auditAction,
-      entityType: "Blog",
-      entityId: blog._id,
-      details: {
-        title: title || blog.title,
-        reason: reason || "Moderator decision",
-        newStatus,
-      },
-    });
 
     return NextResponse.json(
       {
         success: true,
-        blog,
-        auditLog: {
-          id: `LOG-${auditEntry._id.toString().slice(-4).toUpperCase()}`,
-          moderator: guard.user.name,
-          action: auditAction,
-          target: blog.title,
-          reason: reason || "Moderator decision",
-          timestamp: "Just now",
-          type: actionType === "approve" ? "success" : "danger",
-        },
+        blog: result.blog,
+        auditLog: result.auditLog,
       },
       { status: 200 }
     );

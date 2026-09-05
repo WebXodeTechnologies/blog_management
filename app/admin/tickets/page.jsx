@@ -1,48 +1,56 @@
 import Link from "next/link";
-import { MessageSquare, ShieldAlert, CheckCircle2, Clock } from "lucide-react";
+import { MessageSquare, Building2 } from "lucide-react";
 import connectDB from "@/lib/mongodb/db";
 import { TicketRepository } from "@/modules/tickets";
-import { verifyModeratorRequest } from "@/modules/rbac/rbac.guard";
+import { verifyAdminRequest } from "@/modules/rbac/rbac.guard";
+import AdminMetricsGrid from "@/components/tickets/AdminMetricsGrid";
 
-export default async function ModeratorTicketsPage() {
-  const guard = await verifyModeratorRequest();
+export default async function AdminTicketsPage() {
+  const guard = await verifyAdminRequest();
   if (!guard.authorized) {
     return guard.response;
   }
 
   await connectDB();
   const ticketRepo = new TicketRepository();
-  const tickets = await ticketRepo.findAllForStaff();
+
+  const [tickets, metrics] = await Promise.all([
+    ticketRepo.findAllForStaff(),
+    ticketRepo.getMetrics(),
+  ]);
 
   return (
     <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading font-bold text-xl text-slate-900">
-            Moderator Support Queue
+            Global Admin Ticket Oversight
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Triage, manage, and resolve tenant dispute tickets
+            Monitor and manage all support and dispute tickets across tenants
           </p>
         </div>
-        <div className="px-3 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold">
-          {tickets.length} Total Tickets
+        <div className="px-3 py-1.5 rounded-full bg-slate-900 text-white text-xs font-bold font-mono">
+          {tickets.length} System Tickets
         </div>
       </div>
+
+      {/* Admin KPI Metrics Grid */}
+      <AdminMetricsGrid metrics={metrics} />
 
       <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xl overflow-hidden divide-y divide-slate-100">
         {tickets.length === 0 ? (
           <div className="py-16 text-center space-y-3">
             <MessageSquare className="h-8 w-8 text-slate-300 mx-auto" />
             <p className="text-xs text-slate-500 font-medium">
-              No active tickets found in queue.
+              No tickets recorded in the platform database.
             </p>
           </div>
         ) : (
           tickets.map((t) => (
             <Link
               key={t._id.toString()}
-              href={`/moderator/tickets/${t._id.toString()}`}
+              href={`/admin/tickets/${t._id.toString()}`}
               className="flex items-center justify-between p-5 hover:bg-slate-50/80 transition group"
             >
               <div className="space-y-1">
@@ -62,13 +70,14 @@ export default async function ModeratorTicketsPage() {
                     {t.status.replace("_", " ")}
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-500 line-clamp-1">
-                  Tenant:{" "}
-                  <span className="font-semibold text-slate-700">
-                    {t.tenantId?.name || "Workspace"}
-                  </span>{" "}
-                  • {t.description}
-                </p>
+                <div className="flex items-center gap-2 text-[11px] text-slate-500">
+                  <span className="flex items-center gap-1 font-semibold text-indigo-600">
+                    <Building2 className="h-3 w-3" />
+                    {t.tenantId?.name || "Global Tenant"}
+                  </span>
+                  <span>•</span>
+                  <span className="line-clamp-1">{t.description}</span>
+                </div>
               </div>
 
               <div className="flex items-center gap-4 text-right shrink-0">

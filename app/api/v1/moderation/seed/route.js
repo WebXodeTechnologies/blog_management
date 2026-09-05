@@ -13,7 +13,7 @@ export async function GET() {
 
     const defaultPassword = await bcrypt.hash("TexoraUser@2026", 10);
 
-    // 1. Seed or find a default Admin User first to satisfy Tenant's ownerId requirement
+    // 1. Seed or find default Admin User
     let adminUser = await User.findOne({ email: "alex.rivera@texora.io" });
     if (!adminUser) {
       adminUser = await User.create({
@@ -28,7 +28,7 @@ export async function GET() {
       });
     }
 
-    // 2. Seed or find default Tenant using the adminUser._id as ownerId
+    // 2. Seed or find default Tenant
     let tenant = await Tenant.findOne({ slug: "tech-pulse" });
     if (!tenant) {
       tenant = await Tenant.create({
@@ -50,7 +50,7 @@ export async function GET() {
       });
     }
 
-    // 4. Seed real Users with Seniority Level ranks
+    // 4. Seed real Authors with Seniority Ranks
     const sampleAuthors = [
       {
         name: "Alex Rivera",
@@ -103,15 +103,15 @@ export async function GET() {
       createdUsers.push(u);
     }
 
-    // 5. Seed real pending blogs into MongoDB
+    // 5. Seed sample pending blogs
     const sampleBlogs = [
       {
         title: "Building Distributed Event Loops in Rust & Node.js",
         slug: "building-distributed-event-loops-in-rust-nodejs",
         content:
-          "An architectural deep-dive into thread pools, lock-free queues, and asynchronous event loops for high-throughput microservices. In this guide we explore runtime latency and memory safety benchmarks.",
+          "An architectural deep-dive into thread pools, lock-free queues, and asynchronous event loops for high-throughput microservices.",
         excerpt:
-          "An architectural deep-dive into thread pools, lock-free queues, and asynchronous event loops for high-throughput microservices...",
+          "An architectural deep-dive into thread pools, lock-free queues, and asynchronous event loops...",
         authorId: createdUsers[0]._id,
         categoryId: category._id,
         tenantId: tenant._id,
@@ -121,9 +121,9 @@ export async function GET() {
         title: "Zero-Trust Security Patterns in Enterprise Next.js App Router",
         slug: "zero-trust-security-patterns-in-enterprise-nextjs-app-router",
         content:
-          "Enforcing strict authorization policies, RBAC middleware, and CSP headers in modern multi-tenant App Router setups. Learn how to secure JWT session cookies and eliminate privilege escalation risks.",
+          "Enforcing strict authorization policies, RBAC middleware, and CSP headers in modern multi-tenant App Router setups.",
         excerpt:
-          "Enforcing strict authorization policies, RBAC middleware, and CSP headers in modern multi-tenant App Router setups...",
+          "Enforcing strict authorization policies, RBAC middleware, and CSP headers...",
         authorId: createdUsers[1]._id,
         categoryId: category._id,
         tenantId: tenant._id,
@@ -133,9 +133,9 @@ export async function GET() {
         title: "Automated Crypto Airdrop Bot & Flash Loan Script Analysis",
         slug: "automated-crypto-airdrop-bot-flash-loan-script-analysis",
         content:
-          "Understanding automated arbitrage transactions using flash loan smart contracts across decentralized exchanges. We audit gas optimization and execution risk patterns.",
+          "Understanding automated arbitrage transactions using flash loan smart contracts across decentralized exchanges.",
         excerpt:
-          "Understanding automated arbitrage transactions using flash loan smart contracts across decentralized exchanges...",
+          "Understanding automated arbitrage transactions using flash loan smart contracts...",
         authorId: createdUsers[2]._id,
         categoryId: category._id,
         tenantId: tenant._id,
@@ -145,11 +145,7 @@ export async function GET() {
 
     const createdBlogs = [];
     for (const b of sampleBlogs) {
-      let blog = await Blog.findOne({
-        slug: b.slug,
-        tenantId: tenant._id,
-      });
-
+      let blog = await Blog.findOne({ slug: b.slug, tenantId: tenant._id });
       if (!blog) {
         blog = await Blog.create(b);
       } else {
@@ -159,7 +155,7 @@ export async function GET() {
       createdBlogs.push(blog);
     }
 
-    // 6. Seed initial audit log documents
+    // 6. Seed initial audit log entry
     let auditLog = await AuditLog.findOne({ action: "AUTO_FLAGGED" });
     if (!auditLog && createdUsers[0] && createdBlogs[2]) {
       await AuditLog.create({
@@ -178,8 +174,7 @@ export async function GET() {
     return NextResponse.json(
       {
         success: true,
-        message:
-          "Successfully seeded real moderation pending blogs & authors in MongoDB!",
+        message: "Successfully seeded moderation queue in MongoDB!",
         seededUsers: createdUsers.length,
         seededBlogs: createdBlogs.length,
       },

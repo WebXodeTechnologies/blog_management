@@ -30,6 +30,7 @@ import {
   CheckSquare,
   ShieldAlert,
   LayoutDashboard,
+  LifeBuoy,
 } from "lucide-react";
 import logo from "@/public/logos/logo2.png";
 
@@ -203,6 +204,33 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
                   />
                   <span>Review &amp; Approve</span>
                 </div>
+              </Link>
+
+              {/* Moderator Support Tickets Menu */}
+              <Link
+                href="/moderator/tickets"
+                onClick={() => setMobileOpen && setMobileOpen(false)}
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition cursor-pointer ${
+                  checkActive("/moderator/tickets")
+                    ? "bg-indigo-600 text-white font-bold shadow-md shadow-indigo-600/20 border border-indigo-500"
+                    : "text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/60"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <LifeBuoy
+                    className={`h-4 w-4 ${checkActive("/moderator/tickets") ? "text-white" : "text-slate-500"}`}
+                  />
+                  <span>Support Tickets</span>
+                </div>
+                <span
+                  className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
+                    checkActive("/moderator/tickets")
+                      ? "bg-white/20 text-white border-white/30"
+                      : "bg-amber-50 text-amber-700 border-amber-200"
+                  }`}
+                >
+                  Queue
+                </span>
               </Link>
             </div>
           )}
@@ -433,7 +461,25 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
             </AnimatePresence>
           </div>
 
-          {/* 6. Following */}
+          {/* 6. User Support & Dispute Tickets */}
+          <Link
+            href="/dashboard/tickets"
+            onClick={() => setMobileOpen && setMobileOpen(false)}
+            className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition cursor-pointer ${
+              checkActive("/dashboard/tickets")
+                ? "bg-indigo-600 text-white font-bold shadow-md shadow-indigo-600/20 border border-indigo-500"
+                : "text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/60"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <LifeBuoy
+                className={`h-4 w-4 ${checkActive("/dashboard/tickets") ? "text-white" : "text-slate-500"}`}
+              />
+              <span>Support &amp; Tickets</span>
+            </div>
+          </Link>
+
+          {/* 7. Following */}
           <Link
             href="/dashboard/following"
             onClick={() => setMobileOpen && setMobileOpen(false)}

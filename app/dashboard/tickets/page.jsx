@@ -1,33 +1,38 @@
 import Link from "next/link";
-import { MessageSquare, ShieldAlert, CheckCircle2, Clock } from "lucide-react";
+import { Plus, MessageSquare, Clock, AlertCircle } from "lucide-react";
 import connectDB from "@/lib/mongodb/db";
-import { TicketRepository } from "@/modules/tickets";
-import { verifyModeratorRequest } from "@/modules/rbac/rbac.guard";
+import { Ticket } from "@/modules/tickets";
+import { verifyUserRequest } from "@/modules/rbac/rbac.guard";
 
-export default async function ModeratorTicketsPage() {
-  const guard = await verifyModeratorRequest();
+export default async function TicketsPage() {
+  const guard = await verifyUserRequest();
   if (!guard.authorized) {
     return guard.response;
   }
 
   await connectDB();
-  const ticketRepo = new TicketRepository();
-  const tickets = await ticketRepo.findAllForStaff();
+  const tickets = await Ticket.find({ creatorId: guard.user._id })
+    .sort({ updatedAt: -1 })
+    .lean();
 
   return (
-    <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
+    <div className="p-6 sm:p-8 max-w-6xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading font-bold text-xl text-slate-900">
-            Moderator Support Queue
+            Dispute & Support Tickets
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Triage, manage, and resolve tenant dispute tickets
+            Manage your active support requests and live chat channels
           </p>
         </div>
-        <div className="px-3 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold">
-          {tickets.length} Total Tickets
-        </div>
+        <Link
+          href="/dashboard/tickets/new"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-xs cursor-pointer"
+        >
+          <Plus className="h-4 w-4" />
+          <span>New Ticket</span>
+        </Link>
       </div>
 
       <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xl overflow-hidden divide-y divide-slate-100">
@@ -35,14 +40,14 @@ export default async function ModeratorTicketsPage() {
           <div className="py-16 text-center space-y-3">
             <MessageSquare className="h-8 w-8 text-slate-300 mx-auto" />
             <p className="text-xs text-slate-500 font-medium">
-              No active tickets found in queue.
+              No tickets found. Create one to start a live support chat.
             </p>
           </div>
         ) : (
           tickets.map((t) => (
             <Link
               key={t._id.toString()}
-              href={`/moderator/tickets/${t._id.toString()}`}
+              href={`/dashboard/tickets/${t._id.toString()}`}
               className="flex items-center justify-between p-5 hover:bg-slate-50/80 transition group"
             >
               <div className="space-y-1">
@@ -63,11 +68,7 @@ export default async function ModeratorTicketsPage() {
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-500 line-clamp-1">
-                  Tenant:{" "}
-                  <span className="font-semibold text-slate-700">
-                    {t.tenantId?.name || "Workspace"}
-                  </span>{" "}
-                  • {t.description}
+                  {t.description}
                 </p>
               </div>
 

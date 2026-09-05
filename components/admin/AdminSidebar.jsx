@@ -17,6 +17,7 @@ import {
   CreditCard,
   FileText,
   ShieldCheck,
+  LifeBuoy,
 } from "lucide-react";
 import texoraLogo from "@/public/logos/logo2.png";
 
@@ -47,6 +48,12 @@ export default function AdminSidebar({ user, mobileOpen, setMobileOpen }) {
       label: "Tenant Control",
       href: "/admin/tenants",
       icon: Building2,
+    },
+    {
+      label: "Support Tickets",
+      href: "/admin/tickets",
+      icon: LifeBuoy,
+      badge: "Live",
     },
     {
       label: "Content & Articles",

@@ -23,6 +23,9 @@ app.prepare().then(() => {
     },
   });
 
+  // Expose global io instance for API routes
+  global.io = io;
+
   io.on("connection", (socket) => {
     console.log(`⚡ Client connected: ${socket.id}`);
 
@@ -30,27 +33,27 @@ app.prepare().then(() => {
     socket.on("join_user_room", (userId) => {
       if (userId) {
         socket.join(`user_${userId}`);
-        console.log(`User joined room: user_${userId}`);
       }
     });
 
-    // Join live ticket chat room
-    socket.on("join_ticket", (ticketId) => {
-      if (ticketId) {
-        socket.join(`ticket_${ticketId}`);
-        console.log(`Socket joined ticket room: ticket_${ticketId}`);
+    // Join live ticket room
+    socket.on("join_room", (roomName) => {
+      if (roomName) {
+        socket.join(roomName);
+        console.log(`Socket joined room: ${roomName}`);
       }
     });
 
-    // Handle real-time ticket messaging
-    socket.on("send_ticket_message", async (data) => {
-      const { ticketId, senderId, message } = data;
-      // Broadcast message to everyone in the ticket room including sender
-      io.to(`ticket_${ticketId}`).emit("receive_ticket_message", {
-        senderId,
-        message,
-        createdAt: new Date(),
-      });
+    socket.on("leave_room", (roomName) => {
+      if (roomName) {
+        socket.leave(roomName);
+      }
+    });
+
+    // Handle typing indicator properly inside the connection scope
+    socket.on("typing", ({ ticketId, userId }) => {
+      const roomName = `ticket_${ticketId}`;
+      socket.to(roomName).emit("display_typing", { ticketId, userId });
     });
 
     socket.on("disconnect", () => {

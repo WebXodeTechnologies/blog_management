@@ -11,6 +11,7 @@ import {
   Vote,
   Sparkles,
 } from "lucide-react";
+import NotificationBell from "../notifications/NotificationBell";
 
 export default function UserDashboardHero({ user: initialUser }) {
   const [user, setUser] = useState(initialUser);

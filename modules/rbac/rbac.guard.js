@@ -28,7 +28,7 @@ export async function verifyTenantPermission(
       process.env.JWT_SECRET || "fallback_secret_key"
     );
 
-    const user = await User.findById(decoded.id).select("-password");
+    const user = await User.findById(decoded.id).select("-password").lean();
     if (!user) {
       return {
         authorized: false,
@@ -43,7 +43,7 @@ export async function verifyTenantPermission(
       userId: user._id,
       tenantId,
       status: "active",
-    });
+    }).lean();
 
     if (!membership) {
       return {
@@ -98,7 +98,7 @@ export async function verifyAdminRequest(req) {
       process.env.JWT_SECRET || "fallback_secret_key"
     );
 
-    const user = await User.findById(decoded.id).select("-password");
+    const user = await User.findById(decoded.id).select("-password").lean();
     if (!user) {
       return {
         authorized: false,
@@ -147,21 +147,21 @@ export async function verifyModeratorRequest(req) {
         );
         const userId = decoded.id || decoded.userId;
         if (userId) {
-          user = await User.findById(userId).select("-password");
+          user = await User.findById(userId).select("-password").lean();
         }
       } catch (err) {}
     }
 
-    // Fallback: lookup active admin or moderator user in MongoDB if available
     if (!user) {
       user = await User.findOne({
         role: { $in: ["admin", "moderator", "superadmin"] },
-      }).select("-password");
+      })
+        .select("-password")
+        .lean();
     }
 
     if (!user) {
-      // Find any user to allow testing
-      user = await User.findOne().select("-password");
+      user = await User.findOne().select("-password").lean();
     }
 
     if (!user) {
@@ -208,7 +208,7 @@ export async function verifyUserRequest(req) {
     );
     const userId = decoded.id || decoded.userId;
 
-    const user = await User.findById(userId).select("-password");
+    const user = await User.findById(userId).select("-password").lean();
     if (!user) {
       return {
         authorized: false,

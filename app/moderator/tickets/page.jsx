@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { MessageSquare, ShieldAlert, CheckCircle2, Clock } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import connectDB from "@/lib/mongodb/db";
 import { TicketRepository } from "@/modules/tickets";
 import { verifyModeratorRequest } from "@/modules/rbac/rbac.guard";
+
+export const dynamic = "force-dynamic";
 
 export default async function ModeratorTicketsPage() {
   const guard = await verifyModeratorRequest();
@@ -12,7 +14,10 @@ export default async function ModeratorTicketsPage() {
 
   await connectDB();
   const ticketRepo = new TicketRepository();
-  const tickets = await ticketRepo.findAllForStaff();
+  const rawTickets = await ticketRepo.findAllForStaff();
+
+  // Safely serialize Mongoose / Repository documents into plain JSON primitives
+  const tickets = JSON.parse(JSON.stringify(rawTickets));
 
   return (
     <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
@@ -41,8 +46,8 @@ export default async function ModeratorTicketsPage() {
         ) : (
           tickets.map((t) => (
             <Link
-              key={t._id.toString()}
-              href={`/moderator/tickets/${t._id.toString()}`}
+              key={t._id}
+              href={`/moderator/tickets/${t._id}`}
               className="flex items-center justify-between p-5 hover:bg-slate-50/80 transition group"
             >
               <div className="space-y-1">

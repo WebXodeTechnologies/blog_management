@@ -5,6 +5,8 @@ import { TicketRepository } from "@/modules/tickets";
 import { verifyAdminRequest } from "@/modules/rbac/rbac.guard";
 import AdminMetricsGrid from "@/components/tickets/AdminMetricsGrid";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminTicketsPage() {
   const guard = await verifyAdminRequest();
   if (!guard.authorized) {
@@ -14,10 +16,14 @@ export default async function AdminTicketsPage() {
   await connectDB();
   const ticketRepo = new TicketRepository();
 
-  const [tickets, metrics] = await Promise.all([
+  const [rawTickets, rawMetrics] = await Promise.all([
     ticketRepo.findAllForStaff(),
     ticketRepo.getMetrics(),
   ]);
+
+  // Safely serialize database documents and metrics to plain JSON objects
+  const tickets = JSON.parse(JSON.stringify(rawTickets));
+  const metrics = JSON.parse(JSON.stringify(rawMetrics));
 
   return (
     <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
@@ -49,8 +55,8 @@ export default async function AdminTicketsPage() {
         ) : (
           tickets.map((t) => (
             <Link
-              key={t._id.toString()}
-              href={`/admin/tickets/${t._id.toString()}`}
+              key={t._id}
+              href={`/admin/tickets/${t._id}`}
               className="flex items-center justify-between p-5 hover:bg-slate-50/80 transition group"
             >
               <div className="space-y-1">

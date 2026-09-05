@@ -1,8 +1,11 @@
 import Link from "next/link";
-import { Plus, MessageSquare, Clock, AlertCircle } from "lucide-react";
+import { Plus, MessageSquare } from "lucide-react";
 import connectDB from "@/lib/mongodb/db";
 import { Ticket } from "@/modules/tickets";
 import { verifyUserRequest } from "@/modules/rbac/rbac.guard";
+
+// Force dynamic rendering so Next.js doesn't try to pre-render this auth route at build time
+export const dynamic = "force-dynamic";
 
 export default async function TicketsPage() {
   const guard = await verifyUserRequest();
@@ -11,9 +14,12 @@ export default async function TicketsPage() {
   }
 
   await connectDB();
-  const tickets = await Ticket.find({ creatorId: guard.user._id })
+  const rawTickets = await Ticket.find({ creatorId: guard.user._id })
     .sort({ updatedAt: -1 })
     .lean();
+
+  // Ensure plain JSON conversion for all Mongoose documents
+  const tickets = JSON.parse(JSON.stringify(rawTickets));
 
   return (
     <div className="p-6 sm:p-8 max-w-6xl mx-auto space-y-6">
@@ -46,8 +52,8 @@ export default async function TicketsPage() {
         ) : (
           tickets.map((t) => (
             <Link
-              key={t._id.toString()}
-              href={`/dashboard/tickets/${t._id.toString()}`}
+              key={t._id}
+              href={`/dashboard/tickets/${t._id}`}
               className="flex items-center justify-between p-5 hover:bg-slate-50/80 transition group"
             >
               <div className="space-y-1">

@@ -2,7 +2,8 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "standalone",
+  // Dynamically set output: standalone for Docker, undefined for Vercel deployment
+  output: process.env.VERCEL ? undefined : "standalone",
   reactStrictMode: true,
 
   images: {

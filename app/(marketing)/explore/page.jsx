@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import ExploreHero from "@/components/explore/ExploreHero";
 import ExploreSearchFilter from "@/components/explore/ExploreSearchFilter";
 import BlogFeed from "@/components/explore/BlogFeed";
@@ -26,11 +27,20 @@ function getActiveTenantSlug() {
   return "general";
 }
 
-export default function ExplorePage() {
+function ExploreMainContent() {
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category") || "All";
+
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState(categoryParam);
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+    }
+  }, [categoryParam]);
 
   const fetchExplorePosts = async () => {
     try {
@@ -62,7 +72,7 @@ export default function ExplorePage() {
     const matchesCategory =
       selectedCategory === "All" ||
       (post.category &&
-        post.category.toLowerCase() === selectedCategory.toLowerCase());
+        post.category.toLowerCase().includes(selectedCategory.toLowerCase()));
 
     const query = searchQuery.toLowerCase().trim();
     const matchesSearch =
@@ -110,5 +120,19 @@ export default function ExplorePage() {
         </div>
       </div>
     </SmoothScrollProvider>
+  );
+}
+
+export default function ExplorePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        </div>
+      }
+    >
+      <ExploreMainContent />
+    </Suspense>
   );
 }

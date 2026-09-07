@@ -130,7 +130,7 @@ export default function DashboardHeader({ user, onMobileToggle }) {
                 </Link>
 
                 <Link
-                  href="/bookmarks"
+                  href="/dashboard/bookmarks"
                   onClick={() => setDropdownOpen(false)}
                   className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-indigo-50/60 hover:text-indigo-700 transition"
                 >

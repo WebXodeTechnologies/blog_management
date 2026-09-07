@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Compass,
@@ -36,6 +36,7 @@ import logo from "@/public/logos/logo2.png";
 
 export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const [exploreStationOpen, setExploreStationOpen] = useState(
     pathname.includes("explore-station") || pathname.includes("bookmarks")
@@ -68,6 +69,28 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
   const isModerator = user?.role === "moderator" || isAdmin;
 
   const checkActive = (href, exact = false) => {
+    if (href.includes("?")) {
+      const [targetPath, targetQuery] = href.split("?");
+      const targetParams = new URLSearchParams(targetQuery);
+      if (pathname !== targetPath) return false;
+
+      for (const [key, val] of targetParams.entries()) {
+        const currentVal = searchParams.get(key);
+        if (key === "tab" && val === "all" && (!currentVal || currentVal === "all")) {
+          continue;
+        }
+        if (
+          key === "tab" &&
+          ((val === "drafts" && currentVal === "draft") ||
+            (val === "draft" && currentVal === "drafts"))
+        ) {
+          continue;
+        }
+        if (currentVal !== val) return false;
+      }
+      return true;
+    }
+
     if (exact) return pathname === href;
     return pathname.startsWith(href);
   };
@@ -412,6 +435,11 @@ export default function DashboardSidebar({ user, mobileOpen, setMobileOpen }) {
                   className="ml-5 pl-3 border-l-2 border-indigo-200 pt-1.5 space-y-1 overflow-hidden"
                 >
                   {[
+                    {
+                      label: "All Stories",
+                      tab: "all",
+                      icon: <BookOpen className="h-3.5 w-3.5" />,
+                    },
                     {
                       label: "Drafts",
                       tab: "drafts",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -12,22 +12,182 @@ import {
   Sparkles,
   Flame,
   TrendingUp,
+  User,
 } from "lucide-react";
 import { CATEGORY_NAMES, STANDARDIZED_ARTICLES } from "@/constants/categories";
+import { apiFetch } from "@/lib/api";
 
 export default function TrendingArticles() {
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("All");
+
+  const normalizeArticle = (b) => {
+    const wordCount = b.content
+      ? b.content
+          .replace(/<[^>]*>/g, " ")
+          .trim()
+          .split(/\s+/).length
+      : 0;
+    const readTimeMin = Math.max(1, Math.ceil(wordCount / 200));
+
+    const authorName =
+      b.authorId?.name || b.author?.name || "Technical Contributor";
+    const authorRole =
+      b.authorId?.role || b.author?.role || "Engineering Author";
+    const authorAvatar = b.authorId?.avatar || b.author?.avatar || "";
+
+    const category =
+      b.category ||
+      (b.categoryId && typeof b.categoryId === "object"
+        ? b.categoryId.name
+        : null) ||
+      (b.tags && b.tags.length > 0
+        ? b.tags[0].charAt(0).toUpperCase() + b.tags[0].slice(1)
+        : "System Architecture");
+
+    const karmaVal = (b.likes || 0) * 100 + (b.views || 0) * 10;
+    const karmaStr =
+      karmaVal > 0
+        ? `+${karmaVal > 999 ? (karmaVal / 1000).toFixed(1) + "k" : karmaVal} Karma`
+        : "+100 Karma";
+
+    return {
+      id: b._id || b.id || b.slug,
+      slug: b.slug,
+      title: b.title,
+      excerpt:
+        b.excerpt ||
+        (b.content
+          ? b.content
+              .replace(/<[^>]*>/g, " ")
+              .slice(0, 150)
+              .trim() + "..."
+          : "Read full technical article..."),
+      category: category,
+      readTime: `${readTimeMin} min read`,
+      views: b.views
+        ? b.views > 999
+          ? (b.views / 1000).toFixed(1) + "k"
+          : b.views
+        : 0,
+      likes: b.likes || 0,
+      karma: karmaStr,
+      image:
+        b.coverImage ||
+        b.image ||
+        "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
+      author: {
+        name: authorName,
+        role: authorRole,
+        avatar: authorAvatar,
+      },
+    };
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchTrending() {
+      try {
+        setLoading(true);
+        const res = await apiFetch("/api/v1/blogs");
+        const data = await res.json();
+        if (data.success && Array.isArray(data.blogs)) {
+          const published = data.blogs.filter((b) => b.status === "published");
+          if (published.length > 0) {
+            const normalized = published.map(normalizeArticle);
+            if (isMounted) {
+              setArticles(normalized);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch trending articles:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    fetchTrending();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const displayArticles =
+    articles.length > 0 ? articles : STANDARDIZED_ARTICLES;
 
   const filteredArticles =
     activeCategory === "All"
-      ? STANDARDIZED_ARTICLES.slice(0, 4)
-      : STANDARDIZED_ARTICLES.filter(
-          (article) =>
-            article.category.toLowerCase() === activeCategory.toLowerCase()
-        );
+      ? displayArticles
+      : displayArticles.filter((article) => {
+          if (!article.category) return false;
+          const cat = article.category.toLowerCase();
+          const target = activeCategory.toLowerCase();
+          return (
+            cat === target ||
+            cat.includes(target) ||
+            target.includes(cat) ||
+            (target.includes("ai") && cat.includes("ai")) ||
+            (target.includes("web") && cat.includes("web")) ||
+            (target.includes("system") && cat.includes("system")) ||
+            (target.includes("startup") && cat.includes("startup"))
+          );
+        });
 
-  const featuredArticle = filteredArticles[0] || STANDARDIZED_ARTICLES[0];
-  const sideArticles = filteredArticles.slice(1, 4);
+  const featuredArticle = filteredArticles[0] || displayArticles[0];
+  const sideArticles =
+    filteredArticles.length > 1
+      ? filteredArticles.slice(1, 4)
+      : displayArticles.slice(1, 4);
+
+  if (loading) {
+    return (
+      <section className="relative py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto z-10 font-sans">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 animate-pulse">
+          <div className="space-y-3">
+            <div className="h-6 w-64 bg-slate-200/80 rounded-full" />
+            <div className="h-10 w-72 bg-slate-200/80 rounded-2xl" />
+          </div>
+          <div className="h-10 w-36 bg-slate-200/80 rounded-2xl shrink-0" />
+        </div>
+
+        <div className="flex items-center gap-2 mb-12 overflow-x-auto pb-2 animate-pulse scrollbar-none">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className="h-8 w-24 bg-slate-200/80 rounded-full shrink-0"
+            />
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-pulse">
+          <div className="lg:col-span-7 h-120 bg-white/70 rounded-3xl border border-slate-200/70 p-8 flex flex-col justify-between">
+            <div className="space-y-4">
+              <div className="aspect-video w-full bg-slate-200/80 rounded-2xl" />
+              <div className="h-6 w-3/4 bg-slate-200/80 rounded-lg" />
+              <div className="h-4 w-full bg-slate-200/80 rounded-lg" />
+            </div>
+            <div className="h-8 w-full bg-slate-100/80 rounded-xl" />
+          </div>
+          <div className="lg:col-span-5 space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="h-37 bg-white/70 rounded-3xl border border-slate-200/70 p-5 flex items-center gap-4"
+              >
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-20 bg-slate-200/80 rounded-full" />
+                  <div className="h-5 w-full bg-slate-200/80 rounded-lg" />
+                  <div className="h-3 w-4/5 bg-slate-200/80 rounded-lg" />
+                </div>
+                <div className="h-16 w-16 bg-slate-200/80 rounded-xl shrink-0" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto z-10 font-sans">
@@ -121,14 +281,18 @@ export default function TrendingArticles() {
                   {/* Author Header */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="relative h-9 w-9 rounded-full overflow-hidden shrink-0 ring-2 ring-blue-500/20">
-                        <Image
-                          src={featuredArticle.author.avatar}
-                          alt={featuredArticle.author.name}
-                          width={36}
-                          height={36}
-                          className="object-cover h-full w-full"
-                        />
+                      <div className="relative h-9 w-9 rounded-full overflow-hidden shrink-0 ring-2 ring-blue-500/20 bg-indigo-100 flex items-center justify-center font-bold text-indigo-700">
+                        {featuredArticle.author.avatar ? (
+                          <Image
+                            src={featuredArticle.author.avatar}
+                            alt={featuredArticle.author.name}
+                            width={36}
+                            height={36}
+                            className="object-cover h-full w-full"
+                          />
+                        ) : (
+                          <User className="h-4 w-4 text-indigo-600" />
+                        )}
                       </div>
                       <div>
                         <h4 className="text-xs font-sans font-bold text-slate-950">
@@ -213,7 +377,7 @@ export default function TrendingArticles() {
                       </p>
                     </div>
 
-                    {/* Unsplash Thumbnail Image */}
+                    {/* Thumbnail Image */}
                     <div className="relative h-16 w-16 rounded-xl overflow-hidden shrink-0 border border-slate-200 hidden sm:block">
                       <Image
                         src={article.image}
@@ -228,14 +392,18 @@ export default function TrendingArticles() {
                   {/* Article Footer Stats */}
                   <div className="pt-3 border-t border-slate-100/80 flex items-center justify-between text-[11px] font-sans text-slate-500">
                     <div className="flex items-center gap-2">
-                      <div className="relative h-5 w-5 rounded-full overflow-hidden shrink-0">
-                        <Image
-                          src={article.author.avatar}
-                          alt={article.author.name}
-                          width={20}
-                          height={20}
-                          className="object-cover h-full w-full"
-                        />
+                      <div className="relative h-5 w-5 rounded-full overflow-hidden shrink-0 bg-indigo-100 flex items-center justify-center font-bold text-indigo-700">
+                        {article.author.avatar ? (
+                          <Image
+                            src={article.author.avatar}
+                            alt={article.author.name}
+                            width={20}
+                            height={20}
+                            className="object-cover h-full w-full"
+                          />
+                        ) : (
+                          <User className="h-3 w-3 text-indigo-600" />
+                        )}
                       </div>
                       <span className="font-medium text-slate-700">
                         {article.author.name}

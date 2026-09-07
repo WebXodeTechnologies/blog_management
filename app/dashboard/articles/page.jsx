@@ -34,13 +34,20 @@ function getActiveTenantSlug() {
 
 function DashboardArticlesContent() {
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get("tab") || "all";
+  const tabParam = searchParams.get("tab") || "all";
 
   const [user, setUser] = useState(null);
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const [activeTab, setActiveTab] = useState(tabParam);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Sync tab state whenever URL search params change
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
 
   // Delete Modal State Management
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -74,7 +81,7 @@ function DashboardArticlesContent() {
               "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
             readTime: `${Math.max(1, Math.ceil((b.content?.length || 100) / 1000))} min read`,
             likes: b.likes || 0,
-            lifecycle: b.status || "draft",
+            lifecycle: (b.status || "draft").toLowerCase(),
           }))
         );
       } else {
@@ -93,15 +100,47 @@ function DashboardArticlesContent() {
 
   const isModerator = user?.role === "moderator";
 
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    if (typeof window !== "undefined") {
+      const newUrl = `/dashboard/articles?tab=${tabId}`;
+      window.history.pushState(null, "", newUrl);
+    }
+  };
+
   const filteredArticles = articles.filter((article) => {
     const matchesSearch =
+      !searchQuery.trim() ||
       article.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       article.excerpt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       article.category?.toLowerCase().includes(searchQuery.toLowerCase());
 
     if (!matchesSearch) return false;
     if (activeTab === "all") return true;
-    return article.lifecycle === activeTab;
+
+    const status = (
+      article.status ||
+      article.lifecycle ||
+      "draft"
+    ).toLowerCase();
+
+    if (activeTab === "draft" || activeTab === "drafts") {
+      return status === "draft";
+    }
+    if (activeTab === "scheduled") {
+      return status === "scheduled";
+    }
+    if (activeTab === "published") {
+      return status === "published";
+    }
+    if (activeTab === "unlisted") {
+      return status === "unlisted" || status === "archived";
+    }
+    if (activeTab === "submissions") {
+      return status === "pending" || status === "submissions";
+    }
+
+    return status === activeTab;
   });
 
   const confirmDeleteClick = (article) => {
@@ -207,24 +246,29 @@ function DashboardArticlesContent() {
         <div className="flex items-center gap-1.5 p-1.5 bg-indigo-50/50 rounded-2xl border border-indigo-100 overflow-x-auto scrollbar-none w-full 2xl:w-auto">
           {[
             { id: "all", label: "All Stories" },
-            { id: "draft", label: "Drafts" },
+            { id: "drafts", label: "Drafts" },
             { id: "scheduled", label: "Scheduled" },
             { id: "published", label: "Published" },
             { id: "unlisted", label: "Unlisted" },
             { id: "submissions", label: "Submissions for Approval" },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition whitespace-nowrap cursor-pointer shrink-0 ${
-                activeTab === tab.id
-                  ? "bg-indigo-600 text-white shadow-xs font-bold"
-                  : "text-slate-600 hover:text-indigo-600"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+          ].map((tab) => {
+            const isActive =
+              activeTab === tab.id ||
+              (tab.id === "drafts" && activeTab === "draft");
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handleTabChange(tab.id)}
+                className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition whitespace-nowrap cursor-pointer shrink-0 ${
+                  isActive
+                    ? "bg-indigo-600 text-white shadow-xs font-bold"
+                    : "text-slate-600 hover:text-indigo-600"
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Search bar visible only on ultra-wide / 2k+ screens */}

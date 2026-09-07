@@ -168,7 +168,7 @@ export default function MarketingNavbar() {
                           <span>My Articles</span>
                         </Link>
                         <Link
-                          href="/bookmarks"
+                          href="/dashboard/bookmarks"
                           onClick={() => setDropdownOpen(false)}
                           className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition"
                         >
@@ -335,7 +335,7 @@ export default function MarketingNavbar() {
                   <span>My Articles</span>
                 </Link>
                 <Link
-                  href="/bookmarks"
+                  href="/dashboard/bookmarks"
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-slate-700 hover:text-slate-950 hover:bg-white/60 rounded-xl transition"
                 >

@@ -10,19 +10,80 @@ export const metadata = {
     "Explore deep-dive technical engineering articles, architecture notes, and developer guides.",
 };
 
+
 async function getPublishedArticles() {
   try {
+    console.log("========== ARTICLES DEBUG START ==========");
+
+    // 1. Connect to MongoDB
     await connectDB();
+    console.log("✅ MongoDB connection successful");
+
+    // 2. Fetch all articles without filters
+    const allBlogs = await Blog.find({}).lean();
+
+    console.log("📦 Total articles in collection:", allBlogs.length);
+
+    console.log(
+      "📋 All article details:",
+      allBlogs.map((blog) => ({
+        _id: String(blog._id),
+        title: blog.title,
+        status: blog.status,
+        slug: blog.slug,
+        authorId: blog.authorId ? String(blog.authorId) : null,
+        createdAt: blog.createdAt,
+      }))
+    );
+
+    // 3. Check published status
+    const publishedBlogs = await Blog.find({
+      status: "published",
+    }).lean();
+
+    console.log(
+      "📰 Articles matching status='published':",
+      publishedBlogs.length
+    );
+
+    // 4. Fetch published articles with author information
     const blogs = await Blog.find({ status: "published" })
       .populate("authorId", "name avatar")
       .sort({ createdAt: -1 })
       .lean();
+
+    console.log("👤 Articles after author population:", blogs.length);
+
+    console.log(
+      "🔍 Final article details:",
+      blogs.map((blog) => ({
+        _id: String(blog._id),
+        title: blog.title,
+        slug: blog.slug,
+        status: blog.status,
+        author: blog.authorId
+          ? {
+              name: blog.authorId.name,
+              avatar: blog.authorId.avatar,
+            }
+          : null,
+      }))
+    );
+
+    console.log("========== ARTICLES DEBUG END ==========");
+
+    // 5. Return plain JSON-compatible data
     return JSON.parse(JSON.stringify(blogs));
   } catch (error) {
-    console.error("Error fetching published articles:", error);
+    console.error("❌ ERROR FETCHING ARTICLES");
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    console.error("Full error:", error);
+
     return [];
   }
 }
+
 
 export default async function PublicArticlesPage() {
   const articles = await getPublishedArticles();
